@@ -1,240 +1,660 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-const groups = [
-  {
-    key: 'ai',
-    label: 'AI & LLM Engineering',
-    title: 'Intelligent applications and AI workflows.',
-    description: 'Building intelligent applications using Large Language Models, AI workflows, RAG, prompt engineering, AI agents, and modern full-stack AI technologies.',
-    arch: ['Requirement', 'LLM/Prompt', 'Tools/RAG', 'Validation', 'Output'],
-    details: {
-      features: ['Structured prompt design', 'Workflow and dependency generation', 'Tool or retrieval simulation', 'JSON output validation'],
-      challenges: ['Keeping output structured', 'Reducing hallucination risk', 'Handling vague requirements', 'Balancing speed and quality'],
-      learnings: ['Clear schemas improve reliability', 'Small evaluation checks add trust', 'Prompt context should stay focused', 'Human-readable output matters'],
-      future: ['Multi-model comparison', 'RAG source citations', 'Prompt test history', 'Cost and latency analytics'],
-    },
-  },
-  {
-    key: 'eng',
-    label: 'Engineering & Automation',
-    title: 'Scalable platforms and delivery workflows.',
-    description: 'Developing scalable web apps, API integrations, developer tools, deployment workflows, observability dashboards, and automation platforms.',
-    arch: ['Input', 'API/UI', 'Automation', 'Validation', 'Delivery'],
-    details: {
-      features: ['Reusable workflow components', 'Environment and release checks', 'API mapping and validation', 'Dashboard-style visibility'],
-      challenges: ['Complex workflow dependencies', 'Release-risk visibility', 'Integration edge cases', 'Keeping UI fast on mobile'],
-      learnings: ['Automate repeated decisions', 'Show status clearly', 'Design for rollback and recovery', 'Keep tools simple and usable'],
-      future: ['Team workspaces', 'Saved workflow templates', 'Deeper observability', 'AI-assisted triage'],
-    },
-  },
-  {
-    key: 'web',
-    label: '🖥️ Web Server & Database Projects',
-    title: 'Apache, HTTPS, logs, and database-backed tools.',
-    description: 'Realistic web-server and database projects covering Apache HTTPS deployment monitoring, secure reverse-proxy uploads, request-log exploration, Supabase persistence, and SQLite local/demo fallback usage.',
-    arch: ['Apache/Logs', 'Next.js UI', 'Validation', 'Supabase', 'SQLite Demo'],
-    details: {
-      features: ['Apache VirtualHost and proxy configuration viewer', 'HTTPS enforcement and SSL/TLS certificate checks', 'Access/error log analytics with status grouping', 'Supabase-first persistence with SQLite local fallback'],
-      challenges: ['Representing server configuration safely in a portfolio demo', 'Keeping Supabase as the production database while explaining SQLite fallback', 'Summarizing logs without exposing private operational data', 'Balancing detailed diagnostics with a clean UI'],
-      learnings: ['Small dashboards can make infrastructure health easier to understand', 'Certificate and redirect checks are useful release-readiness signals', 'Structured log filters reduce QA and developer investigation time', 'Local SQLite fallback is useful for demos without replacing production storage'],
-      future: ['Apache config import templates', 'Certificate renewal reminders', 'CSV export and saved investigations', 'Role-based operational views'],
-    },
-  },
+const themes = [
+  { key: 'dark', label: 'Dark' },
+  { key: 'read', label: 'Read' },
+  { key: 'sky', label: 'Sky' },
+  { key: 'night', label: 'Night' },
 ];
 
-const groupByKey = Object.fromEntries(groups.map((group) => [group.key, group]));
+const categories = [
+  {
+    key: 'llm',
+    eyebrow: 'LLM & AI systems',
+    title: 'Intelligent products with measurable guardrails.',
+    description:
+      'Production-minded LLM workflows that combine retrieval, structured outputs, evaluation, and human-readable execution traces.',
+    architecture: ['Input', 'Context', 'LLM tools', 'Guardrails', 'Output'],
+  },
+  {
+    key: 'automation',
+    eyebrow: 'Automation & delivery',
+    title: 'Complex workflows made visible and repeatable.',
+    description:
+      'API journey automation, dependency discovery, release readiness, observability, and customer implementation workspaces.',
+    architecture: ['Capture', 'Map', 'Execute', 'Assert', 'Report'],
+  },
+  {
+    key: 'platform',
+    eyebrow: 'Web server & data',
+    title: 'Secure infrastructure-facing developer tools.',
+    description:
+      'Apache HTTPS operations, reverse-proxy workflows, request-log analysis, Supabase persistence, and SQLite-friendly demos.',
+    architecture: ['Apache', 'Next.js', 'API route', 'Supabase', 'Insight'],
+  },
+];
 
 const projects = [
-  { sec: 'ai', icon: '🧠', title: 'LLM Workflow Automation Studio', cat: 'AI Workflow', lvl: 'Advanced', tech: ['Next.js', 'React', 'TypeScript', 'OpenAI', 'JSON', 'Workflow Automation'], desc: 'LLM-powered workflow generator that transforms business requirements into structured execution pipelines with steps, dependencies, validations, and final outputs.', impact: 'Turns unstructured requirements into clear executable workflow plans.', steps: ['Parse business requirement', 'Extract entities and constraints', 'Generate workflow dependencies', 'Validate structured JSON plan', 'Create final execution output'], sample: { requirement: 'Create an approval workflow for API release readiness', output: 'structured workflow pipeline', environment: 'simulation' } },
-  { sec: 'ai', icon: '🤖', title: 'AI Agent Deployment Console', cat: 'AI Agents', lvl: 'Advanced', tech: ['OpenAI', 'AI Agents', 'Function Calling', 'Next.js', 'TypeScript'], desc: 'Interactive console for configuring AI agents with tools, guardrails, workflow steps, and deployment readiness simulation.', impact: 'Demonstrates how AI agents can be prepared for real-world business workflows.', steps: ['Configure agent role', 'Attach tools and function calls', 'Apply guardrail rules', 'Run readiness simulation', 'Prepare deployment checklist'], sample: { agent: 'Customer workflow assistant', tools: ['search', 'validate', 'summarize'], guardrails: 'business-rule checks' } },
-  { sec: 'ai', icon: '✍️', title: 'Prompt Engineering Lab', cat: 'Prompt Engineering', lvl: 'Intermediate', tech: ['Prompt Engineering', 'LLM', 'JSON Schema', 'Structured Output'], desc: 'Workspace to design, improve, compare, and evaluate prompts for structured AI applications.', impact: 'Improves prompt clarity, reliability, and output consistency.', steps: ['Load prompt variants', 'Run structured test cases', 'Validate JSON schema', 'Compare output quality', 'Select improved prompt'], sample: { prompt: 'Summarize an API issue into RCA, fix, and test cases', schema: 'rca/fix/tests' } },
-  { sec: 'ai', icon: '📚', title: 'AI Knowledge Base Assistant', cat: 'RAG Assistant', lvl: 'Advanced', tech: ['RAG', 'Embeddings', 'Supabase', 'Vector Search', 'OpenAI'], desc: 'RAG-style assistant that simulates document ingestion, context retrieval, and AI-based answer generation.', impact: 'Shows how documents and FAQs can become searchable AI assistants.', steps: ['Ingest document content', 'Chunk and embed text', 'Retrieve matching context', 'Generate grounded answer', 'Return source-aware response'], sample: { question: 'How should deployment rollback be handled?', sources: 'technical documentation', mode: 'RAG simulation' } },
-  { sec: 'ai', icon: '🛡️', title: 'LLM Evaluation & Guardrails Console', cat: 'AI Evaluation', lvl: 'Advanced', tech: ['LLM Evaluation', 'Guardrails', 'AI Safety', 'Scoring'], desc: 'Evaluation console for checking LLM responses against correctness, hallucination risk, format compliance, and business rules.', impact: 'Improves AI reliability before production rollout.', steps: ['Load expected criteria', 'Run response checks', 'Score hallucination risk', 'Validate formatting', 'Generate guardrail report'], sample: { response: 'Generated claim status explanation', checks: ['correctness', 'format', 'business rules'] } },
-  { sec: 'ai', icon: '📄', title: 'AI Resume & Document Generator', cat: 'Document AI', lvl: 'Intermediate', tech: ['Next.js', 'OpenAI', 'Markdown', 'PDF', 'Templates'], desc: 'AI-powered document generator for resumes, proposals, reports, emails, and professional templates.', impact: 'Converts rough inputs into polished professional documents.', steps: ['Select document template', 'Collect rough input', 'Generate structured draft', 'Improve tone and formatting', 'Prepare export output'], sample: { document: 'resume summary', tone: 'professional', format: 'markdown/pdf ready' } },
-  { sec: 'eng', icon: '🔗', title: 'API Integration Builder', cat: 'API Platform', lvl: 'Advanced', tech: ['REST API', 'Node.js', 'TypeScript', 'Webhooks', 'JSON'], desc: 'Visual workspace for API authentication, request mapping, response handling, chained API calls, and webhook workflows.', impact: 'Simplifies complex API integration planning and execution.', steps: ['Configure authentication', 'Map request payload', 'Chain dependent APIs', 'Handle webhook response', 'Validate integration output'], sample: { api: 'claim status integration', auth: 'bearer token', flow: 'request mapping and response handling' } },
-  { sec: 'eng', icon: '🚀', title: 'Cloud Deployment Readiness Console', cat: 'Deployment Engineering', lvl: 'Advanced', tech: ['Vercel', 'GitHub', 'CI/CD', 'Environment Variables', 'Production Deployment'], desc: 'Deployment dashboard for checking build status, environment variables, preview deployment, production readiness, and rollback planning.', impact: 'Improves release confidence with a clear deployment checklist.', steps: ['Check build status', 'Validate environment variables', 'Verify preview deployment', 'Run production checklist', 'Prepare rollback plan'], sample: { deployment: 'portfolio production release', checks: ['build', 'env', 'preview', 'rollback'] } },
-  { sec: 'eng', icon: '🧰', title: 'Developer Productivity Command Center', cat: 'Developer Tooling', lvl: 'Intermediate', tech: ['React', 'TypeScript', 'Automation', 'GitHub', 'CI/CD'], desc: 'Developer toolbox with reusable workflows, command generation, environment validation, and engineering utilities.', impact: 'Organizes repeated engineering tasks into guided workflows.', steps: ['Select engineering workflow', 'Validate environment', 'Generate reusable command', 'Run checklist', 'Save output for reuse'], sample: { workflow: 'generate UAT curl and validation checklist', target: 'developer productivity' } },
-  { sec: 'eng', icon: '📈', title: 'Product Observability Hub', cat: 'Observability', lvl: 'Advanced', tech: ['Monitoring', 'Logs', 'Metrics', 'Analytics', 'Dashboard'], desc: 'Dashboard for monitoring API health, latency, logs, deployment status, feature usage, and system activity.', impact: 'Makes system health and product usage easy to understand.', steps: ['Collect service signals', 'Normalize logs and metrics', 'Visualize latency and health', 'Detect anomalies', 'Create action summary'], sample: { service: 'API gateway', signals: ['latency', 'errors', 'deployment status', 'usage'] } },
-  { sec: 'eng', icon: '🏢', title: 'Full-Stack SaaS Operations Dashboard', cat: 'Full-Stack SaaS', lvl: 'Advanced', tech: ['Next.js', 'Supabase', 'PostgreSQL', 'React', 'TypeScript'], desc: 'Modern SaaS admin dashboard with modules, analytics cards, user roles, workflow status, and responsive layouts.', impact: 'Demonstrates full-stack product development with reusable UI patterns.', steps: ['Authenticate user role', 'Load dashboard modules', 'Query operational data', 'Render analytics cards', 'Update workflow status'], sample: { module: 'operations dashboard', roles: ['admin', 'member'], database: 'PostgreSQL' } },
-  { sec: 'eng', icon: '🤝', title: 'Customer Implementation Workspace', cat: 'Forward Deployment', lvl: 'Advanced', tech: ['Solution Engineering', 'Workflow Design', 'Product Delivery', 'SaaS'], desc: 'Forward deployment workspace that converts customer requirements into tasks, dependencies, risks, milestones, and delivery plans.', impact: 'Connects business requirements with technical implementation planning.', steps: ['Capture customer requirement', 'Map technical tasks', 'Identify dependencies and risks', 'Plan delivery milestones', 'Generate implementation summary'], sample: { customerNeed: 'new workflow automation module', delivery: 'tasks, risks, milestones' } },
-  { sec: 'web', icon: '🖥️', title: 'Apache HTTPS Deployment & Monitoring Console', cat: 'Web Server Monitoring', lvl: 'Intermediate', tech: ['React', 'Next.js', 'TypeScript', 'Apache HTTP Server', 'HTTPS', 'SSL/TLS', 'Supabase', 'SQLite', 'REST APIs'], desc: 'Built a web-based dashboard to manage and monitor Apache HTTP Server deployments with virtual-host health, HTTPS certificate expiry, redirects, request errors, and log summaries.', impact: 'Improves visibility into web-server health and helps identify certificate, routing, and HTTP error issues before they impact users.', steps: ['Load Apache VirtualHost inventory', 'Validate HTTP to HTTPS redirects', 'Check SSL/TLS certificate expiry', 'Analyze access and error logs', 'Save deployment health summary'], sample: { domain: 'app.example.com', virtualHost: '443_ssl_vhost', healthCheck: '/api/health', database: 'Supabase production with SQLite fallback', mode: 'monitoring simulation' } },
-  { sec: 'web', icon: '🔐', title: 'Secure File Upload Portal with Apache Reverse Proxy', cat: 'Secure Upload Platform', lvl: 'Intermediate', tech: ['Next.js', 'React', 'TypeScript', 'Apache HTTP Server', 'mod_proxy', 'HTTPS', 'Supabase Auth', 'Supabase Storage', 'SQLite'], desc: 'Developed a secure internal web portal for uploading, validating, and tracking documents behind Apache reverse proxy HTTPS termination and protected routes.', impact: 'Provides a secure and traceable document-upload workflow suitable for internal operational teams.', steps: ['Authenticate role-based user', 'Validate upload metadata', 'Apply Apache proxy and security rules', 'Store file reference and audit event', 'Update document processing status'], sample: { userRole: 'operations-reviewer', file: 'claim-document.pdf', route: '/secure/upload', storage: 'Supabase Storage', fallback: 'SQLite metadata mode' } },
-  { sec: 'web', icon: '📊', title: 'API Request & Error Log Explorer', cat: 'Log Analytics', lvl: 'Intermediate', tech: ['Next.js', 'React', 'TypeScript', 'Apache HTTP Server Logs', 'SQLite', 'Supabase PostgreSQL', 'REST APIs', 'Chart UI'], desc: 'Created a web application that ingests API request logs and Apache access logs, normalizes them, and provides searchable error analysis for developers and QA teams.', impact: 'Reduces time spent identifying recurring API and production issues by centralizing request, response, and error analysis.', steps: ['Import Apache/API logs', 'Normalize endpoint and status data', 'Filter errors by method and correlation ID', 'Group recurring 4xx/5xx failures', 'Export investigation summary'], sample: { logSource: 'apache-access.log', statusFilter: [400, 401, 403, 404, 500, 503], correlationId: 'REQ-2026-0716-001', database: 'Supabase PostgreSQL with SQLite local fallback' } },
+  {
+    id: 'llm-workflow-studio',
+    category: 'llm',
+    icon: '◈',
+    title: 'LLM Workflow Automation Studio',
+    type: 'AI orchestration',
+    level: 'Advanced',
+    description:
+      'Transforms business requirements into structured execution plans with dependencies, validations, fallback paths, and traceable outputs.',
+    impact: 'Reduces manual solution design and makes generated workflows reviewable before implementation.',
+    tech: ['Next.js', 'LLM', 'Structured output', 'Tool calling', 'JSON Schema'],
+    steps: ['Parse requirement', 'Extract constraints', 'Generate dependency graph', 'Run schema checks', 'Prepare execution plan'],
+    sample: {
+      requirement: 'Design an API release approval workflow with rollback checks',
+      environment: 'uat',
+      outputFormat: 'dependency-aware JSON plan',
+    },
+    features: ['Dependency-aware step generation', 'Schema validation', 'Editable runtime input', 'Execution trace simulation'],
+    challenges: ['Avoiding vague generated steps', 'Keeping outputs deterministic', 'Representing fallback paths clearly'],
+    future: ['Saved workflow templates', 'Multi-model evaluation', 'Real tool execution through approved connectors'],
+  },
+  {
+    id: 'rag-knowledge-assistant',
+    category: 'llm',
+    icon: '⌁',
+    title: 'Grounded Knowledge Assistant',
+    type: 'RAG application',
+    level: 'Advanced',
+    description:
+      'A source-aware assistant for engineering runbooks, API specifications, incident notes, and customer implementation documentation.',
+    impact: 'Shortens investigation time while keeping answers connected to retrieved operational context.',
+    tech: ['RAG', 'Embeddings', 'Supabase', 'Vector search', 'Evaluation'],
+    steps: ['Ingest documents', 'Chunk and index', 'Retrieve context', 'Generate grounded answer', 'Score citation coverage'],
+    sample: {
+      question: 'Why did the deployment readiness check fail?',
+      sources: ['runbook', 'release log', 'API health report'],
+      responseMode: 'answer with evidence',
+    },
+    features: ['Document ingestion pipeline', 'Hybrid retrieval concept', 'Source-aware responses', 'Answer quality scoring'],
+    challenges: ['Noisy enterprise documents', 'Context-window limits', 'Separating evidence from inference'],
+    future: ['Role-based collections', 'Feedback-driven reranking', 'Automated freshness checks'],
+  },
+  {
+    id: 'llm-evaluation-console',
+    category: 'llm',
+    icon: '◎',
+    title: 'LLM Evaluation & Guardrails Console',
+    type: 'AI quality engineering',
+    level: 'Advanced',
+    description:
+      'Evaluates generated responses for correctness, business-rule compliance, format accuracy, hallucination risk, and unsafe disclosure.',
+    impact: 'Adds testable acceptance criteria before LLM features are released to users.',
+    tech: ['LLM evaluation', 'Guardrails', 'Golden datasets', 'Scoring', 'Observability'],
+    steps: ['Load test case', 'Run model response', 'Apply deterministic checks', 'Score semantic quality', 'Generate release verdict'],
+    sample: {
+      testCase: 'Explain a failed claim-status API response',
+      checks: ['required fields', 'business rules', 'unsupported claims', 'tone'],
+      threshold: 0.85,
+    },
+    features: ['Deterministic and semantic checks', 'Pass/warn/fail verdicts', 'Regression-ready datasets', 'Readable failure reasons'],
+    challenges: ['Balancing strictness and usefulness', 'Measuring hallucination consistently', 'Keeping evaluators independent'],
+    future: ['Cost and latency scorecards', 'Model comparison', 'Production feedback replay'],
+  },
+  {
+    id: 'dynamic-api-journey',
+    category: 'automation',
+    icon: '↯',
+    title: 'Dynamic API Journey Automation',
+    type: 'API automation platform',
+    level: 'Advanced',
+    description:
+      'Builds and executes multi-step API journeys where response values are extracted, mapped, transformed, and reused in later requests.',
+    impact: 'Makes complex API sequencing reusable across QA, development, and implementation teams.',
+    tech: ['Java', 'Rest Assured', 'TestNG', 'JSONPath', 'CI/CD'],
+    steps: ['Load journey definition', 'Resolve variables', 'Execute API request', 'Extract response values', 'Assert and publish report'],
+    sample: {
+      journey: 'register claim → view details → save tariff → settlement validation',
+      environment: 'uat',
+      assertions: ['HTTP status', 'business status', 'schema', 'dependent values'],
+    },
+    features: ['Scoped value store', 'Nested-to-flat field mapping', 'Reusable assertions', 'Environment-aware execution'],
+    challenges: ['Different field names across APIs', 'Multipart dependency mapping', 'Preventing false-positive matches'],
+    future: ['Team-managed mappings', 'Parallel journey execution', 'Contract-drift alerts'],
+  },
+  {
+    id: 'har-dependency-discovery',
+    category: 'automation',
+    icon: '⌘',
+    title: 'HAR Replay & Dependency Discovery',
+    type: 'Developer tooling',
+    level: 'Advanced',
+    description:
+      'Converts browser HAR traffic into replayable API flows and discovers likely request dependencies from earlier responses.',
+    impact: 'Accelerates automation onboarding for complex applications with limited API documentation.',
+    tech: ['Node.js', 'HAR', 'Playwright', 'Dependency graph', 'Streaming UI'],
+    steps: ['Parse HAR traffic', 'Remove noise and secrets', 'Detect value producers', 'Build request templates', 'Replay with live status'],
+    sample: {
+      source: 'claims-processing.har',
+      discovery: 'response.result.claimSeqID → later request body.ClaimSeqID',
+      overrideMode: 'user mappings take priority',
+    },
+    features: ['Secret redaction', 'Confidence-ranked mappings', 'User override mappings', 'Step-level request and response diagnostics'],
+    challenges: ['Repeated IDs with different meanings', 'Large payloads', 'Authentication refresh during replay'],
+    future: ['Visual graph editing', 'AI-assisted mapping explanations', 'Distributed runners'],
+  },
+  {
+    id: 'release-observability-console',
+    category: 'automation',
+    icon: '△',
+    title: 'Release & API Observability Console',
+    type: 'Deployment engineering',
+    level: 'Advanced',
+    description:
+      'Combines build checks, deployment state, API health, latency, error trends, environment readiness, and rollback guidance.',
+    impact: 'Provides one decision surface for release confidence instead of scattered logs and dashboards.',
+    tech: ['Next.js', 'Vercel', 'GitHub', 'KQL', 'OpenTelemetry'],
+    steps: ['Collect deployment state', 'Validate environment', 'Probe critical APIs', 'Summarize errors', 'Produce go/no-go verdict'],
+    sample: {
+      release: 'claims-v4-uat',
+      checks: ['build', 'deployment', 'health endpoints', '5xx trend', 'rollback candidate'],
+      decision: 'release readiness',
+    },
+    features: ['Readiness scorecard', 'Error clustering', 'Rollback context', 'Environment comparison'],
+    challenges: ['Normalizing signals from many tools', 'Avoiding alert noise', 'Showing enough context without overload'],
+    future: ['Automated release gates', 'Incident timeline generation', 'SLO-aware recommendations'],
+  },
+  {
+    id: 'customer-implementation-workspace',
+    category: 'automation',
+    icon: '◇',
+    title: 'Customer Implementation Workspace',
+    type: 'Forward deployment',
+    level: 'Advanced',
+    description:
+      'Turns customer requirements into technical workstreams, owners, risks, milestones, API mappings, and implementation status.',
+    impact: 'Connects customer outcomes with clear engineering execution and delivery accountability.',
+    tech: ['Next.js', 'Supabase', 'Workflow design', 'API integration', 'Delivery analytics'],
+    steps: ['Capture requirement', 'Map solution components', 'Identify dependencies', 'Track milestones', 'Publish implementation summary'],
+    sample: {
+      customerNeed: 'Integrate insurer claim-status updates',
+      constraints: ['existing API gateway', 'UAT approval', 'no downtime'],
+      deliverable: 'implementation plan and progress board',
+    },
+    features: ['Requirement-to-task traceability', 'Risk and dependency tracking', 'Implementation notes', 'Executive-ready status'],
+    challenges: ['Ambiguous requirements', 'Cross-team ownership', 'Changing external API constraints'],
+    future: ['Customer portal views', 'Automated meeting summaries', 'Connector-based status sync'],
+  },
+  {
+    id: 'apache-monitoring-console',
+    category: 'platform',
+    icon: '▦',
+    title: 'Apache HTTPS Deployment & Monitoring Console',
+    type: 'Web server operations',
+    level: 'Intermediate',
+    description:
+      'Monitors Apache virtual hosts, HTTPS redirects, certificate expiry, upstream health, and access or error log patterns.',
+    impact: 'Surfaces configuration and certificate risks before they become user-facing incidents.',
+    tech: ['Apache HTTP Server', 'HTTPS', 'Next.js', 'Supabase', 'REST APIs'],
+    steps: ['Load virtual hosts', 'Validate redirect chain', 'Check certificate dates', 'Probe upstream health', 'Store health snapshot'],
+    sample: {
+      domain: 'app.example.com',
+      virtualHost: '443_ssl_vhost',
+      checks: ['HTTPS redirect', 'certificate expiry', 'proxy health', '5xx trend'],
+    },
+    features: ['Virtual-host inventory', 'TLS readiness checks', 'Redirect validation', 'Operational health snapshots'],
+    challenges: ['Representing server configuration safely', 'Separating demo data from real infrastructure', 'Summarizing noisy logs'],
+    future: ['Certificate reminders', 'Configuration import', 'Role-based operations views'],
+  },
+  {
+    id: 'secure-upload-proxy',
+    category: 'platform',
+    icon: '▣',
+    title: 'Secure Upload Portal with Apache Reverse Proxy',
+    type: 'Secure internal platform',
+    level: 'Intermediate',
+    description:
+      'A protected document workflow behind Apache HTTPS termination with upload validation, metadata tracking, and audit-friendly status.',
+    impact: 'Creates a traceable internal upload experience without exposing backend services directly.',
+    tech: ['Apache mod_proxy', 'Next.js', 'Supabase Storage', 'RLS', 'Audit trail'],
+    steps: ['Authenticate user', 'Validate metadata', 'Enforce upload rules', 'Store document reference', 'Track processing status'],
+    sample: {
+      userRole: 'operations-reviewer',
+      route: '/secure/upload',
+      file: 'claim-document.pdf',
+      controls: ['type', 'size', 'ownership', 'audit event'],
+    },
+    features: ['Reverse-proxy architecture', 'Upload validation', 'RLS-aware metadata', 'Operational audit trail'],
+    challenges: ['Large file handling', 'Secure access boundaries', 'Reliable status transitions'],
+    future: ['Malware scanning integration', 'Signed access links', 'Retention-policy automation'],
+  },
+  {
+    id: 'api-log-explorer',
+    category: 'platform',
+    icon: '▤',
+    title: 'API Request & Error Log Explorer',
+    type: 'Log analytics',
+    level: 'Intermediate',
+    description:
+      'Normalizes Apache and API logs into searchable incidents grouped by route, status, correlation ID, release, and recurring error signature.',
+    impact: 'Reduces the time required to identify repeated 4xx and 5xx failures across environments.',
+    tech: ['Apache logs', 'Next.js', 'PostgreSQL', 'SQLite', 'Analytics UI'],
+    steps: ['Import logs', 'Normalize fields', 'Group recurring failures', 'Trace correlation IDs', 'Export investigation summary'],
+    sample: {
+      source: 'apache-access.log',
+      filters: ['POST', '500', 'REQ-2026-0716-001'],
+      grouping: 'endpoint + status + normalized error',
+    },
+    features: ['Fast filters', 'Recurring-error grouping', 'Correlation tracing', 'Shareable investigation summary'],
+    challenges: ['Protecting sensitive log fields', 'Handling inconsistent formats', 'Keeping large datasets responsive'],
+    future: ['Streaming ingestion', 'Anomaly detection', 'Saved investigations'],
+  },
 ];
 
-const skills = ['OpenAI', 'LLM Workflows', 'AI Agents', 'RAG', 'Prompt Engineering', 'Next.js', 'React', 'TypeScript', 'Supabase', 'PostgreSQL', 'Node.js', 'REST APIs', 'Vercel', 'GitHub', 'CI/CD', 'Apache HTTP Server', 'HTTPS', 'SSL/TLS', 'SQLite', 'Observability', 'Automation', 'Forward Deployment'];
+const skills = [
+  'Java',
+  'JavaScript',
+  'Next.js',
+  'React',
+  'Node.js',
+  'LLM workflows',
+  'RAG',
+  'AI evaluation',
+  'REST APIs',
+  'TestNG',
+  'Rest Assured',
+  'Playwright',
+  'Supabase',
+  'PostgreSQL',
+  'SQLite',
+  'Vercel',
+  'GitHub',
+  'CI/CD',
+  'Apache HTTP Server',
+  'Observability',
+];
 
-function BadgeList({ items }) {
-  return <div className="chips">{items.map((item) => <span key={item}>{item}</span>)}</div>;
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+function ThemeSwitcher({ theme, onChange }) {
+  return (
+    <div className="theme-switcher" aria-label="Choose site theme">
+      {themes.map((item) => (
+        <button
+          key={item.key}
+          type="button"
+          className={theme === item.key ? 'active' : ''}
+          onClick={() => onChange(item.key)}
+          aria-pressed={theme === item.key}
+        >
+          {item.label}
+        </button>
+      ))}
+    </div>
+  );
 }
 
-function DetailBox({ title, items }) {
-  return <div className="box"><h4>{title}</h4><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></div>;
+function ProjectCard({ project, onOpen }) {
+  return (
+    <article className={`project-card category-${project.category}`}>
+      <div className="project-visual" aria-hidden="true">
+        <span>{project.icon}</span>
+        <div className="visual-lines" />
+      </div>
+      <div className="project-body">
+        <div className="project-meta">
+          <span>{project.type}</span>
+          <span>{project.level}</span>
+        </div>
+        <h3>{project.title}</h3>
+        <p>{project.description}</p>
+        <div className="impact"><strong>Impact</strong>{project.impact}</div>
+        <div className="tag-list">
+          {project.tech.slice(0, 5).map((item) => <span key={item}>{item}</span>)}
+        </div>
+        <button type="button" className="card-action" onClick={() => onOpen(project)}>
+          Open interactive case study <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function ProjectModal({ project, input, setInput, runSteps, runOutput, running, onRun, onClose }) {
+  if (!project) return null;
+  const category = categories.find((item) => item.key === project.category);
+
+  return (
+    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
+      <article className="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-title" onMouseDown={(event) => event.stopPropagation()}>
+        <button type="button" className="modal-close" onClick={onClose} aria-label="Close project details">×</button>
+        <header className="modal-header">
+          <div className="modal-kicker"><span>{project.icon}</span>{project.type} · {project.level}</div>
+          <h2 id="project-title">{project.title}</h2>
+          <p>{project.description}</p>
+          <div className="tag-list large">
+            {project.tech.map((item) => <span key={item}>{item}</span>)}
+          </div>
+        </header>
+
+        <div className="modal-content">
+          <section className="architecture-panel" aria-label="Project architecture">
+            <div className="section-label">Architecture</div>
+            <div className="architecture-flow">
+              {category.architecture.map((item, index) => (
+                <div className="architecture-node" key={item}>
+                  <small>0{index + 1}</small>
+                  <strong>{item}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="detail-grid">
+            <div className="detail-card"><h4>Key features</h4><ul>{project.features.map((item) => <li key={item}>{item}</li>)}</ul></div>
+            <div className="detail-card"><h4>Engineering challenges</h4><ul>{project.challenges.map((item) => <li key={item}>{item}</li>)}</ul></div>
+            <div className="detail-card full"><h4>Next iteration</h4><ul className="inline-list">{project.future.map((item) => <li key={item}>{item}</li>)}</ul></div>
+          </div>
+
+          <section className="workflow-console" aria-label="Interactive workflow simulation">
+            <div className="console-bar"><div><i /><i /><i /></div><span>workflow-simulation.json</span></div>
+            <div className="console-grid">
+              <div className="editor-panel">
+                <label htmlFor="workflow-input">Editable sample input</label>
+                <textarea id="workflow-input" value={input} onChange={(event) => setInput(event.target.value)} spellCheck="false" />
+                <button type="button" className="primary-button" onClick={onRun} disabled={running}>
+                  {running ? 'Running workflow…' : 'Run workflow simulation'}
+                </button>
+              </div>
+              <div className="execution-panel">
+                <div className="step-list">
+                  {runSteps.map((step, index) => (
+                    <div className={`run-step ${step.status}`} key={`${step.name}-${index}`}>
+                      <span>{step.status === 'passed' ? '✓' : step.status === 'running' ? '•' : index + 1}</span>
+                      <strong>{step.name}</strong>
+                      <small>{step.status}</small>
+                    </div>
+                  ))}
+                </div>
+                <div className="output-panel">
+                  <small>SIMULATED OUTPUT</small>
+                  <pre>{runOutput}</pre>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </article>
+    </div>
+  );
 }
 
 export default function Page() {
   const [theme, setTheme] = useState('dark');
-  const [filter, setFilter] = useState('all');
-  const [selected, setSelected] = useState(null);
-  const [input, setInput] = useState('');
-  const [states, setStates] = useState([]);
-  const [output, setOutput] = useState('Ready. Edit the sample input and run the workflow.');
-  const [formStatus, setFormStatus] = useState('');
-  const [scroll, setScroll] = useState(0);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [workflowInput, setWorkflowInput] = useState('');
+  const [runSteps, setRunSteps] = useState([]);
+  const [runOutput, setRunOutput] = useState('Ready. Edit the input and run the workflow.');
+  const [running, setRunning] = useState(false);
+  const [contactState, setContactState] = useState({ status: 'idle', message: '' });
+  const runIdRef = useRef(0);
 
   useEffect(() => {
-    const saved = localStorage.getItem('portfolio-theme') || 'dark';
-    setTheme(saved);
+    const savedTheme = window.localStorage.getItem('portfolio-theme');
+    setTheme(themes.some((item) => item.key === savedTheme) ? savedTheme : 'dark');
   }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem('portfolio-theme', theme);
+    window.localStorage.setItem('portfolio-theme', theme);
   }, [theme]);
 
   useEffect(() => {
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setScroll(max > 0 ? (window.scrollY / max) * 100 : 0);
+    const handleKey = (event) => {
+      if (event.key === 'Escape') setSelectedProject(null);
     };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    document.addEventListener('keydown', handleKey);
+    document.body.style.overflow = selectedProject ? 'hidden' : '';
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = '';
+    };
+  }, [selectedProject]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('show'));
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  const visibleProjects = useMemo(
+    () => activeCategory === 'all' ? projects : projects.filter((project) => project.category === activeCategory),
+    [activeCategory],
+  );
 
-  useEffect(() => {
-    if (selected) {
-      setInput(JSON.stringify(selected.sample, null, 2));
-      setStates(selected.steps.map(() => 'Pending'));
-      setOutput('Ready. Edit the sample input and run the workflow.');
-      document.body.classList.add('lock');
-    } else {
-      document.body.classList.remove('lock');
-    }
-  }, [selected]);
-
-  const visibleProjects = useMemo(() => projects.filter((project) => filter === 'all' || project.sec === filter), [filter]);
-
-  async function runSimulation() {
-    try {
-      JSON.parse(input);
-    } catch {
-      setOutput('FAILED · Please enter valid JSON before running.');
-      setStates((current) => current.map((_, index) => index === 0 ? 'Failed' : 'Pending'));
-      return;
-    }
-    const nextStates = selected.steps.map(() => 'Pending');
-    setStates(nextStates);
-    setOutput('Running workflow…');
-    for (let index = 0; index < selected.steps.length; index += 1) {
-      nextStates[index] = 'Running';
-      setStates([...nextStates]);
-      await new Promise((resolve) => setTimeout(resolve, 220));
-      nextStates[index] = 'Passed';
-      setStates([...nextStates]);
-    }
-    setOutput(JSON.stringify({
-      status: 'PASSED',
-      httpStatus: 200,
-      responseTimeMs: Math.floor(90 + Math.random() * 120),
-      project: selected.title,
-      logSummary: selected.sec === 'web' ? 'Apache/API log scan completed; no blocking 5xx pattern detected.' : 'Frontend workflow simulation completed successfully.',
-      databaseSave: selected.sec === 'web' ? 'Supabase primary save simulated; SQLite fallback available for local demo.' : 'Simulation output saved in browser session.',
-      completedSteps: selected.steps.length,
-    }, null, 2));
+  function openProject(project) {
+    runIdRef.current += 1;
+    setSelectedProject(project);
+    setWorkflowInput(JSON.stringify(project.sample, null, 2));
+    setRunSteps(project.steps.map((name) => ({ name, status: 'waiting' })));
+    setRunOutput('Ready. Edit the input and run the workflow.');
+    setRunning(false);
   }
 
-  function submitContact(event) {
+  function closeProject() {
+    runIdRef.current += 1;
+    setSelectedProject(null);
+    setRunning(false);
+  }
+
+  async function runWorkflow() {
+    if (!selectedProject || running) return;
+    let parsedInput;
+    try {
+      parsedInput = JSON.parse(workflowInput);
+    } catch {
+      setRunOutput('Input validation failed: provide valid JSON before running the workflow.');
+      return;
+    }
+
+    const currentRunId = runIdRef.current + 1;
+    runIdRef.current = currentRunId;
+    setRunning(true);
+    setRunOutput('Execution started…');
+    setRunSteps(selectedProject.steps.map((name) => ({ name, status: 'waiting' })));
+
+    for (let index = 0; index < selectedProject.steps.length; index += 1) {
+      if (runIdRef.current !== currentRunId) return;
+      setRunSteps((current) => current.map((step, stepIndex) => ({
+        ...step,
+        status: stepIndex < index ? 'passed' : stepIndex === index ? 'running' : 'waiting',
+      })));
+      await wait(430);
+      setRunSteps((current) => current.map((step, stepIndex) => ({
+        ...step,
+        status: stepIndex <= index ? 'passed' : 'waiting',
+      })));
+    }
+
+    if (runIdRef.current !== currentRunId) return;
+    setRunOutput(JSON.stringify({
+      status: 'SUCCESS',
+      project: selectedProject.title,
+      executedSteps: selectedProject.steps.length,
+      validation: 'PASSED',
+      input: parsedInput,
+      message: 'Simulation completed. The production implementation would execute approved APIs, tools, and persistence operations.',
+    }, null, 2));
+    setRunning(false);
+  }
+
+  async function submitContact(event) {
     event.preventDefault();
-    setFormStatus('Thanks — please email gauravsuryvanshi06@gmail.com for the fastest reply.');
-    event.currentTarget.reset();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const payload = {
+      name: String(data.get('name') || '').trim(),
+      email: String(data.get('email') || '').trim(),
+      message: String(data.get('message') || '').trim(),
+      company: String(data.get('company') || '').trim(),
+    };
+
+    setContactState({ status: 'loading', message: 'Sending your message…' });
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.message || 'Unable to send your message.');
+      form.reset();
+      setContactState({ status: 'success', message: 'Message received. Thank you — I will get back to you soon.' });
+    } catch (error) {
+      setContactState({ status: 'error', message: error.message || 'Unable to send your message.' });
+    }
   }
 
   return (
-    <>
-      <div className="bg"><i className="cloud c1" /><i className="cloud c2" /><i className="shoot" /></div>
-      <i className="progress" style={{ '--scroll': `${scroll}%` }} />
-      <nav className="nav">
-        <div className="navin wrap">
-          <a className="brand" href="#top">GS<b>.</b><small>LLM × Deployment</small></a>
-          <div className="links"><a href="#projects">Projects</a><a href="#skills">Toolkit</a><a href="#contact">Contact</a></div>
-          <div className="themes">{['dark', 'read', 'sky', 'night'].map((name) => <button className={theme === name ? 'on' : ''} key={name} onClick={() => setTheme(name)}>{name[0].toUpperCase() + name.slice(1)}</button>)}</div>
+    <main>
+      <div className="ambient-background" aria-hidden="true"><div /><div /><div /></div>
+
+      <header className="site-header">
+        <div className="container nav-row">
+          <a href="#top" className="brand" aria-label="Gaurav Suryavanshi home">
+            <span>GS</span>
+            <div><strong>Gaurav Suryavanshi</strong><small>Forward Deployment Engineer</small></div>
+          </a>
+          <nav aria-label="Primary navigation">
+            <a href="#work">Work</a>
+            <a href="#capabilities">Capabilities</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <ThemeSwitcher theme={theme} onChange={setTheme} />
         </div>
-      </nav>
+      </header>
 
-      <main>
-        <section id="top" className="hero wrap">
-          <div className="reveal">
-            <div className="eyebrow">Development Engineer · LLM Application Engineer · Forward Deployment Engineer</div>
-            <h1>Building usable AI products<br /><span>from requirements to deployment.</span></h1>
-            <p>I am a development engineer with 2 years of experience building full-stack web applications, LLM-powered workflow tools, API integrations, deployment dashboards, and automation-focused product interfaces.</p>
-            <div className="actions"><a className="btn primary" href="#projects">Explore premium projects ↘</a><a className="btn" href="#contact">Contact →</a></div>
+      <section className="hero" id="top">
+        <div className="container hero-grid">
+          <div className="hero-copy">
+            <div className="availability"><i /> Open to development and forward-deployment opportunities</div>
+            <p className="eyebrow">LLM applications · API automation · production delivery</p>
+            <h1>I turn complex workflows into <span>reliable products.</span></h1>
+            <p className="hero-description">
+              Software engineer with two years of experience building API automation, developer tools, LLM-enabled workflows, observability dashboards, and customer-focused implementation systems.
+            </p>
+            <div className="hero-actions">
+              <a className="primary-button" href="#work">Explore selected work</a>
+              <a className="secondary-button" href="#contact">Start a conversation</a>
+            </div>
+            <div className="hero-stats">
+              <div><strong>2+</strong><span>years building and shipping</span></div>
+              <div><strong>API-first</strong><span>automation and integration</span></div>
+              <div><strong>End-to-end</strong><span>from requirement to release</span></div>
+            </div>
           </div>
-          <aside className="heroCard reveal">
-            <div className="terminal"><i /><i /><i /><b>PORTFOLIO SIGNAL</b></div>
-            <div className="ring"><i>15+</i><small>premium project demos</small></div>
-            <div className="mini"><p><b>Focus</b><span>LLM + Full-Stack</span></p><p><b>Database</b><span>Supabase + SQLite</span></p><p><b>Mode</b><span>{theme[0].toUpperCase() + theme.slice(1)}</span></p></div>
-          </aside>
-          <div className="metrics">
-            {['15+|Interactive Projects', '2 Years|Development Experience', 'LLM & AI|Applications', 'Full-Stack|Web Development', 'Apache|HTTPS Projects', 'APIs|Integrations', 'Deploy|Engineering', 'Prod|Deployments'].map((metric) => {
-              const [value, label] = metric.split('|');
-              return <div className="metric reveal" key={metric}><b>{value}</b><small>{label}</small></div>;
-            })}
-          </div>
-        </section>
 
-        <section id="projects">
-          <div className="wrap">
-            <div className="head reveal"><div><div className="eyebrow">🚀 Featured Projects</div><h2>Premium project showcase for modern engineering roles.</h2></div><p>Recruiter-friendly cards with realistic two-year experience wording, live frontend simulations, detailed popups, and fast responsive interactions.</p></div>
-            <div className="filters">{[['all', 'All'], ['ai', 'AI & LLM'], ['eng', 'Engineering'], ['web', 'Web Server & DB']].map(([key, label]) => <button key={key} className={`filter ${filter === key ? 'active' : ''}`} onClick={() => setFilter(key)}>{label}</button>)}</div>
-            {groups.map((group) => (
-              <div className="group" key={group.key}>
-                <div className="sectionHead reveal"><div><div className="eyebrow">{group.label}</div><h3 className="sectionTitle">{group.title}</h3></div><p>{group.description}</p></div>
-                <div className="grid">
-                  {visibleProjects.filter((project) => project.sec === group.key).map((project) => (
-                    <article className={`card reveal ${project.sec}`} key={project.title}>
-                      <div className="thumb"><span>{project.icon}</span></div>
-                      <div className="body">
-                        <div className="badges"><span className="badge">{project.cat}</span><span className="badge">{project.lvl}</span></div>
-                        <h4>{project.title}</h4>
-                        <p className="desc">{project.desc}</p>
-                        <p className="impact"><b>Impact</b> {project.impact}</p>
-                        <BadgeList items={project.tech} />
-                        <div className="buttons"><button className="btn primary" onClick={() => setSelected(project)}>View Project ↗</button><button className="btn" onClick={() => setSelected(project)}>View Details</button><a className="btn" href="https://github.com/suryavanshi-cmd/gaurav-portfolio" target="_blank" rel="noreferrer">GitHub</a></div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+          <div className="hero-console" aria-label="Current engineering focus">
+            <div className="console-bar"><div><i /><i /><i /></div><span>delivery-console</span></div>
+            <div className="hero-console-content">
+              <div className="signal-ring"><div><strong>READY</strong><small>production mindset</small></div></div>
+              <div className="signal-list">
+                <div><span>LLM workflow engineering</span><b>ACTIVE</b></div>
+                <div><span>Complex API automation</span><b>ACTIVE</b></div>
+                <div><span>Forward deployment</span><b>ACTIVE</b></div>
+                <div><span>Release observability</span><b>ACTIVE</b></div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="work-section" id="work">
+        <div className="container">
+          <div className="section-heading">
+            <div><p className="eyebrow">Selected engineering work</p><h2>Projects designed around real delivery problems.</h2></div>
+            <p>Each case study includes the problem, architecture, technical decisions, and an editable workflow simulation.</p>
+          </div>
+
+          <div className="project-filters" role="group" aria-label="Filter projects">
+            <button type="button" className={activeCategory === 'all' ? 'active' : ''} onClick={() => setActiveCategory('all')}>All projects</button>
+            {categories.map((category) => (
+              <button type="button" key={category.key} className={activeCategory === category.key ? 'active' : ''} onClick={() => setActiveCategory(category.key)}>
+                {category.eyebrow}
+              </button>
             ))}
           </div>
-        </section>
 
-        <section id="skills"><div className="wrap"><div className="head reveal"><div><div className="eyebrow">Toolkit</div><h2>Stack aligned to AI, web-server, database, and deployment work.</h2></div><p>Practical technologies used across LLM interfaces, Apache/HTTPS workflows, integration design, dashboards, and production deployments.</p></div><div className="skills">{skills.map((skill) => <span key={skill}>{skill}</span>)}</div></div></section>
-        <section id="contact"><div className="contact wrap reveal"><div><div className="eyebrow">Contact</div><h2>Have a workflow to build?</h2><p>Let’s discuss LLM applications, full-stack dashboards, Apache/HTTPS tooling, API integrations, automation tools, or forward deployment work.</p><a className="mail" href="mailto:gauravsuryvanshi06@gmail.com">gauravsuryvanshi06@gmail.com ↗</a></div><form onSubmit={submitContact}><input name="name" minLength="2" required placeholder="Your name" /><input name="email" type="email" required placeholder="Email address" /><textarea name="message" minLength="10" required placeholder="Tell me about the project" /><input className="hp" name="company" /><button className="btn primary">Prepare message →</button><small className="status">{formStatus}</small></form></div></section>
-      </main>
-
-      <footer><div className="foot wrap"><span>© 2026 Gaurav Suryavanshi</span><span><a href="#top">Back to top ↑</a> · <a href="https://github.com/suryavanshi-cmd" target="_blank" rel="noreferrer">GitHub ↗</a></span></div></footer>
-
-      {selected && (
-        <div className="overlay" onClick={(event) => event.target.className === 'overlay' && setSelected(null)}>
-          <article className="modal" role="dialog" aria-modal="true">
-            <button className="close" aria-label="Close" onClick={() => setSelected(null)}>×</button>
-            <header className="modalHero"><div className="badges"><span className="badge">{selected.cat}</span><span className="badge">{selected.lvl}</span></div><h2>{selected.icon} {selected.title}</h2><p><b>Project overview:</b> {selected.desc}</p><p><b>Key impact:</b> {selected.impact}</p><BadgeList items={selected.tech} /><div className="actions"><a className="btn primary" href="#" onClick={(event) => event.preventDefault()}>Live Demo</a><a className="btn" href="https://github.com/suryavanshi-cmd/gaurav-portfolio" target="_blank" rel="noreferrer">GitHub</a></div></header>
-            <div className="modalContent"><div><h3>Architecture / workflow diagram</h3><div className="arch">{groupByKey[selected.sec].arch.map((node) => <div className="node" key={node}>{node}</div>)}</div></div><div><h3>Project page</h3><div className="details"><DetailBox title="Feature list" items={groupByKey[selected.sec].details.features} /><DetailBox title="Challenges faced" items={groupByKey[selected.sec].details.challenges} /><DetailBox title="Key learnings" items={groupByKey[selected.sec].details.learnings} /><DetailBox title="Future enhancements" items={groupByKey[selected.sec].details.future} /></div></div><div><h3>Interactive workflow simulation</h3><div className="console"><div className="consoleTop"><i /><i /><i /><b>FRONTEND-ONLY LIVE SIMULATION</b></div><div className="editor"><textarea value={input} onChange={(event) => setInput(event.target.value)} /><div className="actions"><button className="btn primary" onClick={runSimulation}>Run Workflow</button><button className="btn" onClick={() => setSelected({ ...selected })}>Reset</button></div></div><div className="timeline">{selected.steps.map((step, index) => <div className={`step ${states[index]?.toLowerCase()}`} key={step}><i>{states[index] === 'Passed' ? '✓' : index + 1}</i><strong>{step}</strong><small>{states[index]}</small></div>)}</div><div className="out"><small>SAMPLE OUTPUT PANEL</small><code>{output}</code></div></div></div></div>
-          </article>
+          {categories.map((category) => {
+            const categoryProjects = visibleProjects.filter((project) => project.category === category.key);
+            if (!categoryProjects.length) return null;
+            return (
+              <div className="project-group" key={category.key}>
+                <div className="group-heading">
+                  <div><p className="eyebrow">{category.eyebrow}</p><h3>{category.title}</h3></div>
+                  <p>{category.description}</p>
+                </div>
+                <div className="project-grid">
+                  {categoryProjects.map((project) => <ProjectCard key={project.id} project={project} onOpen={openProject} />)}
+                </div>
+              </div>
+            );
+          })}
         </div>
-      )}
-    </>
+      </section>
+
+      <section className="capabilities-section" id="capabilities">
+        <div className="container capabilities-grid">
+          <div>
+            <p className="eyebrow">Engineering capabilities</p>
+            <h2>Strong at the boundary between customer needs and production systems.</h2>
+            <p>My work combines hands-on development, automation quality, solution design, debugging, and release ownership.</p>
+          </div>
+          <div className="capability-cards">
+            <article><span>01</span><h3>Discover</h3><p>Translate unclear requirements, API traffic, logs, and workflow behavior into an implementable technical model.</p></article>
+            <article><span>02</span><h3>Build</h3><p>Create reliable Next.js applications, automation frameworks, integration utilities, and data-backed operational tools.</p></article>
+            <article><span>03</span><h3>Validate</h3><p>Use assertions, observability, guardrails, test datasets, and failure-focused diagnostics to improve release confidence.</p></article>
+            <article><span>04</span><h3>Deploy</h3><p>Connect GitHub, Vercel, Supabase, CI/CD, environment configuration, monitoring, and rollback-aware delivery.</p></article>
+          </div>
+        </div>
+        <div className="container skill-cloud" aria-label="Technical skills">
+          {skills.map((skill) => <span key={skill}>{skill}</span>)}
+        </div>
+      </section>
+
+      <section className="contact-section" id="contact">
+        <div className="container contact-grid">
+          <div>
+            <p className="eyebrow">Let’s build something useful</p>
+            <h2>Need an engineer who can understand the workflow and ship the implementation?</h2>
+            <p>I am interested in software engineering, LLM application engineering, automation platforms, and forward-deployment roles.</p>
+            <a href="mailto:gaurav.suryavanshi@bfhl.in" className="email-link">gaurav.suryavanshi@bfhl.in ↗</a>
+            <div className="connection-status"><i /><span>Supabase-backed contact workflow</span></div>
+          </div>
+          <form className="contact-form" onSubmit={submitContact}>
+            <label>Name<input name="name" type="text" minLength="2" maxLength="120" autoComplete="name" required placeholder="Your name" /></label>
+            <label>Email<input name="email" type="email" maxLength="254" autoComplete="email" required placeholder="you@company.com" /></label>
+            <label>Message<textarea name="message" minLength="10" maxLength="4000" required placeholder="Tell me about the role, project, or problem." /></label>
+            <label className="honeypot" aria-hidden="true">Company<input name="company" type="text" tabIndex="-1" autoComplete="off" /></label>
+            <button className="primary-button" type="submit" disabled={contactState.status === 'loading'}>
+              {contactState.status === 'loading' ? 'Sending…' : 'Send message'}
+            </button>
+            <p className={`form-status ${contactState.status}`} role="status">{contactState.message}</p>
+          </form>
+        </div>
+      </section>
+
+      <footer>
+        <div className="container footer-row">
+          <div><strong>Gaurav Suryavanshi</strong><span>Development · LLM · Automation · Forward Deployment</span></div>
+          <p>Built with Next.js, deployed on Vercel, and connected to Supabase.</p>
+        </div>
+      </footer>
+
+      <ProjectModal
+        project={selectedProject}
+        input={workflowInput}
+        setInput={setWorkflowInput}
+        runSteps={runSteps}
+        runOutput={runOutput}
+        running={running}
+        onRun={runWorkflow}
+        onClose={closeProject}
+      />
+    </main>
   );
 }
