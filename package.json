@@ -1,1 +1,16 @@
-{"name":"gaurav-portfolio","private":true,"version":"3.3.0","scripts":{"build":"next build","vercel-build":"next build"},"dependencies":{"next":"15.5.19","react":"19.1.1","react-dom":"19.1.1"}}
+{
+  "name": "gaurav-portfolio",
+  "version": "4.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "vercel-build": "next build"
+  },
+  "dependencies": {
+    "next": "15.5.19",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  }
+}
