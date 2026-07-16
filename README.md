@@ -1,29 +1,61 @@
-# Gaurav Portfolio
+# Gaurav Suryavanshi Portfolio
 
-Interactive portfolio for a Development Engineer, LLM Application Engineer, and Forward Deployment Engineer.
+A production-focused Next.js portfolio for a Forward Deployment Engineer, LLM Application Engineer, and automation-focused software engineer.
 
-## Latest update
+## What this version includes
 
-Adds a premium **Web Server & Database Projects** category with three recruiter-friendly projects:
-
-- Apache HTTPS Deployment & Monitoring Console
-- Secure File Upload Portal with Apache Reverse Proxy
-- API Request & Error Log Explorer
-
-The implementation keeps the existing portfolio direction: responsive layout, dark/read/sky/night modes, project cards, project-detail modal, editable sample input, and frontend-only workflow simulation.
+- Premium responsive portfolio UI with Dark, Read, Sky, and Night themes
+- Three focused project collections:
+  - LLM & AI Systems
+  - Automation & Delivery
+  - Web Server & Data
+- Recruiter-friendly case studies with architecture, impact, challenges, and future scope
+- Interactive project modal with editable JSON workflow simulation
+- Supabase-backed contact form through a validated Next.js API route
+- Mobile, tablet, and desktop layouts
+- Accessibility improvements, keyboard-close modal behavior, and reduced-motion support
+- Vercel-ready production configuration and metadata
 
 ## Stack
 
-- Next.js
-- React
-- Supabase production database concept
-- SQLite local/demo fallback concept
+- Next.js 15
+- React 19
+- Supabase PostgreSQL and Row Level Security
+- Vercel
+- GitHub
 - Apache HTTP Server / HTTPS project content
-- Vercel deployment
+- Java, Node.js, Rest Assured, TestNG, Playwright, PostgreSQL, and SQLite project content
 
-## Commands
+## Local development
 
 ```bash
 npm install
-npm run build
+cp .env.example .env.local
+npm run dev
 ```
+
+Open `http://localhost:3000`.
+
+## Production build
+
+```bash
+npm run build
+npm start
+```
+
+## Supabase configuration
+
+The contact API route supports the following environment variables:
+
+```bash
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key_here
+```
+
+It also supports existing `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` values for compatibility. Never commit secret or service-role keys.
+
+The expected table is `public.portfolio_contacts` with `name`, `email`, `message`, and `created_at` fields. Row Level Security should permit validated `INSERT` operations for the public contact form while preventing public reads.
+
+## Deployment
+
+The repository is connected to Vercel. Pushes to non-production branches should create preview deployments, while the production branch remains `main`.
