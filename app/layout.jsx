@@ -1,5 +1,6 @@
 import './globals.css';
 import './modern-responsive.css';
+import LearningsLauncher from '../components/LearningsLauncher';
 
 export const metadata = {
   metadataBase: new URL('https://gaurav-portfolio-topaz.vercel.app'),
@@ -47,7 +48,10 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        {children}
+        <LearningsLauncher />
+      </body>
     </html>
   );
 }
