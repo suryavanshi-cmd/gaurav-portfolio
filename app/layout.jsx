@@ -1,4 +1,5 @@
 import './globals.css';
+import './modern-responsive.css';
 
 export const metadata = {
   metadataBase: new URL('https://gaurav-portfolio-topaz.vercel.app'),
@@ -36,6 +37,7 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: dark)', color: '#070a0f' },
     { media: '(prefers-color-scheme: light)', color: '#f4f0e8' },
