@@ -15,25 +15,25 @@ const marqueeWords = [
 ];
 
 const terminalLines = [
-  'building dependency-aware LLM workflows…',
-  'replaying HAR traffic into live API journeys…',
-  'scoring model output against golden datasets…',
-  'probing release readiness before the go/no-go call…',
-  'shipping to Vercel in under 60 seconds…',
+  'running 190+ partner-integration cases in parallel…',
+  'replaying HAR captures into repeatable API journeys…',
+  'asserting Oracle SQL data behind every API response…',
+  'validating blue-green migrations and live SSE claim flows…',
+  'wiring TestNG suites into CI for faster release feedback…',
 ];
 
 const pulseMetrics = [
-  { value: 10, suffix: '', label: 'Case studies shipped' },
-  { value: 20, suffix: '+', label: 'Tools in the stack' },
-  { value: 2, suffix: 'yr', label: 'Building in production' },
-  { value: 100, suffix: '%', label: 'Requirement to release' },
+  { value: 190, suffix: '+', label: 'Automated regression cases' },
+  { value: 2, suffix: '+ yrs', label: 'Owning API automation' },
+  { value: 10, suffix: '', label: 'Case studies on this site' },
+  { value: 3, suffix: '', label: 'Engineering roles shipped' },
 ];
 
 const themes = [
   { key: 'dark', label: 'Dark' },
-  { key: 'read', label: 'Read' },
-  { key: 'sky', label: 'Sky' },
-  { key: 'night', label: 'Night' },
+  { key: 'cold', label: 'Cold' },
+  { key: 'summer', label: 'Summer' },
+  { key: 'rainy', label: 'Rainy' },
 ];
 
 const categories = [
@@ -276,6 +276,93 @@ const projects = [
     future: ['Streaming ingestion', 'Anomaly detection', 'Saved investigations'],
   },
 ];
+
+const resume = {
+  name: 'Gaurav Suryavanshi',
+  role: 'Software Development Engineer in Test (SDET)',
+  location: 'Pune, India',
+  phone: '+91 9075259103',
+  email: 'gauravsuryvanshi06@gmail.com',
+  summary: [
+    'SDET with 2+ years building and owning API test-automation frameworks for large-scale health-insurance claims systems.',
+    'Strong in Java 17 + TestNG + Rest-Assured, Oracle SQL/PLSQL data validation, and Spring Boot / Node.js service testing.',
+    'Comfortable designing test strategy from scratch, driving partner-integration coverage, and wiring suites into CI.',
+  ],
+  experience: [
+    {
+      title: 'Software Development Engineer in Test (SDET)',
+      company: 'Vidal Health TPA — Pune',
+      period: '2024 – Present',
+      points: [
+        'Own and extend a Java 17 + TestNG + Rest-Assured API automation framework for health-insurance claims processing, covering end-to-end claim, enrollment and partner-integration flows.',
+        'Designed and automated a partner-integration regression suite of 190+ test cases across multiple REST APIs, with request/response schema validation and database-level assertions.',
+        'Built and tuned TestNG suites for parallel execution, reducing regression run time and stabilising CI feedback across release cycles.',
+        'Authored functional and data-validation test scenarios backed by Oracle SQL assertions for bulk data-upload and partner MIS reporting workflows.',
+        'Designed test coverage for database migration and blue-green deployment patterns, and validated real-time (SSE) claim-processing workflows.',
+        'Partnered with developers to reproduce, triage and close backend defects, improving release quality and QA-to-engineering turnaround.',
+      ],
+    },
+    {
+      title: 'Backend Automation Test Intern',
+      company: 'Bajaj Finserv Health',
+      period: '2024',
+      points: [
+        'Built a microservice to automate API testing by generating and executing curl commands from HTTPS response logs pulled off the ELK stack.',
+        'Migrated the service from Node.js to NestJS for better performance and scalability.',
+      ],
+    },
+    {
+      title: 'Backend Developer Intern',
+      company: 'Esenceweb IT Solutions',
+      period: '2024',
+      points: [
+        'Developed backend services in Node.js/Express with MongoDB, JWT auth and real-time messaging via Socket.io; integrated a Dialogflow chatbot for automated responses.',
+      ],
+    },
+  ],
+  resumeProjects: [
+    {
+      title: 'Generic Dynamic Journey Builder',
+      stack: 'Java · Node.js · HAR parsing',
+      detail:
+        'HAR-file-driven framework that parses Chrome DevTools exports and replays REST workflows with dynamic variable extraction, dependency chaining and assertions — turning captured user journeys into repeatable automated API tests.',
+    },
+    {
+      title: 'JSON-Driven API Sequencing Engine',
+      stack: 'Node.js · Express · SSE',
+      detail:
+        'Config-driven engine that orchestrates chained API calls with retry/polling, SSE streaming and a visual builder UI for composing and running test sequences.',
+    },
+    {
+      title: 'Wildlife Conservation Analysis (Honors)',
+      stack: 'Python · YOLOv5 · Inception V3',
+      detail:
+        'Computer-vision pipeline to count wildlife populations from images/video and classify species against IUCN Red List criteria. Copyright-registered.',
+    },
+  ],
+  skillGroups: [
+    {
+      label: 'Test automation',
+      items: 'Rest-Assured, TestNG, JUnit, Selenium, Postman, Bruno, API contract & regression suites, data-driven & parallel execution',
+    },
+    { label: 'Languages', items: 'Java 17, JavaScript/TypeScript, Python, SQL/PLSQL, C++' },
+    { label: 'Backend / services', items: 'Spring Boot, Node.js, Express, NestJS, REST APIs, SSE, JWT auth, microservices' },
+    { label: 'Databases', items: 'Oracle SQL/PLSQL, MongoDB, SQLite — query-level assertions, EBR / blue-green validation' },
+    { label: 'Tooling & CI', items: 'Git, GitHub, Docker, Maven, CI/CD pipelines, ELK, JSON/HAR-driven test tooling' },
+  ],
+  education: {
+    degree: 'Bachelor of Engineering — CSE',
+    school: 'PCCOER, Pune',
+    period: 'Aug 2020 – May 2024',
+    detail: 'CGPA: 8.96 / 10',
+  },
+  certifications: [
+    'Introduction to Generative AI — Udemy',
+    'Introduction to Machine Learning — Coursera',
+    'Java — Udemy',
+    'Copyright: Wildlife Conservation and Analysis Using Machine Learning',
+  ],
+};
 
 const skills = [
   'Java',
@@ -574,6 +661,7 @@ export default function Page() {
           </a>
           <nav aria-label="Primary navigation">
             <a href="#work">Work</a>
+            <a href="#resume">Résumé</a>
             <a href="#capabilities">Capabilities</a>
             <a href="#contact">Contact</a>
           </nav>
@@ -584,30 +672,23 @@ export default function Page() {
       <section className="hero" id="top">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <div className="availability" data-reveal><i /> Open to development and forward-deployment opportunities</div>
-            <ScrambleText as="p" className="eyebrow" text="LLM applications · API automation · production delivery" />
+            <div className="availability" data-reveal><i /> Open to SDET, automation, and LLM engineering roles</div>
             <h1>
-              <span className="kinetic-line"><span>I turn complex</span></span>
-              <span className="kinetic-line"><span>workflows into</span></span>
+              <span className="kinetic-line"><span>I turn complex workflows</span></span>
               <span className="kinetic-line open">
-                <span className="charged glitch" data-text="reliable products.">reliable products.</span>
+                <span className="charged glitch" data-text="into reliable products.">into reliable products.</span>
               </span>
             </h1>
             <p className="hero-description" data-reveal data-reveal-delay="1">
-              Software engineer with two years of experience building API automation, developer tools, LLM-enabled workflows, observability dashboards, and customer-focused implementation systems.
+              SDET with 2+ years owning API automation for large-scale health-insurance claims systems — Java 17, TestNG, Rest-Assured, Oracle SQL, and CI that catches regressions before release.
             </p>
             <div className="hero-terminal" role="status" aria-live="off">
               <b>▹ now</b>
               <TypeCycle className="type-line" phrases={terminalLines} />
             </div>
             <div className="hero-actions">
-              <a className="primary-button" href="#work" data-magnetic onClick={strike}>Explore selected work</a>
-              <a className="secondary-button" href="#contact" data-magnetic onClick={strike}>Start a conversation</a>
-            </div>
-            <div className="hero-stats">
-              <div data-reveal data-reveal-delay="1"><strong>2+</strong><span>years building and shipping</span></div>
-              <div data-reveal data-reveal-delay="2"><strong>API-first</strong><span>automation and integration</span></div>
-              <div data-reveal data-reveal-delay="3"><strong>End-to-end</strong><span>from requirement to release</span></div>
+              <a className="primary-button" href="#resume" data-magnetic onClick={strike}>Read the résumé</a>
+              <a className="secondary-button" href="#work" data-magnetic onClick={strike}>Explore the work</a>
             </div>
           </div>
 
@@ -679,6 +760,111 @@ export default function Page() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="resume-section" id="resume">
+        <div className="container">
+          <div className="section-heading" data-reveal>
+            <div>
+              <p className="eyebrow">Résumé</p>
+              <h2>The full <span>track record.</span></h2>
+            </div>
+            <p>Every role, project, skill group, and credential — the same content as the PDF, laid out to be read on a screen.</p>
+          </div>
+
+          <div className="resume-card" data-reveal="zoom" data-tilt>
+            <header className="resume-identity">
+              <div>
+                <h3>{resume.name}</h3>
+                <p>{resume.role}</p>
+              </div>
+              <ul className="resume-contact">
+                <li>{resume.location}</li>
+                <li><a href={`tel:${resume.phone.replace(/\s/g, '')}`}>{resume.phone}</a></li>
+                <li><a href={`mailto:${resume.email}`}>{resume.email}</a></li>
+              </ul>
+              <a
+                className="primary-button"
+                href="/Gaurav-Suryavanshi-Resume.pdf"
+                download
+                data-magnetic
+                onClick={strike}
+              >
+                Download PDF <span aria-hidden="true">↓</span>
+              </a>
+            </header>
+
+            <div className="resume-summary">
+              {resume.summary.map((line) => <p key={line}>{line}</p>)}
+            </div>
+          </div>
+
+          <div className="resume-grid">
+            <div className="resume-main">
+              <section className="resume-block" data-reveal="left" aria-labelledby="resume-experience">
+                <h3 id="resume-experience" className="resume-block-title">Professional experience</h3>
+                {resume.experience.map((role, index) => (
+                  <article className="resume-role" key={role.title + role.company} data-reveal data-reveal-delay={String(index + 1)}>
+                    <div className="resume-role-head">
+                      <div>
+                        <h4>{role.title}</h4>
+                        <p>{role.company}</p>
+                      </div>
+                      <span>{role.period}</span>
+                    </div>
+                    <ul>
+                      {role.points.map((point) => <li key={point}>{point}</li>)}
+                    </ul>
+                  </article>
+                ))}
+              </section>
+
+              <section className="resume-block" data-reveal="left" aria-labelledby="resume-projects">
+                <h3 id="resume-projects" className="resume-block-title">Projects</h3>
+                <div className="resume-project-grid">
+                  {resume.resumeProjects.map((project, index) => (
+                    <article key={project.title} data-tilt data-reveal="zoom" data-reveal-delay={String(index + 1)}>
+                      <h4>{project.title}</h4>
+                      <span>{project.stack}</span>
+                      <p>{project.detail}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            <aside className="resume-side">
+              <section className="resume-block" data-reveal="right" aria-labelledby="resume-skills">
+                <h3 id="resume-skills" className="resume-block-title">Technical skills</h3>
+                <dl className="resume-skill-list">
+                  {resume.skillGroups.map((group) => (
+                    <div key={group.label}>
+                      <dt>{group.label}</dt>
+                      <dd>{group.items}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+
+              <section className="resume-block" data-reveal="right" data-reveal-delay="1" aria-labelledby="resume-education">
+                <h3 id="resume-education" className="resume-block-title">Education</h3>
+                <div className="resume-education">
+                  <h4>{resume.education.degree}</h4>
+                  <p>{resume.education.school}</p>
+                  <span>{resume.education.period}</span>
+                  <strong>{resume.education.detail}</strong>
+                </div>
+              </section>
+
+              <section className="resume-block" data-reveal="right" data-reveal-delay="2" aria-labelledby="resume-certs">
+                <h3 id="resume-certs" className="resume-block-title">Certifications</h3>
+                <ul className="resume-certs">
+                  {resume.certifications.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              </section>
+            </aside>
+          </div>
         </div>
       </section>
 

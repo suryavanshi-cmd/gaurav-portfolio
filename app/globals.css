@@ -19,54 +19,57 @@
   color-scheme: dark;
 }
 
-html[data-theme='read'] {
-  --bg: #f2eee5;
-  --bg-soft: #e9e3d8;
-  --surface: rgba(255, 253, 247, 0.9);
-  --surface-solid: #fffdf8;
-  --surface-raised: #eee6da;
-  --text: #20251f;
-  --muted: #687066;
-  --line: rgba(72, 80, 67, 0.16);
-  --line-strong: rgba(72, 80, 67, 0.3);
-  --accent: #416e21;
-  --accent-2: #ad6d26;
-  --accent-ink: #fffdf8;
-  --shadow: 0 25px 70px rgba(69, 55, 35, 0.16);
-  color-scheme: light;
-}
-
-html[data-theme='sky'] {
-  --bg: #e9f7ff;
-  --bg-soft: #d8effc;
-  --surface: rgba(255, 255, 255, 0.86);
+/* Cold — bright arctic light, frost blues over near-white glass. */
+html[data-theme='cold'] {
+  --bg: #eef5fb;
+  --bg-soft: #dfecf7;
+  --surface: rgba(255, 255, 255, 0.88);
   --surface-solid: #ffffff;
-  --surface-raised: #dff3ff;
-  --text: #10263a;
-  --muted: #567188;
-  --line: rgba(20, 103, 151, 0.16);
-  --line-strong: rgba(20, 103, 151, 0.3);
-  --accent: #0877c9;
-  --accent-2: #00a59f;
+  --surface-raised: #e4f0fa;
+  --text: #0f2436;
+  --muted: #557089;
+  --line: rgba(23, 92, 143, 0.16);
+  --line-strong: rgba(23, 92, 143, 0.32);
+  --accent: #0b73bd;
+  --accent-2: #21b0c9;
   --accent-ink: #ffffff;
-  --shadow: 0 25px 75px rgba(18, 115, 167, 0.18);
+  --shadow: 0 25px 75px rgba(20, 90, 140, 0.18);
   color-scheme: light;
 }
 
-html[data-theme='night'] {
-  --bg: #030616;
-  --bg-soft: #080d24;
-  --surface: rgba(10, 17, 40, 0.86);
-  --surface-solid: #0a122b;
-  --surface-raised: #101c3f;
-  --text: #f6f8ff;
-  --muted: #9ca9ca;
-  --line: rgba(131, 163, 231, 0.17);
-  --line-strong: rgba(131, 163, 231, 0.32);
-  --accent: #8bd9ff;
-  --accent-2: #b99cff;
-  --accent-ink: #07101e;
-  --shadow: 0 28px 95px rgba(0, 0, 22, 0.66);
+/* Summer — warm sunlit sand, amber and citrus accents. */
+html[data-theme='summer'] {
+  --bg: #fff5e6;
+  --bg-soft: #ffe9cd;
+  --surface: rgba(255, 252, 246, 0.9);
+  --surface-solid: #fffdf8;
+  --surface-raised: #ffeed7;
+  --text: #35210c;
+  --muted: #7d6142;
+  --line: rgba(140, 88, 26, 0.18);
+  --line-strong: rgba(140, 88, 26, 0.34);
+  --accent: #d9600c;
+  --accent-2: #c99400;
+  --accent-ink: #fffdf8;
+  --shadow: 0 25px 72px rgba(150, 88, 20, 0.2);
+  color-scheme: light;
+}
+
+/* Rainy — wet slate dusk, cool teal and petrichor blue. */
+html[data-theme='rainy'] {
+  --bg: #080f18;
+  --bg-soft: #0d1723;
+  --surface: rgba(15, 26, 39, 0.86);
+  --surface-solid: #0e1b28;
+  --surface-raised: #142534;
+  --text: #eaf3fb;
+  --muted: #93a9bd;
+  --line: rgba(140, 180, 214, 0.17);
+  --line-strong: rgba(140, 180, 214, 0.32);
+  --accent: #6fc3e8;
+  --accent-2: #8fe3d0;
+  --accent-ink: #061019;
+  --shadow: 0 28px 95px rgba(0, 10, 20, 0.66);
   color-scheme: dark;
 }
 
@@ -173,18 +176,6 @@ main {
   left: 35%;
   bottom: -320px;
   background: radial-gradient(circle, var(--accent), transparent 70%);
-}
-
-html[data-theme='night'] .ambient-background::after {
-  content: '';
-  position: absolute;
-  inset: -15%;
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1px, transparent 1.2px),
-    radial-gradient(circle, rgba(139, 217, 255, 0.7) 0 1px, transparent 1.2px);
-  background-position: 0 0, 31px 21px;
-  background-size: 77px 77px, 113px 113px;
-  animation: drift-stars 70s linear infinite;
 }
 
 .site-header {

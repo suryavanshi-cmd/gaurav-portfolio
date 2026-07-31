@@ -21,6 +21,51 @@ const ROUNDS = [
   [{ token: 'world', logit: 3.7 }, { token: 'future', logit: 2.5 }, { token: 'way', logit: 1.7 }, { token: 'industries', logit: 1.1 }],
 ];
 
+/* Two to three sentences of narration per stage, shown under the visual so the
+   walkthrough reads as an explanation rather than an animation. */
+const NARRATION = {
+  prompt: [
+    'Everything starts with plain text. The model cannot read letters directly, so the prompt is first prepared for numerical processing.',
+    'Nothing has been predicted yet — this is only the input the model will condition on.',
+    'The same prompt will be re-processed after every new token is appended.',
+  ],
+  tokens: [
+    'The tokenizer splits the text into sub-word pieces called tokens, and common words usually stay whole.',
+    'Rare or compound words get broken into several tokens, which is why token count rarely matches word count.',
+    'Each token maps to a fixed integer ID from the model vocabulary.',
+  ],
+  vectors: [
+    'Every token ID is looked up in an embedding table and becomes a vector of numbers.',
+    'Those numbers are learned during training, so tokens used in similar contexts end up close together in that space.',
+    'Position information is added too, so the model knows word order and not just which words appeared.',
+  ],
+  attention: [
+    'Self-attention lets each token look at every other token and decide which ones matter for predicting what comes next.',
+    'Queries and keys produce a score for each pair, and the softmax of those scores becomes the attention weight.',
+    'Thicker lines here represent stronger simulated attention between two tokens.',
+  ],
+  transformer: [
+    'Each transformer layer runs attention, adds the result back to its input, normalizes it, then passes it through a feed-forward network.',
+    'Stacking many of these layers lets the model build up from surface patterns to more abstract structure.',
+    'Production models stack dozens to hundreds of layers; three are shown here to keep the demo light.',
+  ],
+  logits: [
+    'The final layer projects the representation onto the whole vocabulary, producing one raw score — a logit — per candidate token.',
+    'Logits are unbounded and unnormalized: a higher score just means the model finds that token more plausible.',
+    'Only the top candidates are shown; a real vocabulary holds tens of thousands of entries.',
+  ],
+  softmax: [
+    'Softmax exponentiates each logit and divides by the total, turning arbitrary scores into probabilities that sum to 100%.',
+    'Temperature is applied here: lower values sharpen the distribution, higher values flatten it and make output more varied.',
+    'This distribution is what sampling strategies like top-k and top-p actually operate on.',
+  ],
+  selection: [
+    'One token is chosen from the distribution and appended to the sequence.',
+    'The extended sequence is then fed back in from the beginning, and the whole cycle repeats for the next token.',
+    'That loop — predict one token, append, re-read — is all that text generation is.',
+  ],
+};
+
 const EXPLORE_CARDS = [
   ['Tokenizer', 'Text is split into reusable token pieces before the neural network processes it.'],
   ['Embeddings', 'Each token becomes a compact numerical vector that represents learned features.'],
@@ -28,6 +73,9 @@ const EXPLORE_CARDS = [
   ['Softmax', 'Raw model scores are normalized into a probability distribution over candidate tokens.'],
   ['Training', 'During training, cross-entropy loss compares the expected token with the predicted probability.'],
   ['Inference', 'During inference, model weights stay fixed while the model predicts and appends one token at a time.'],
+  ['Temperature', 'Temperature rescales logits before softmax: low values make the model confident and repetitive, high values make it varied and riskier.'],
+  ['Context window', 'The context window is how many tokens the model can attend to at once. Everything outside it is invisible to the prediction.'],
+  ['Top-k / top-p', 'Instead of always taking the most likely token, sampling can keep the k best candidates, or the smallest set whose probabilities add up to p.'],
 ];
 
 const tokenize = (text) => text.trim().split(/\s+/).filter(Boolean);
@@ -193,7 +241,6 @@ export default function LLMWhiteboard({ onClose }) {
   const [generatedTokens, setGeneratedTokens] = useState([]);
   const [round, setRound] = useState(0);
   const [completed, setCompleted] = useState(false);
-  const [manualMode, setManualMode] = useState(false);
   const [expandedConcept, setExpandedConcept] = useState(null);
   const wasPlayingRef = useRef(false);
 
@@ -209,7 +256,6 @@ export default function LLMWhiteboard({ onClose }) {
     setRound(0);
     setCurrentStage(0);
     setCompleted(false);
-    setManualMode(false);
     setExpandedConcept(null);
     setPlaying(true);
   }, []);
@@ -233,16 +279,29 @@ export default function LLMWhiteboard({ onClose }) {
 
   const previous = useCallback(() => {
     setPlaying(false);
-    setManualMode(true);
     setCompleted(false);
     setCurrentStage((stage) => Math.max(0, stage - 1));
   }, []);
 
   const next = useCallback(() => {
     setPlaying(false);
-    setManualMode(true);
+    if (completed) {
+      setCompleted(false);
+      setCurrentStage(0);
+      setRound(0);
+      setGeneratedTokens([]);
+      return;
+    }
     advance();
-  }, [advance]);
+  }, [advance, completed]);
+
+  const togglePlay = useCallback(() => {
+    if (completed) {
+      replay();
+      return;
+    }
+    setPlaying((value) => !value);
+  }, [completed, replay]);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -327,6 +386,12 @@ export default function LLMWhiteboard({ onClose }) {
               selectedToken={selectedToken}
               generatedTokens={generatedTokens}
             />
+            <div className={styles.narration}>
+              <small>WHAT IS HAPPENING</small>
+              {(NARRATION[STAGES[activeStage].key] || []).map((sentence) => (
+                <p key={sentence}>{sentence}</p>
+              ))}
+            </div>
           </section>
 
           <aside className={styles.outputCard}>
@@ -342,18 +407,49 @@ export default function LLMWhiteboard({ onClose }) {
         </main>
 
         <div className={styles.controls}>
-          {completed ? (
-            <>
-              <button type="button" className={styles.primaryButton} onClick={replay}>Replay animation</button>
-              <button type="button" onClick={() => { setManualMode(true); setCompleted(false); setPlaying(false); setCurrentStage(0); setRound(0); setGeneratedTokens([]); }}>Step through</button>
-            </>
-          ) : (
-            <>
-              <button type="button" onClick={() => setPlaying((value) => !value)}>{playing ? 'Pause' : 'Continue'}</button>
-              {manualMode ? <button type="button" onClick={previous}>Previous</button> : null}
-              {manualMode ? <button type="button" onClick={next}>Next</button> : null}
-            </>
-          )}
+          <button
+            type="button"
+            className={styles.controlPill}
+            onClick={replay}
+            aria-label="Restart from the first step"
+          >
+            <span aria-hidden="true">⟲</span>
+            <span><small>Start over</small>Restart</span>
+          </button>
+
+          <button
+            type="button"
+            className={styles.controlPill}
+            onClick={previous}
+            disabled={activeStage === 0 && !completed}
+            aria-label="Go to the previous step"
+          >
+            <span aria-hidden="true">‹</span>
+            <span><small>Step back</small>Previous</span>
+          </button>
+
+          <button
+            type="button"
+            className={`${styles.controlPill} ${styles.controlPrimary}`}
+            onClick={togglePlay}
+            aria-label={playing ? 'Pause the walkthrough' : 'Continue the walkthrough'}
+          >
+            <span aria-hidden="true">{playing ? '❚❚' : '▶'}</span>
+            <span>
+              <small>{playing ? 'Running' : completed ? 'Finished' : 'Paused'}</small>
+              {playing ? 'Pause' : completed ? 'Replay' : 'Continue'}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className={styles.controlPill}
+            onClick={next}
+            aria-label="Go to the next step"
+          >
+            <span aria-hidden="true">›</span>
+            <span><small>Step forward</small>Next</span>
+          </button>
         </div>
 
         {completed ? (

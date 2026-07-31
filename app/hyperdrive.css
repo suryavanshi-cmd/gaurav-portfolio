@@ -17,14 +17,105 @@
 }
 
 html[data-theme='dark'],
-html[data-theme='night'],
+html[data-theme='rainy'],
 html:not([data-theme]) {
   --glow-strength: 1;
 }
 
-html[data-theme='read'],
-html[data-theme='sky'] {
+html[data-theme='cold'],
+html[data-theme='summer'] {
   --glow-strength: 0.35;
+}
+
+/* --------------------------------------------------------------------------
+   0. Weather themes
+   Each theme paints its own ambient layer over the shared background.
+   -------------------------------------------------------------------------- */
+
+.ambient-background::before,
+.ambient-background::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+}
+
+/* Cold — drifting snow on a frost-tinted sky. */
+html[data-theme='cold'] .ambient-background::before {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1.6px, transparent 2.2px),
+    radial-gradient(circle, rgba(206, 233, 250, 0.85) 0 1.1px, transparent 1.8px);
+  background-position: 0 0, 43px 27px;
+  background-size: 118px 118px, 79px 79px;
+  animation: snow-fall calc(19s / var(--fx-speed)) linear infinite;
+}
+
+html[data-theme='cold'] .ambient-background::after {
+  inset: 0;
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(255, 255, 255, 0.85), transparent 60%),
+    linear-gradient(180deg, rgba(190, 226, 248, 0.35), transparent 45%);
+}
+
+@keyframes snow-fall {
+  from { transform: translate3d(0, -12%, 0); }
+  to { transform: translate3d(24px, 12%, 0); }
+}
+
+/* Summer — a high sun, warm haze, and slow light shimmer. */
+html[data-theme='summer'] .ambient-background::before {
+  inset: 0;
+  background:
+    radial-gradient(420px circle at 84% 6%, rgba(255, 214, 120, 0.75), transparent 68%),
+    radial-gradient(720px circle at 84% 6%, rgba(255, 170, 60, 0.28), transparent 70%);
+  animation: sun-breathe calc(7s / var(--fx-speed)) ease-in-out infinite;
+}
+
+html[data-theme='summer'] .ambient-background::after {
+  background: repeating-linear-gradient(
+    104deg,
+    rgba(255, 206, 128, 0.16) 0 2px,
+    transparent 2px 190px
+  );
+  animation: heat-shimmer calc(11s / var(--fx-speed)) linear infinite;
+}
+
+@keyframes sun-breathe {
+  0%, 100% { opacity: 0.82; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes heat-shimmer {
+  from { transform: translate3d(-120px, 0, 0); }
+  to { transform: translate3d(120px, 0, 0); }
+}
+
+/* Rainy — slanted rain over a wet slate sky. */
+html[data-theme='rainy'] .ambient-background::before {
+  background-image:
+    repeating-linear-gradient(76deg, rgba(175, 214, 240, 0.42) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(76deg, rgba(143, 227, 208, 0.22) 0 1px, transparent 1px 21px);
+  background-size: 100% 190px, 100% 260px;
+  mask-image: linear-gradient(to bottom, black 55%, transparent);
+  animation: rain-fall calc(700ms / var(--fx-speed)) linear infinite;
+}
+
+html[data-theme='rainy'] .ambient-background::after {
+  inset: 0;
+  background: radial-gradient(140% 70% at 50% 0%, rgba(111, 195, 232, 0.14), transparent 62%);
+  animation: storm-flash calc(9s / var(--fx-speed)) ease-in-out infinite;
+}
+
+@keyframes rain-fall {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 46px 190px, 62px 260px; }
+}
+
+@keyframes storm-flash {
+  0%, 88%, 100% { opacity: 0.55; }
+  90% { opacity: 1; }
+  92% { opacity: 0.6; }
+  94% { opacity: 0.95; }
 }
 
 /* --------------------------------------------------------------------------
@@ -71,14 +162,14 @@ textarea,
   font-family: var(--font-mono);
 }
 
+/* Same treatment as the contact heading: Chakra Petch, sentence case, tight. */
 .hero h1 {
   max-width: 100%;
-  font-family: var(--font-display);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: -0.015em;
-  line-height: 0.92;
-  font-size: clamp(38px, 6.2vw, 92px);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  font-size: clamp(36px, 5.2vw, 74px);
 }
 
 .hero h1 .kinetic-line {
@@ -218,8 +309,8 @@ textarea,
   mix-blend-mode: screen;
 }
 
-html[data-theme='read'] .lightning-field,
-html[data-theme='sky'] .lightning-field {
+html[data-theme='cold'] .lightning-field,
+html[data-theme='summer'] .lightning-field {
   mix-blend-mode: multiply;
   opacity: 0.55;
 }
@@ -258,8 +349,8 @@ html[data-theme='sky'] .lightning-field {
   mix-blend-mode: overlay;
 }
 
-html[data-theme='read'] .scanline-veil,
-html[data-theme='sky'] .scanline-veil {
+html[data-theme='cold'] .scanline-veil,
+html[data-theme='summer'] .scanline-veil {
   opacity: 0.16;
 }
 
@@ -366,6 +457,13 @@ body.has-plasma-cursor button {
 [data-reveal='left'] { transform: translate3d(-34px, 0, 0); }
 [data-reveal='right'] { transform: translate3d(34px, 0, 0); }
 [data-reveal='zoom'] { transform: scale(0.94); }
+
+/* Narrow gutters are smaller than the slide distance, so a horizontal reveal
+   would push the page wider than the viewport. Slide vertically instead. */
+@media (max-width: 960px) {
+  [data-reveal='left'],
+  [data-reveal='right'] { transform: translate3d(0, 26px, 0); }
+}
 
 [data-reveal].is-revealed {
   opacity: 1;
@@ -764,6 +862,306 @@ body.has-plasma-cursor button {
 .contact-form textarea:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent),
     0 0 calc(30px * var(--glow-strength)) color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   Résumé section
+   -------------------------------------------------------------------------- */
+
+.resume-section {
+  position: relative;
+  padding: var(--section-space) 0;
+}
+
+.resume-card {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--surface), var(--surface-solid));
+  box-shadow: var(--shadow);
+}
+
+.resume-identity {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.resume-identity h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 3vw, 34px);
+  letter-spacing: -0.03em;
+}
+
+.resume-identity > div > p {
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.resume-contact {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.resume-contact a:hover {
+  color: var(--accent);
+}
+
+.resume-summary {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.resume-summary p {
+  margin: 0;
+  padding-left: 16px;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.resume-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+  gap: 22px;
+  margin-top: 22px;
+  align-items: start;
+}
+
+.resume-main,
+.resume-side {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.resume-block {
+  padding: clamp(18px, 2.4vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.resume-block-title {
+  margin: 0 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.resume-block-title::before {
+  content: '⚡ ';
+  color: var(--accent);
+}
+
+.resume-role + .resume-role {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px dashed var(--line);
+}
+
+.resume-role-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.resume-role-head h4 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(16px, 2vw, 19px);
+  letter-spacing: -0.015em;
+}
+
+.resume-role-head > div > p {
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.resume-role-head > span {
+  padding: 5px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.resume-role ul {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 9px;
+}
+
+.resume-role li {
+  position: relative;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.resume-role li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 calc(10px * var(--glow-strength)) var(--accent);
+}
+
+.resume-project-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.resume-project-grid article {
+  position: relative;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+}
+
+.resume-project-grid h4 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  letter-spacing: -0.015em;
+}
+
+.resume-project-grid span {
+  display: block;
+  margin: 5px 0 9px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.resume-project-grid p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.resume-skill-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.resume-skill-list dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.resume-skill-list dd {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.resume-education h4 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 16px;
+}
+
+.resume-education p {
+  margin: 5px 0 0;
+  color: var(--accent);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.resume-education span {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.resume-education strong {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.resume-certs {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resume-certs li {
+  position: relative;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.resume-certs li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+@media (max-width: 960px) {
+  .resume-grid { grid-template-columns: minmax(0, 1fr); }
+  .resume-identity { grid-template-columns: minmax(0, 1fr); }
+  .resume-identity .primary-button { justify-self: start; }
 }
 
 /* Keep the fixed controls clear of the last line of footer text. */
