@@ -1,6 +1,33 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CountUp, ScrambleText, TypeCycle } from '../components/Kinetic';
+
+const marqueeWords = [
+  'LLM ENGINEERING',
+  'API AUTOMATION',
+  'FORWARD DEPLOYMENT',
+  'OBSERVABILITY',
+  'RAG SYSTEMS',
+  'CI/CD',
+  'GUARDRAILS',
+  'SHIP FAST',
+];
+
+const terminalLines = [
+  'building dependency-aware LLM workflows…',
+  'replaying HAR traffic into live API journeys…',
+  'scoring model output against golden datasets…',
+  'probing release readiness before the go/no-go call…',
+  'shipping to Vercel in under 60 seconds…',
+];
+
+const pulseMetrics = [
+  { value: 10, suffix: '', label: 'Case studies shipped' },
+  { value: 20, suffix: '+', label: 'Tools in the stack' },
+  { value: 2, suffix: 'yr', label: 'Building in production' },
+  { value: 100, suffix: '%', label: 'Requirement to release' },
+];
 
 const themes = [
   { key: 'dark', label: 'Dark' },
@@ -293,9 +320,14 @@ function ThemeSwitcher({ theme, onChange }) {
   );
 }
 
-function ProjectCard({ project, onOpen }) {
+function ProjectCard({ project, onOpen, index }) {
   return (
-    <article className={`project-card category-${project.category}`}>
+    <article
+      className={`project-card category-${project.category}`}
+      data-tilt
+      data-reveal="zoom"
+      data-reveal-delay={String((index % 4) + 1)}
+    >
       <div className="project-visual" aria-hidden="true">
         <span>{project.icon}</span>
         <div className="visual-lines" />
@@ -397,7 +429,15 @@ export default function Page() {
   const [runOutput, setRunOutput] = useState('Ready. Edit the input and run the workflow.');
   const [running, setRunning] = useState(false);
   const [contactState, setContactState] = useState({ status: 'idle', message: '' });
+  const [overdrive, setOverdrive] = useState(false);
   const runIdRef = useRef(0);
+
+  const strike = useCallback((event, power = 1.2) => {
+    const detail = event
+      ? { x: event.clientX, y: event.clientY, power, sparks: 30 }
+      : { x: window.innerWidth / 2, y: window.innerHeight / 3, power, sparks: 40 };
+    window.dispatchEvent(new CustomEvent('portfolio:strike', { detail }));
+  }, []);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('portfolio-theme');
@@ -407,7 +447,20 @@ export default function Page() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem('portfolio-theme', theme);
+    window.dispatchEvent(new CustomEvent('portfolio:theme', { detail: { theme } }));
   }, [theme]);
+
+  useEffect(() => {
+    const enable = () => setOverdrive(true);
+    window.addEventListener('portfolio:overdrive', enable);
+    return () => window.removeEventListener('portfolio:overdrive', enable);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('overdrive', overdrive);
+    if (overdrive) strike(null, 1.6);
+    return () => document.body.classList.remove('overdrive');
+  }, [overdrive, strike]);
 
   useEffect(() => {
     const handleKey = (event) => {
@@ -531,24 +584,34 @@ export default function Page() {
       <section className="hero" id="top">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <div className="availability"><i /> Open to development and forward-deployment opportunities</div>
-            <p className="eyebrow">LLM applications · API automation · production delivery</p>
-            <h1>I turn complex workflows into <span>reliable products.</span></h1>
-            <p className="hero-description">
+            <div className="availability" data-reveal><i /> Open to development and forward-deployment opportunities</div>
+            <ScrambleText as="p" className="eyebrow" text="LLM applications · API automation · production delivery" />
+            <h1>
+              <span className="kinetic-line"><span>I turn complex</span></span>
+              <span className="kinetic-line"><span>workflows into</span></span>
+              <span className="kinetic-line open">
+                <span className="charged glitch" data-text="reliable products.">reliable products.</span>
+              </span>
+            </h1>
+            <p className="hero-description" data-reveal data-reveal-delay="1">
               Software engineer with two years of experience building API automation, developer tools, LLM-enabled workflows, observability dashboards, and customer-focused implementation systems.
             </p>
+            <div className="hero-terminal" role="status" aria-live="off">
+              <b>▹ now</b>
+              <TypeCycle className="type-line" phrases={terminalLines} />
+            </div>
             <div className="hero-actions">
-              <a className="primary-button" href="#work">Explore selected work</a>
-              <a className="secondary-button" href="#contact">Start a conversation</a>
+              <a className="primary-button" href="#work" data-magnetic onClick={strike}>Explore selected work</a>
+              <a className="secondary-button" href="#contact" data-magnetic onClick={strike}>Start a conversation</a>
             </div>
             <div className="hero-stats">
-              <div><strong>2+</strong><span>years building and shipping</span></div>
-              <div><strong>API-first</strong><span>automation and integration</span></div>
-              <div><strong>End-to-end</strong><span>from requirement to release</span></div>
+              <div data-reveal data-reveal-delay="1"><strong>2+</strong><span>years building and shipping</span></div>
+              <div data-reveal data-reveal-delay="2"><strong>API-first</strong><span>automation and integration</span></div>
+              <div data-reveal data-reveal-delay="3"><strong>End-to-end</strong><span>from requirement to release</span></div>
             </div>
           </div>
 
-          <div className="hero-console" aria-label="Current engineering focus">
+          <div className="hero-console" aria-label="Current engineering focus" data-tilt data-reveal="right">
             <div className="console-bar"><div><i /><i /><i /></div><span>delivery-console</span></div>
             <div className="hero-console-content">
               <div className="signal-ring"><div><strong>READY</strong><small>production mindset</small></div></div>
@@ -563,10 +626,30 @@ export default function Page() {
         </div>
       </section>
 
+      <div className="hyper-marquee" aria-hidden="true">
+        <div>
+          {[...marqueeWords, ...marqueeWords].map((word, index) => (
+            <span key={`${word}-${index}`}>{word}</span>
+          ))}
+        </div>
+      </div>
+
       <section className="work-section" id="work">
         <div className="container">
-          <div className="section-heading">
-            <div><p className="eyebrow">Selected engineering work</p><h2>Projects designed around real delivery problems.</h2></div>
+          <div className="pulse-strip" aria-label="Portfolio at a glance">
+            {pulseMetrics.map((metric, index) => (
+              <article key={metric.label} data-reveal="zoom" data-reveal-delay={String(index + 1)}>
+                <strong><CountUp value={metric.value} suffix={metric.suffix} /></strong>
+                <small>{metric.label}</small>
+              </article>
+            ))}
+          </div>
+
+          <div className="section-heading" data-reveal>
+            <div>
+              <p className="eyebrow">Selected engineering work</p>
+              <h2>Projects designed around <span>real delivery problems.</span></h2>
+            </div>
             <p>Each case study includes the problem, architecture, technical decisions, and an editable workflow simulation.</p>
           </div>
 
@@ -584,12 +667,14 @@ export default function Page() {
             if (!categoryProjects.length) return null;
             return (
               <div className="project-group" key={category.key}>
-                <div className="group-heading">
+                <div className="group-heading" data-reveal="left">
                   <div><p className="eyebrow">{category.eyebrow}</p><h3>{category.title}</h3></div>
                   <p>{category.description}</p>
                 </div>
                 <div className="project-grid">
-                  {categoryProjects.map((project) => <ProjectCard key={project.id} project={project} onOpen={openProject} />)}
+                  {categoryProjects.map((project, index) => (
+                    <ProjectCard key={project.id} project={project} onOpen={openProject} index={index} />
+                  ))}
                 </div>
               </div>
             );
@@ -599,33 +684,33 @@ export default function Page() {
 
       <section className="capabilities-section" id="capabilities">
         <div className="container capabilities-grid">
-          <div>
+          <div data-reveal="left">
             <p className="eyebrow">Engineering capabilities</p>
-            <h2>Strong at the boundary between customer needs and production systems.</h2>
+            <h2>Strong at the boundary between <span>customer needs and production systems.</span></h2>
             <p>My work combines hands-on development, automation quality, solution design, debugging, and release ownership.</p>
           </div>
           <div className="capability-cards">
-            <article><span>01</span><h3>Discover</h3><p>Translate unclear requirements, API traffic, logs, and workflow behavior into an implementable technical model.</p></article>
-            <article><span>02</span><h3>Build</h3><p>Create reliable Next.js applications, automation frameworks, integration utilities, and data-backed operational tools.</p></article>
-            <article><span>03</span><h3>Validate</h3><p>Use assertions, observability, guardrails, test datasets, and failure-focused diagnostics to improve release confidence.</p></article>
-            <article><span>04</span><h3>Deploy</h3><p>Connect GitHub, Vercel, Supabase, CI/CD, environment configuration, monitoring, and rollback-aware delivery.</p></article>
+            <article data-reveal data-reveal-delay="1" data-tilt><span>01</span><h3>Discover</h3><p>Translate unclear requirements, API traffic, logs, and workflow behavior into an implementable technical model.</p></article>
+            <article data-reveal data-reveal-delay="2" data-tilt><span>02</span><h3>Build</h3><p>Create reliable Next.js applications, automation frameworks, integration utilities, and data-backed operational tools.</p></article>
+            <article data-reveal data-reveal-delay="3" data-tilt><span>03</span><h3>Validate</h3><p>Use assertions, observability, guardrails, test datasets, and failure-focused diagnostics to improve release confidence.</p></article>
+            <article data-reveal data-reveal-delay="4" data-tilt><span>04</span><h3>Deploy</h3><p>Connect GitHub, Vercel, Supabase, CI/CD, environment configuration, monitoring, and rollback-aware delivery.</p></article>
           </div>
         </div>
-        <div className="container skill-cloud" aria-label="Technical skills">
+        <div className="container skill-cloud" aria-label="Technical skills" data-reveal>
           {skills.map((skill) => <span key={skill}>{skill}</span>)}
         </div>
       </section>
 
       <section className="contact-section" id="contact">
         <div className="container contact-grid">
-          <div>
+          <div data-reveal="left">
             <p className="eyebrow">Let’s build something useful</p>
-            <h2>Need an engineer who can understand the workflow and ship the implementation?</h2>
+            <h2>Need an engineer who can <span>understand the workflow and ship it?</span></h2>
             <p>I am interested in software engineering, LLM application engineering, automation platforms, and forward-deployment roles.</p>
             <a href="mailto:gaurav.suryavanshi@bfhl.in" className="email-link">gaurav.suryavanshi@bfhl.in ↗</a>
             <div className="connection-status"><i /><span>Supabase-backed contact workflow</span></div>
           </div>
-          <form className="contact-form" onSubmit={submitContact}>
+          <form className="contact-form" onSubmit={submitContact} data-reveal="right" data-tilt>
             <label>Name<input name="name" type="text" minLength="2" maxLength="120" autoComplete="name" required placeholder="Your name" /></label>
             <label>Email<input name="email" type="email" maxLength="254" autoComplete="email" required placeholder="you@company.com" /></label>
             <label>Message<textarea name="message" minLength="10" maxLength="4000" required placeholder="Tell me about the role, project, or problem." /></label>
@@ -644,6 +729,20 @@ export default function Page() {
           <p>Built with Next.js, deployed on Vercel, and connected to Supabase.</p>
         </div>
       </footer>
+
+      <button
+        type="button"
+        className="overdrive-switch"
+        aria-pressed={overdrive}
+        onClick={(event) => {
+          setOverdrive((current) => !current);
+          strike(event, 1.7);
+        }}
+        title="Konami code works too: ↑ ↑ ↓ ↓ ← → ← → B A"
+      >
+        <i />
+        {overdrive ? 'Overdrive on' : 'Overdrive'}
+      </button>
 
       <ProjectModal
         project={selectedProject}

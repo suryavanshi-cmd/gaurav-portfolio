@@ -4,6 +4,10 @@ A production-focused Next.js portfolio for a Forward Deployment Engineer, LLM Ap
 
 ## What this version includes
 
+- High-energy motion layer: canvas lightning strikes, click sparks, a plasma cursor, scroll-velocity warp lines, and a scroll charge rail
+- Display typography system (Anton, Chakra Petch, Space Grotesk, JetBrains Mono) with an animated gradient headline and glitch echo
+- Kinetic content: text scramble, terminal typewriter, count-up metrics, high-speed marquee, scroll reveals, 3D tilt and spotlight cards, magnetic buttons
+- OVERDRIVE mode — a faster, louder variant of the whole site, toggled from the control in the corner or with the Konami code
 - Premium responsive portfolio UI with Dark, Read, Sky, and Night themes
 - Three focused project collections:
   - LLM & AI Systems
@@ -13,7 +17,7 @@ A production-focused Next.js portfolio for a Forward Deployment Engineer, LLM Ap
 - Interactive project modal with editable JSON workflow simulation
 - Supabase-backed contact form through a validated Next.js API route
 - Mobile, tablet, and desktop layouts
-- Accessibility improvements, keyboard-close modal behavior, and reduced-motion support
+- Accessibility improvements, keyboard-close modal behavior, and full `prefers-reduced-motion` support that disables every effect layer
 - Vercel-ready production configuration and metadata
 
 ## Stack

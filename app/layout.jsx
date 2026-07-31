@@ -1,6 +1,11 @@
 import './globals.css';
 import './modern-responsive.css';
+import './hyperdrive.css';
+import HyperFX from '../components/HyperFX';
 import LearningsLauncher from '../components/LearningsLauncher';
+
+const FONT_HREF =
+  'https://fonts.googleapis.com/css2?family=Anton&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@400;500;600;700&display=swap';
 
 export const metadata = {
   metadataBase: new URL('https://gaurav-portfolio-topaz.vercel.app'),
@@ -48,7 +53,13 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href={FONT_HREF} />
+      </head>
       <body>
+        <HyperFX />
         {children}
         <LearningsLauncher />
       </body>
