@@ -210,7 +210,7 @@ textarea,
 
 .hero h1 .kinetic-line > span {
   display: inline-block;
-  animation: slam-in calc(700ms / var(--fx-speed)) cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: slam-in calc(700ms / var(--fx-speed)) var(--ease-smooth) backwards;
 }
 
 .hero h1 .kinetic-line:nth-child(1) > span { animation-delay: 60ms; }
@@ -265,7 +265,7 @@ textarea,
   -webkit-background-clip: border-box;
   background-clip: border-box;
   -webkit-text-fill-color: currentColor;
-  transition: opacity 160ms ease;
+  transition: opacity 160ms var(--ease-smooth);
 }
 
 .glitch:hover::before {
@@ -354,7 +354,7 @@ html[data-theme='summer'] .scanline-veil {
   pointer-events: none;
   visibility: hidden;
   opacity: calc(var(--warp) * 0.9);
-  transition: opacity 200ms ease;
+  transition: opacity 200ms var(--ease-smooth);
 }
 
 body.is-warping .warp-lines {
@@ -417,7 +417,7 @@ body.is-warping .warp-lines i {
   box-shadow:
     0 0 calc(22px * var(--glow-strength)) color-mix(in srgb, var(--accent) 45%, transparent),
     inset 0 0 12px color-mix(in srgb, var(--accent-2) 30%, transparent);
-  transition: width 180ms ease, height 180ms ease, border-color 180ms ease, background 180ms ease;
+  transition: width 180ms var(--ease-smooth), height 180ms var(--ease-smooth), border-color 180ms var(--ease-smooth), background 180ms var(--ease-smooth);
 }
 
 .plasma-ring.is-hot {
@@ -456,8 +456,8 @@ body.has-plasma-cursor [contenteditable] {
   opacity: 0;
   transform: translate3d(0, 26px, 0);
   transition:
-    opacity calc(620ms / var(--fx-speed)) cubic-bezier(0.16, 1, 0.3, 1),
-    transform calc(620ms / var(--fx-speed)) cubic-bezier(0.16, 1, 0.3, 1);
+    opacity calc(620ms / var(--fx-speed)) var(--ease-smooth),
+    transform calc(620ms / var(--fx-speed)) var(--ease-smooth);
 }
 
 [data-reveal='left'] { transform: translate3d(-34px, 0, 0); }
@@ -487,18 +487,18 @@ body.has-plasma-cursor [contenteditable] {
 [data-tilt] {
   position: relative;
   transition:
-    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 240ms ease,
-    border-color 240ms ease,
-    opacity calc(620ms / var(--fx-speed)) cubic-bezier(0.16, 1, 0.3, 1);
+    transform 240ms var(--ease-smooth),
+    box-shadow 240ms var(--ease-smooth),
+    border-color 240ms var(--ease-smooth),
+    opacity calc(620ms / var(--fx-speed)) var(--ease-smooth);
 }
 
 [data-tilt].is-live {
   transition:
     transform 90ms linear,
-    box-shadow 240ms ease,
-    border-color 240ms ease,
-    opacity calc(620ms / var(--fx-speed)) cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow 240ms var(--ease-smooth),
+    border-color 240ms var(--ease-smooth),
+    opacity calc(620ms / var(--fx-speed)) var(--ease-smooth);
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line-strong));
   box-shadow:
     0 26px 70px rgba(0, 0, 0, 0.4),
@@ -518,7 +518,7 @@ body.has-plasma-cursor [contenteditable] {
     color-mix(in srgb, var(--accent) 22%, transparent),
     transparent 62%
   );
-  transition: opacity 220ms ease;
+  transition: opacity 220ms var(--ease-smooth);
 }
 
 [data-tilt].is-live::before {
@@ -528,11 +528,11 @@ body.has-plasma-cursor [contenteditable] {
 /* Magnetic pull is also an inline transform (see HyperFX) — .primary-button:hover's
    translateY would otherwise override it for the entire hover, killing the effect. */
 [data-magnetic] {
-  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease;
+  transition: transform 260ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth);
 }
 
 [data-magnetic].is-pulled {
-  transition: transform 90ms linear, box-shadow 200ms ease;
+  transition: transform 90ms linear, box-shadow 200ms var(--ease-smooth);
   box-shadow: 0 0 calc(34px * var(--glow-strength)) color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
@@ -544,26 +544,53 @@ body.has-plasma-cursor [contenteditable] {
   border-bottom-color: color-mix(in srgb, var(--accent) 18%, var(--line));
 }
 
-/* Mobile nav dropdown. The base rules hide `.site-header nav` entirely below
-   1024/1040px with no replacement; `nav.is-open` (toggled by the hamburger)
-   beats that display:none on specificity alone and repaints it as a panel
-   anchored to the (already position: sticky, so already positioned)
-   header instead of the inline flex row. */
-.site-header nav.is-open {
-  display: flex;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 2px;
-  padding: 10px max(16px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom));
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 96%, transparent);
-  backdrop-filter: blur(20px) saturate(140%);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
-  animation: nav-panel-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+/* Mobile nav dropdown. globals.css and modern-responsive.css both hide
+   `.site-header nav` (display: none) below 1024/1040px with no replacement;
+   the higher-specificity `.site-header nav` rule below beats both and keeps
+   the nav in the layout as a floating panel at all times below that width,
+   toggling open/closed through opacity + transform + visibility instead of
+   display — that's what lets it transition smoothly BOTH ways. A one-shot
+   @keyframes entrance (the previous approach) can't animate a close, since
+   nothing plays it in reverse when the class is removed. */
+@media (max-width: 1040px) {
+  .site-header nav {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 10px max(16px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom));
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    backdrop-filter: blur(20px) saturate(140%);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition:
+      opacity 200ms var(--ease-smooth),
+      transform 200ms var(--ease-smooth),
+      visibility 0ms linear 200ms;
+  }
+
+  .site-header nav.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition:
+      opacity 200ms var(--ease-smooth),
+      transform 200ms var(--ease-smooth),
+      visibility 0ms linear 0ms;
+  }
+}
+
+.site-header nav a {
+  transition: color 160ms var(--ease-smooth), background 160ms var(--ease-smooth);
 }
 
 .site-header nav.is-open a {
@@ -582,16 +609,9 @@ body.has-plasma-cursor [contenteditable] {
   color: var(--text);
 }
 
-@keyframes nav-panel-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-header nav.is-open {
-    animation: none;
-  }
-}
+/* No separate reduced-motion override needed here: the site-wide
+   `transition-duration: 0.01ms !important` rule further down already
+   collapses this open/close transition to a near-instant state change. */
 
 /* Sweep animates transform (compositable), not background-position.
    No overflow-clip needed on .site-header: body already carries
@@ -782,7 +802,7 @@ body.has-plasma-cursor [contenteditable] {
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask-composite: exclude;
-  transition: opacity 260ms ease;
+  transition: opacity 260ms var(--ease-smooth);
 }
 
 .project-card:hover::after,
@@ -815,7 +835,7 @@ body.overdrive .project-card::after {
 .project-card:hover .project-body h3 {
   color: var(--accent);
   text-shadow: 0 0 calc(22px * var(--glow-strength)) color-mix(in srgb, var(--accent) 45%, transparent);
-  transition: color 160ms ease, text-shadow 160ms ease;
+  transition: color 160ms var(--ease-smooth), text-shadow 160ms var(--ease-smooth);
 }
 
 .project-visual > span {
@@ -832,7 +852,7 @@ body.overdrive .project-card::after {
 .theme-switcher button {
   position: relative;
   overflow: hidden;
-  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), color 140ms ease, background 140ms ease;
+  transition: transform 140ms var(--ease-smooth), color 140ms var(--ease-smooth), background 140ms var(--ease-smooth);
 }
 
 .project-filters button:hover,
@@ -862,7 +882,7 @@ body.overdrive .project-card::after {
   z-index: -1;
   transform: translateX(-120%) skewX(-20deg);
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-  transition: transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 620ms var(--ease-smooth);
 }
 
 .primary-button:hover::after,
@@ -878,7 +898,7 @@ body.overdrive .project-card::after {
 /* Skill cloud */
 .skill-cloud span {
   font-family: var(--font-mono);
-  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  transition: transform 160ms var(--ease-smooth), color 160ms var(--ease-smooth), border-color 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
 }
 
 .skill-cloud span:hover {
@@ -907,7 +927,7 @@ body.overdrive .project-card::after {
   background: linear-gradient(180deg, var(--accent), var(--accent-2));
   transform: scaleY(0);
   transform-origin: 50% 0;
-  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 320ms var(--ease-smooth);
 }
 
 .capability-cards article:hover::after {
@@ -1277,7 +1297,7 @@ footer .footer-row {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease, border-color 200ms ease;
+  transition: transform 160ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth), border-color 200ms var(--ease-smooth);
 }
 
 .overdrive-switch:hover {
@@ -1290,7 +1310,7 @@ footer .footer-row {
   height: 8px;
   border-radius: 50%;
   background: var(--muted);
-  transition: background 200ms ease, box-shadow 200ms ease;
+  transition: background 200ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth);
 }
 
 .overdrive-switch[aria-pressed='true'] {

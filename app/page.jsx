@@ -510,22 +510,84 @@ function ProjectCard({ project, onOpen, index }) {
   );
 }
 
+const MODAL_EXIT_MS = 200;
+const EASE_SMOOTH = 'cubic-bezier(0.16, 1, 0.3, 1)';
+
 function ProjectModal({ project, input, setInput, runSteps, runOutput, running, onRun, onClose }) {
-  if (!project) return null;
-  const category = categories.find((item) => item.key === project.category);
+  // Renders the last non-null project a beat longer than `project` itself
+  // stays truthy, so closing plays an exit transition instead of the modal
+  // vanishing the instant `project` becomes null.
+  const [renderedProject, setRenderedProject] = useState(project);
+  const [closing, setClosing] = useState(false);
+  const backdropRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (project) {
+      setRenderedProject(project);
+      setClosing(false);
+      return undefined;
+    }
+    if (!renderedProject) return undefined;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setRenderedProject(null);
+      return undefined;
+    }
+
+    // Driven via the Web Animations API rather than a CSS class + @keyframes:
+    // .animate() starts deterministically the moment it's called, with no
+    // dependency on a CSS class-change being detected by the engine on the
+    // next style pass — which is what a plain class toggle relies on.
+    setClosing(true);
+    const timing = { duration: MODAL_EXIT_MS, easing: EASE_SMOOTH, fill: 'forwards' };
+    const animations = [
+      backdropRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], timing),
+      modalRef.current?.animate(
+        [
+          { opacity: 1, transform: 'translateY(0) scale(1)' },
+          { opacity: 0, transform: 'translateY(10px) scale(0.98)' },
+        ],
+        timing,
+      ),
+    ].filter(Boolean);
+
+    let cancelled = false;
+    const finish = () => {
+      if (cancelled) return;
+      cancelled = true;
+      setRenderedProject(null);
+      setClosing(false);
+    };
+
+    Promise.all(animations.map((animation) => animation.finished.catch(() => {}))).then(finish);
+    // Safety net: if `.finished` is ever slow to settle (backgrounded tab,
+    // an unusually congested main thread), don't leave the modal stuck open.
+    const fallback = window.setTimeout(finish, MODAL_EXIT_MS + 400);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(fallback);
+      animations.forEach((animation) => animation.cancel());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project]);
+
+  if (!renderedProject) return null;
+  const category = categories.find((item) => item.key === renderedProject.category);
 
   // Portaled to <body>: <main> is an isolated stacking context, so a modal
   // rendered inside it could never stack above the body-level effect overlays.
   return createPortal(
-    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
-      <article className="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-title" onMouseDown={(event) => event.stopPropagation()}>
+    <div ref={backdropRef} className={`modal-backdrop${closing ? ' is-closing' : ''}`} role="presentation" onMouseDown={onClose}>
+      <article ref={modalRef} className={`project-modal${closing ? ' is-closing' : ''}`} role="dialog" aria-modal="true" aria-labelledby="project-title" onMouseDown={(event) => event.stopPropagation()}>
         <button type="button" className="modal-close" onClick={onClose} aria-label="Close project details">×</button>
         <header className="modal-header">
-          <div className="modal-kicker"><span>{project.icon}</span>{project.type} · {project.level}</div>
-          <h2 id="project-title">{project.title}</h2>
-          <p>{project.description}</p>
+          <div className="modal-kicker"><span>{renderedProject.icon}</span>{renderedProject.type} · {renderedProject.level}</div>
+          <h2 id="project-title">{renderedProject.title}</h2>
+          <p>{renderedProject.description}</p>
           <div className="tag-list large">
-            {project.tech.map((item) => <span key={item}>{item}</span>)}
+            {renderedProject.tech.map((item) => <span key={item}>{item}</span>)}
           </div>
         </header>
 
@@ -543,9 +605,9 @@ function ProjectModal({ project, input, setInput, runSteps, runOutput, running, 
           </section>
 
           <div className="detail-grid">
-            <div className="detail-card"><h4>Key features</h4><ul>{project.features.map((item) => <li key={item}>{item}</li>)}</ul></div>
-            <div className="detail-card"><h4>Engineering challenges</h4><ul>{project.challenges.map((item) => <li key={item}>{item}</li>)}</ul></div>
-            <div className="detail-card full"><h4>Next iteration</h4><ul className="inline-list">{project.future.map((item) => <li key={item}>{item}</li>)}</ul></div>
+            <div className="detail-card"><h4>Key features</h4><ul>{renderedProject.features.map((item) => <li key={item}>{item}</li>)}</ul></div>
+            <div className="detail-card"><h4>Engineering challenges</h4><ul>{renderedProject.challenges.map((item) => <li key={item}>{item}</li>)}</ul></div>
+            <div className="detail-card full"><h4>Next iteration</h4><ul className="inline-list">{renderedProject.future.map((item) => <li key={item}>{item}</li>)}</ul></div>
           </div>
 
           <section className="workflow-console" aria-label="Interactive workflow simulation">

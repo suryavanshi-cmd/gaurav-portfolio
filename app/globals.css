@@ -16,7 +16,30 @@
   --radius-lg: 28px;
   --radius-md: 18px;
   --radius-sm: 12px;
+  /* One shared easing curve for every transition and enter animation on the
+     site, so motion reads as one system instead of a mix of ad-hoc curves. */
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --theme-transition:
+    background-color 320ms var(--ease-smooth),
+    border-color 320ms var(--ease-smooth),
+    color 320ms var(--ease-smooth),
+    box-shadow 320ms var(--ease-smooth),
+    fill 320ms var(--ease-smooth),
+    stroke 320ms var(--ease-smooth);
   color-scheme: dark;
+}
+
+/* Theme-switch smoothing: every element transitions its theme-driven colors
+   unless it already declares its own `transition` (which simply overrides
+   this — no conflict, since a more specific rule replaces the whole
+   shorthand list rather than merging with it). Deliberately excludes
+   `transform`, which several components drive every frame from JS
+   (HyperFX tilt/magnet, the plasma cursor) — transitioning it here would
+   fight those and make pointer tracking feel laggy. */
+*,
+*::before,
+*::after {
+  transition: var(--theme-transition);
 }
 
 /* Cold — bright arctic light, frost blues over near-white glass. */
@@ -91,7 +114,7 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 15px;
   line-height: 1.6;
-  transition: background 220ms ease, color 220ms ease;
+  transition: background 220ms var(--ease-smooth), color 220ms var(--ease-smooth);
 }
 
 button,
@@ -258,7 +281,7 @@ main {
   height: 2px;
   border-radius: 2px;
   background: var(--accent);
-  transition: right 180ms ease;
+  transition: right 180ms var(--ease-smooth);
 }
 
 .site-header nav a:hover {
@@ -296,7 +319,7 @@ main {
   height: 2px;
   border-radius: 2px;
   background: var(--text);
-  transition: transform 200ms ease, opacity 150ms ease;
+  transition: transform 200ms var(--ease-smooth), opacity 150ms var(--ease-smooth);
 }
 
 .nav-toggle[aria-expanded='true'] span:nth-child(1) {
@@ -330,7 +353,7 @@ main {
   font-size: 9px;
   font-weight: 850;
   letter-spacing: 0.02em;
-  transition: 150ms ease;
+  transition: 150ms var(--ease-smooth);
 }
 
 .theme-switcher button:hover {
@@ -434,7 +457,7 @@ main {
   cursor: pointer;
   font-size: 11px;
   font-weight: 900;
-  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition: transform 160ms var(--ease-smooth), border-color 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth), background 160ms var(--ease-smooth);
 }
 
 .primary-button {
@@ -668,7 +691,7 @@ main {
   font-size: 9px;
   font-weight: 850;
   text-transform: capitalize;
-  transition: 150ms ease;
+  transition: 150ms var(--ease-smooth);
 }
 
 .project-filters button:hover {
@@ -713,7 +736,7 @@ main {
   border-radius: 22px;
   background: var(--surface);
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
-  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  transition: transform 180ms var(--ease-smooth), border-color 180ms var(--ease-smooth), box-shadow 180ms var(--ease-smooth);
 }
 
 .project-card:hover {
@@ -775,7 +798,7 @@ main {
   font-size: 52px;
   font-weight: 300;
   text-shadow: 0 15px 35px rgba(0, 0, 0, 0.32);
-  transition: transform 180ms ease;
+  transition: transform 180ms var(--ease-smooth);
 }
 
 .project-card:hover .project-visual > span {
@@ -897,7 +920,7 @@ main {
   border: 1px solid var(--line);
   border-radius: 19px;
   background: var(--surface);
-  transition: transform 170ms ease, border-color 170ms ease;
+  transition: transform 170ms var(--ease-smooth), border-color 170ms var(--ease-smooth);
 }
 
 .capability-cards article:hover {
@@ -939,7 +962,7 @@ main {
   color: var(--muted);
   font-size: 10px;
   font-weight: 750;
-  transition: 150ms ease;
+  transition: 150ms var(--ease-smooth);
 }
 
 .skill-cloud span:hover {
@@ -1017,7 +1040,7 @@ main {
   font-size: 12px;
   line-height: 1.55;
   text-transform: none;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 150ms var(--ease-smooth), box-shadow 150ms var(--ease-smooth);
 }
 
 .contact-form input:focus,
@@ -1096,7 +1119,15 @@ footer {
   padding: 18px;
   background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(14px);
-  animation: fade-in 160ms ease;
+  animation: fade-in 160ms var(--ease-smooth);
+}
+
+/* Exit is driven by the Web Animations API from page.jsx (see ProjectModal) —
+   .animate() starts deterministically the instant it's called, unlike a class
+   toggle relying on the engine to notice an @keyframes reference changed.
+   This class only blocks stray interaction while the fade plays out. */
+.modal-backdrop.is-closing {
+  pointer-events: none;
 }
 
 .project-modal {
@@ -1108,8 +1139,10 @@ footer {
   border-radius: 26px;
   background: var(--surface-solid);
   box-shadow: var(--shadow);
-  animation: modal-in 180ms ease;
+  animation: modal-in 180ms var(--ease-smooth);
 }
+
+
 
 .modal-close {
   position: sticky;
@@ -1339,7 +1372,7 @@ footer {
   border-radius: 10px;
   background: var(--surface-raised);
   color: var(--muted);
-  transition: 160ms ease;
+  transition: 160ms var(--ease-smooth);
 }
 
 .run-step > span {
