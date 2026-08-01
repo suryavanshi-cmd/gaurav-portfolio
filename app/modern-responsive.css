@@ -70,7 +70,7 @@ input {
 .contact-section,
 .site-footer {
   content-visibility: auto;
-  contain-intrinsic-size: 900px;
+  contain-intrinsic-size: auto 900px;
 }
 
 .project-card,
@@ -87,10 +87,6 @@ input {
 .project-filters button,
 .theme-switcher button {
   transition-duration: 180ms !important;
-}
-
-.project-card:hover {
-  transform: translateY(-4px);
 }
 
 .project-card:active,

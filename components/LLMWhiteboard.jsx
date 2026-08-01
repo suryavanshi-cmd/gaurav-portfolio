@@ -31,7 +31,7 @@ const NARRATION = {
   ],
   tokens: [
     'The tokenizer splits the text into sub-word pieces called tokens, and common words usually stay whole.',
-    'Rare or compound words get broken into several tokens, which is why token count rarely matches word count.',
+    'Real tokenizers break rare or compound words into several pieces — this demo simplifies by splitting on whole words.',
     'Each token maps to a fixed integer ID from the model vocabulary.',
   ],
   vectors: [
@@ -146,11 +146,10 @@ function StageVisual({ stage, tokens, rows, distribution, selectedToken, generat
       <div className={styles.tokenVisual}>
         <div className={styles.tokenRow}>{tokens.map((token, index) => <span key={`${token}-${index}`}>{token}</span>)}</div>
         <div className={styles.tokenStats}>
-          <span>{PROMPT.length} characters</span>
-          <span>{tokenize(PROMPT).length} words</span>
-          <span>≈ {Math.ceil(PROMPT.length / 4)} tokens</span>
+          <span>{[PROMPT, ...generatedTokens].join(' ').length} characters</span>
+          <span>{tokens.length} tokens shown</span>
         </div>
-        <small>Simulated tokenization for educational visualization.</small>
+        <small>This demo splits on words; real tokenizers use sub-word pieces, so counts differ.</small>
       </div>
     );
   }
@@ -279,9 +278,15 @@ export default function LLMWhiteboard({ onClose }) {
 
   const previous = useCallback(() => {
     setPlaying(false);
-    setCompleted(false);
+    if (completed) {
+      // Completing appended the final token; undo it so stepping forward
+      // re-runs the prediction instead of appending a duplicate.
+      setCompleted(false);
+      setGeneratedTokens((current) => current.slice(0, -1));
+      return;
+    }
     setCurrentStage((stage) => Math.max(0, stage - 1));
-  }, []);
+  }, [completed]);
 
   const next = useCallback(() => {
     setPlaying(false);
@@ -373,7 +378,7 @@ export default function LLMWhiteboard({ onClose }) {
             })}
           </aside>
 
-          <section className={styles.focusCard} aria-live="polite">
+          <section className={styles.focusCard}>
             <div className={styles.focusHeading}>
               <div><small>STEP {String(activeStage + 1).padStart(2, '0')}</small><h3>{STAGES[activeStage].label}</h3></div>
               <span>{round + 1} / {ROUNDS.length} prediction</span>

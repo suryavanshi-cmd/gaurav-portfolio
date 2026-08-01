@@ -62,7 +62,8 @@ export default function LightningField() {
     let height = 0;
     let ratio = 1;
     let frame = 0;
-    let nextStrike = 900;
+    let loopActive = false;
+    let strikeTimer = 0;
     let last = performance.now();
     let running = true;
 
@@ -72,7 +73,10 @@ export default function LightningField() {
     let accentAlt = readAccent('--accent-2', ACCENT_FALLBACK);
 
     function resize() {
-      ratio = Math.min(window.devicePixelRatio || 1, 2);
+      // Half-res on coarse pointers: phones pay the blend-mode compositing cost
+      // twice as hard and never see pointer-follow detail up close.
+      const cap = window.matchMedia('(pointer: coarse)').matches ? 1.25 : 2;
+      ratio = Math.min(window.devicePixelRatio || 1, cap);
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = Math.floor(width * ratio);
@@ -134,21 +138,42 @@ export default function LightningField() {
       context.stroke();
     }
 
-    function render(now) {
+    function ensureLoop() {
+      if (loopActive) return;
+      loopActive = true;
+      last = performance.now();
       frame = window.requestAnimationFrame(render);
+    }
+
+    function scheduleAmbientStrike() {
+      window.clearTimeout(strikeTimer);
+      strikeTimer = window.setTimeout(() => {
+        if (!document.hidden && !reduceMotion.matches) {
+          spawnBolt(Math.random() * width, height * (0.35 + Math.random() * 0.5), 0.75 + Math.random() * 0.5);
+          ensureLoop();
+        }
+        scheduleAmbientStrike();
+      }, 2600 + Math.random() * 5200);
+    }
+
+    function render(now) {
       const delta = Math.min(now - last, 60);
       last = now;
-      if (!running) return;
+
+      // Nothing left to draw: clear once and park the loop until the next
+      // spawn — an empty full-viewport canvas should cost nothing per frame.
+      if (bolts.length === 0 && sparks.length === 0) {
+        context.clearRect(0, 0, width, height);
+        loopActive = false;
+        return;
+      }
+
+      frame = window.requestAnimationFrame(render);
+      if (!running || reduceMotion.matches) return;
 
       context.clearRect(0, 0, width, height);
       context.lineCap = 'round';
       context.lineJoin = 'round';
-
-      nextStrike -= delta;
-      if (nextStrike <= 0) {
-        spawnBolt(Math.random() * width, height * (0.35 + Math.random() * 0.5), 0.75 + Math.random() * 0.5);
-        nextStrike = 2600 + Math.random() * 5200;
-      }
 
       for (let index = bolts.length - 1; index >= 0; index -= 1) {
         const bolt = bolts[index];
@@ -195,6 +220,7 @@ export default function LightningField() {
       if (event.target instanceof Element && event.target.closest('input, textarea')) return;
       spawnSparks(event.clientX, event.clientY, 18);
       if (Math.random() > 0.45) spawnBolt(event.clientX, event.clientY, 0.8);
+      ensureLoop();
     }
 
     function handleStrike(event) {
@@ -203,6 +229,7 @@ export default function LightningField() {
       const y = typeof detail.y === 'number' ? detail.y : height * 0.4;
       spawnBolt(x, y, detail.power || 1.15);
       spawnSparks(x, y, detail.sparks || 26);
+      ensureLoop();
     }
 
     function handleVisibility() {
@@ -216,7 +243,7 @@ export default function LightningField() {
     }
 
     resize();
-    frame = window.requestAnimationFrame(render);
+    scheduleAmbientStrike();
     window.addEventListener('resize', resize, { passive: true });
     window.addEventListener('pointerdown', handlePointer, { passive: true });
     window.addEventListener('portfolio:strike', handleStrike);
@@ -225,6 +252,7 @@ export default function LightningField() {
 
     return () => {
       window.cancelAnimationFrame(frame);
+      window.clearTimeout(strikeTimer);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointerdown', handlePointer);
       window.removeEventListener('portfolio:strike', handleStrike);

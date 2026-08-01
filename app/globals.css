@@ -27,11 +27,11 @@ html[data-theme='cold'] {
   --surface-solid: #ffffff;
   --surface-raised: #e4f0fa;
   --text: #0f2436;
-  --muted: #557089;
+  --muted: #4a637a;
   --line: rgba(23, 92, 143, 0.16);
   --line-strong: rgba(23, 92, 143, 0.32);
-  --accent: #0b73bd;
-  --accent-2: #21b0c9;
+  --accent: #0a68ab;
+  --accent-2: #0d7183;
   --accent-ink: #ffffff;
   --shadow: 0 25px 75px rgba(20, 90, 140, 0.18);
   color-scheme: light;
@@ -48,8 +48,8 @@ html[data-theme='summer'] {
   --muted: #7d6142;
   --line: rgba(140, 88, 26, 0.18);
   --line-strong: rgba(140, 88, 26, 0.34);
-  --accent: #d9600c;
-  --accent-2: #c99400;
+  --accent: #b04b04;
+  --accent-2: #8a6600;
   --accent-ink: #fffdf8;
   --shadow: 0 25px 72px rgba(150, 88, 20, 0.2);
   color-scheme: light;
@@ -675,7 +675,6 @@ main {
 }
 
 .project-card:hover {
-  transform: translateY(-6px);
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
   box-shadow: var(--shadow);
 }
@@ -856,7 +855,6 @@ main {
 }
 
 .capability-cards article:hover {
-  transform: translateY(-4px);
   border-color: var(--accent);
 }
 

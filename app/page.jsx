@@ -1,16 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CountUp, ScrambleText, TypeCycle } from '../components/Kinetic';
+import { createPortal } from 'react-dom';
+import { CountUp, TypeCycle } from '../components/Kinetic';
 
 const marqueeWords = [
-  'LLM ENGINEERING',
   'API AUTOMATION',
-  'FORWARD DEPLOYMENT',
-  'OBSERVABILITY',
-  'RAG SYSTEMS',
+  'REST-ASSURED',
+  'TESTNG',
+  'ORACLE SQL',
+  'LLM ENGINEERING',
   'CI/CD',
-  'GUARDRAILS',
+  'OBSERVABILITY',
   'SHIP FAST',
 ];
 
@@ -391,7 +392,7 @@ const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mill
 
 function ThemeSwitcher({ theme, onChange }) {
   return (
-    <div className="theme-switcher" aria-label="Choose site theme">
+    <div className="theme-switcher" role="group" aria-label="Choose site theme">
       {themes.map((item) => (
         <button
           key={item.key}
@@ -442,7 +443,9 @@ function ProjectModal({ project, input, setInput, runSteps, runOutput, running, 
   if (!project) return null;
   const category = categories.find((item) => item.key === project.category);
 
-  return (
+  // Portaled to <body>: <main> is an isolated stacking context, so a modal
+  // rendered inside it could never stack above the body-level effect overlays.
+  return createPortal(
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
       <article className="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-title" onMouseDown={(event) => event.stopPropagation()}>
         <button type="button" className="modal-close" onClick={onClose} aria-label="Close project details">×</button>
@@ -503,7 +506,8 @@ function ProjectModal({ project, input, setInput, runSteps, runOutput, running, 
           </section>
         </div>
       </article>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -604,6 +608,7 @@ export default function Page() {
         status: stepIndex < index ? 'passed' : stepIndex === index ? 'running' : 'waiting',
       })));
       await wait(430);
+      if (runIdRef.current !== currentRunId) return;
       setRunSteps((current) => current.map((step, stepIndex) => ({
         ...step,
         status: stepIndex <= index ? 'passed' : 'waiting',
@@ -657,7 +662,7 @@ export default function Page() {
         <div className="container nav-row">
           <a href="#top" className="brand" aria-label="Gaurav Suryavanshi home">
             <span>GS</span>
-            <div><strong>Gaurav Suryavanshi</strong><small>Forward Deployment Engineer</small></div>
+            <div><strong>Gaurav Suryavanshi</strong><small>SDET · API Automation</small></div>
           </a>
           <nav aria-label="Primary navigation">
             <a href="#work">Work</a>
@@ -692,7 +697,7 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="hero-console" aria-label="Current engineering focus" data-tilt data-reveal="right">
+          <div className="hero-console" role="group" aria-label="Current engineering focus" data-tilt data-reveal="right">
             <div className="console-bar"><div><i /><i /><i /></div><span>delivery-console</span></div>
             <div className="hero-console-content">
               <div className="signal-ring"><div><strong>READY</strong><small>production mindset</small></div></div>
@@ -717,7 +722,7 @@ export default function Page() {
 
       <section className="work-section" id="work">
         <div className="container">
-          <div className="pulse-strip" aria-label="Portfolio at a glance">
+          <div className="pulse-strip" role="group" aria-label="Portfolio at a glance">
             {pulseMetrics.map((metric, index) => (
               <article key={metric.label} data-reveal="zoom" data-reveal-delay={String(index + 1)}>
                 <strong><CountUp value={metric.value} suffix={metric.suffix} /></strong>
@@ -882,7 +887,7 @@ export default function Page() {
             <article data-reveal data-reveal-delay="4" data-tilt><span>04</span><h3>Deploy</h3><p>Connect GitHub, Vercel, Supabase, CI/CD, environment configuration, monitoring, and rollback-aware delivery.</p></article>
           </div>
         </div>
-        <div className="container skill-cloud" aria-label="Technical skills" data-reveal>
+        <div className="container skill-cloud" role="group" aria-label="Technical skills" data-reveal>
           {skills.map((skill) => <span key={skill}>{skill}</span>)}
         </div>
       </section>
@@ -893,7 +898,7 @@ export default function Page() {
             <p className="eyebrow">Let’s build something useful</p>
             <h2>Need an engineer who can <span>understand the workflow and ship it?</span></h2>
             <p>I am interested in software engineering, LLM application engineering, automation platforms, and forward-deployment roles.</p>
-            <a href="mailto:gaurav.suryavanshi@bfhl.in" className="email-link">gaurav.suryavanshi@bfhl.in ↗</a>
+            <a href={`mailto:${resume.email}`} className="email-link">{resume.email} ↗</a>
             <div className="connection-status"><i /><span>Supabase-backed contact workflow</span></div>
           </div>
           <form className="contact-form" onSubmit={submitContact} data-reveal="right" data-tilt>
@@ -911,7 +916,7 @@ export default function Page() {
 
       <footer>
         <div className="container footer-row">
-          <div><strong>Gaurav Suryavanshi</strong><span>Development · LLM · Automation · Forward Deployment</span></div>
+          <div><strong>Gaurav Suryavanshi</strong><span>SDET · API Automation · LLM · Delivery</span></div>
           <p>Built with Next.js, deployed on Vercel, and connected to Supabase.</p>
         </div>
       </footer>

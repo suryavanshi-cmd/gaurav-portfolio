@@ -30,6 +30,8 @@ export default function CursorTrail() {
     let ringY = pointerY;
     let velocity = 0;
     let frame = 0;
+    let pointerTarget = null;
+    let lastTested = null;
 
     function handleMove(event) {
       const dx = event.clientX - pointerX;
@@ -37,10 +39,7 @@ export default function CursorTrail() {
       velocity = Math.min(Math.hypot(dx, dy), 90);
       pointerX = event.clientX;
       pointerY = event.clientY;
-
-      const interactive = event.target instanceof Element
-        && event.target.closest('a, button, input, textarea, [role="button"], .project-card');
-      ring.classList.toggle('is-hot', Boolean(interactive));
+      pointerTarget = event.target;
     }
 
     function handleDown() {
@@ -53,6 +52,16 @@ export default function CursorTrail() {
 
     function loop() {
       frame = window.requestAnimationFrame(loop);
+
+      // Hit-test at most once per frame (and only when the target changed)
+      // instead of on every pointermove event.
+      if (pointerTarget !== lastTested) {
+        lastTested = pointerTarget;
+        const interactive = pointerTarget instanceof Element
+          && pointerTarget.closest('a, button, input, textarea, [role="button"], .project-card');
+        ring.classList.toggle('is-hot', Boolean(interactive));
+      }
+
       ringX += (pointerX - ringX) * 0.18;
       ringY += (pointerY - ringY) * 0.18;
       velocity *= 0.9;

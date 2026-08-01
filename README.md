@@ -1,6 +1,6 @@
 # Gaurav Suryavanshi Portfolio
 
-A production-focused Next.js portfolio for a Forward Deployment Engineer, LLM Application Engineer, and automation-focused software engineer.
+A production-focused Next.js portfolio for an SDET and API-automation engineer who also builds LLM applications and developer tooling.
 
 ## What this version includes
 
@@ -8,7 +8,8 @@ A production-focused Next.js portfolio for a Forward Deployment Engineer, LLM Ap
 - Display typography system (Anton, Chakra Petch, Space Grotesk, JetBrains Mono) with an animated gradient headline and glitch echo
 - Kinetic content: text scramble, terminal typewriter, count-up metrics, high-speed marquee, scroll reveals, 3D tilt and spotlight cards, magnetic buttons
 - OVERDRIVE mode — a faster, louder variant of the whole site, toggled from the control in the corner or with the Konami code
-- Premium responsive portfolio UI with Dark, Read, Sky, and Night themes
+- Premium responsive portfolio UI with Dark, Cold, Summer, and Rainy weather themes
+- Full résumé section (experience, projects, skills, education, certifications) with a downloadable PDF
 - Three focused project collections:
   - LLM & AI Systems
   - Automation & Delivery
