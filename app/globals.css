@@ -742,6 +742,10 @@ main {
   background: linear-gradient(135deg, #152238, #355c7c);
 }
 
+.category-personal .project-visual {
+  background: linear-gradient(135deg, #2b1c38, #6b3f5c);
+}
+
 .project-visual::before {
   content: '';
   position: absolute;

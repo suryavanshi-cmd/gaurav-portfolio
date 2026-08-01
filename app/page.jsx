@@ -26,7 +26,7 @@ const terminalLines = [
 const pulseMetrics = [
   { value: 190, suffix: '+', label: 'Automated regression cases' },
   { value: 2, suffix: '+ yrs', label: 'Owning API automation' },
-  { value: 10, suffix: '', label: 'Case studies on this site' },
+  { value: 13, suffix: '', label: 'Case studies on this site' },
   { value: 3, suffix: '', label: 'Engineering roles shipped' },
 ];
 
@@ -61,6 +61,14 @@ const categories = [
     description:
       'Apache HTTPS operations, reverse-proxy workflows, request-log analysis, Supabase persistence, and SQLite-friendly demos.',
     architecture: ['Apache', 'Next.js', 'API route', 'Supabase', 'Insight'],
+  },
+  {
+    key: 'personal',
+    eyebrow: 'Personal & academic projects',
+    title: 'Independent tools built outside of day-to-day work.',
+    description:
+      'Real projects from the résumé — HAR-driven API tooling, a config-driven sequencing engine, and a computer-vision pipeline for wildlife conservation.',
+    architecture: ['Capture', 'Parse', 'Build', 'Execute', 'Report'],
   },
 ];
 
@@ -275,6 +283,69 @@ const projects = [
     features: ['Fast filters', 'Recurring-error grouping', 'Correlation tracing', 'Shareable investigation summary'],
     challenges: ['Protecting sensitive log fields', 'Handling inconsistent formats', 'Keeping large datasets responsive'],
     future: ['Streaming ingestion', 'Anomaly detection', 'Saved investigations'],
+  },
+  {
+    id: 'generic-dynamic-journey-builder',
+    category: 'personal',
+    icon: '⬡',
+    title: 'Generic Dynamic Journey Builder',
+    type: 'Developer tooling',
+    level: 'Personal project',
+    description:
+      'A HAR-file-driven framework that parses Chrome DevTools network exports and replays REST workflows, extracting dynamic variables and chaining dependencies between requests automatically.',
+    impact: 'Turns a captured browser session into a repeatable, assertion-backed API test suite without hand-writing request chains.',
+    tech: ['Java', 'Node.js', 'HAR parsing', 'Dependency chaining', 'Rest Assured'],
+    steps: ['Import HAR export', 'Parse request/response pairs', 'Detect variable dependencies', 'Generate chained requests', 'Run assertions'],
+    sample: {
+      source: 'checkout-flow.har',
+      discovery: 'response.orderId → next request body.orderId',
+      overrideMode: 'auto-detected with manual override',
+    },
+    features: ['HAR import and parsing', 'Automatic dependency chaining', 'Assertion generation', 'Reusable request templates'],
+    challenges: ['Distinguishing real dependencies from coincidental matching values', 'Handling large capture files', 'Keeping generated chains readable'],
+    future: ['Visual dependency graph', 'CI integration', 'Support for GraphQL captures'],
+  },
+  {
+    id: 'json-api-sequencing-engine',
+    category: 'personal',
+    icon: '⟁',
+    title: 'JSON-Driven API Sequencing Engine',
+    type: 'Automation tooling',
+    level: 'Personal project',
+    description:
+      'A config-driven engine that orchestrates chained API calls from a JSON definition, with retry and polling support, SSE streaming, and a visual builder UI for composing test sequences.',
+    impact: 'Lets a test sequence be defined and edited as data instead of code, so a new API flow can be composed without touching the framework.',
+    tech: ['Node.js', 'Express', 'SSE', 'JSON Schema', 'React'],
+    steps: ['Define sequence as JSON', 'Resolve step order', 'Execute chained calls', 'Poll or retry on demand', 'Stream progress via SSE'],
+    sample: {
+      sequence: 'login → create-order → poll-status → fetch-receipt',
+      retry: { maxAttempts: 5, backoffMs: 500 },
+      streaming: true,
+    },
+    features: ['JSON-defined sequences', 'Retry and polling steps', 'Live progress via SSE', 'Visual sequence builder UI'],
+    challenges: ['Modeling conditional branches in a declarative format', 'Keeping SSE connections stable across retries', 'Validating user-authored JSON safely'],
+    future: ['Branching and conditional steps', 'Saved sequence library', 'Team sharing'],
+  },
+  {
+    id: 'wildlife-conservation-analysis',
+    category: 'personal',
+    icon: '❖',
+    title: 'Wildlife Conservation Analysis',
+    type: 'Computer vision — Honors',
+    level: 'Academic project',
+    description:
+      'A computer-vision pipeline that counts wildlife populations from images and video, and classifies detected species against IUCN Red List criteria.',
+    impact: 'Automates a manual counting and classification task for conservation research. Copyright-registered.',
+    tech: ['Python', 'YOLOv5', 'Inception V3', 'OpenCV', 'IUCN Red List data'],
+    steps: ['Ingest image or video', 'Detect animals with YOLOv5', 'Classify species with Inception V3', 'Cross-reference IUCN status', 'Report population counts'],
+    sample: {
+      source: 'reserve-camera-trap-04.mp4',
+      detections: 128,
+      species: ['Bengal tiger', 'Chital', 'Indian peafowl'],
+    },
+    features: ['Object detection with YOLOv5', 'Species classification with Inception V3', 'IUCN Red List cross-referencing', 'Population count reporting'],
+    challenges: ['Distinguishing similar species at low resolution', 'Occlusion in dense habitats', 'Balancing precision and recall for rare species'],
+    future: ['Real-time camera-trap inference', 'Larger labeled dataset', 'Migration pattern tracking'],
   },
 ];
 
