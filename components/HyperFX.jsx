@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import CursorTrail from './CursorTrail';
-import LightningField from './LightningField';
 import VelocityRail from './VelocityRail';
 
 /*
@@ -186,7 +185,6 @@ export default function HyperFX() {
   return (
     <>
       <VelocityRail />
-      <LightningField />
       <CursorTrail />
       <div className="scanline-veil" aria-hidden="true" />
       <div className="warp-lines" aria-hidden="true">

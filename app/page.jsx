@@ -521,14 +521,26 @@ export default function Page() {
   const [running, setRunning] = useState(false);
   const [contactState, setContactState] = useState({ status: 'idle', message: '' });
   const [overdrive, setOverdrive] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const runIdRef = useRef(0);
 
-  const strike = useCallback((event, power = 1.2) => {
-    const detail = event
-      ? { x: event.clientX, y: event.clientY, power, sparks: 30 }
-      : { x: window.innerWidth / 2, y: window.innerHeight / 3, power, sparks: 40 };
-    window.dispatchEvent(new CustomEvent('portfolio:strike', { detail }));
-  }, []);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const handleKey = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    const handleResize = () => {
+      if (window.innerWidth > 1040) setMenuOpen(false);
+    };
+    document.addEventListener('keydown', handleKey);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('portfolio-theme');
@@ -538,7 +550,6 @@ export default function Page() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem('portfolio-theme', theme);
-    window.dispatchEvent(new CustomEvent('portfolio:theme', { detail: { theme } }));
   }, [theme]);
 
   useEffect(() => {
@@ -549,9 +560,8 @@ export default function Page() {
 
   useEffect(() => {
     document.body.classList.toggle('overdrive', overdrive);
-    if (overdrive) strike(null, 1.6);
     return () => document.body.classList.remove('overdrive');
-  }, [overdrive, strike]);
+  }, [overdrive]);
 
   useEffect(() => {
     const handleKey = (event) => {
@@ -664,13 +674,25 @@ export default function Page() {
             <span>GS</span>
             <div><strong>Gaurav Suryavanshi</strong><small>SDET · API Automation</small></div>
           </a>
-          <nav aria-label="Primary navigation">
-            <a href="#work">Work</a>
-            <a href="#resume">Résumé</a>
-            <a href="#capabilities">Capabilities</a>
-            <a href="#contact">Contact</a>
+          <nav aria-label="Primary navigation" id="primary-nav" className={menuOpen ? 'is-open' : ''}>
+            <a href="#work" onClick={closeMenu}>Work</a>
+            <a href="#resume" onClick={closeMenu}>Résumé</a>
+            <a href="#capabilities" onClick={closeMenu}>Capabilities</a>
+            <a href="#contact" onClick={closeMenu}>Contact</a>
           </nav>
-          <ThemeSwitcher theme={theme} onChange={setTheme} />
+          <div className="nav-controls">
+            <ThemeSwitcher theme={theme} onChange={setTheme} />
+            <button
+              type="button"
+              className="nav-toggle"
+              aria-expanded={menuOpen}
+              aria-controls="primary-nav"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMenuOpen((value) => !value)}
+            >
+              <span /><span /><span />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -692,8 +714,8 @@ export default function Page() {
               <TypeCycle className="type-line" phrases={terminalLines} />
             </div>
             <div className="hero-actions">
-              <a className="primary-button" href="#resume" data-magnetic onClick={strike}>Read the résumé</a>
-              <a className="secondary-button" href="#work" data-magnetic onClick={strike}>Explore the work</a>
+              <a className="primary-button" href="#resume" data-magnetic>Read the résumé</a>
+              <a className="secondary-button" href="#work" data-magnetic>Explore the work</a>
             </div>
           </div>
 
@@ -794,7 +816,6 @@ export default function Page() {
                 href="/Gaurav-Suryavanshi-Resume.pdf"
                 download
                 data-magnetic
-                onClick={strike}
               >
                 Download PDF <span aria-hidden="true">↓</span>
               </a>
@@ -925,10 +946,7 @@ export default function Page() {
         type="button"
         className="overdrive-switch"
         aria-pressed={overdrive}
-        onClick={(event) => {
-          setOverdrive((current) => !current);
-          strike(event, 1.7);
-        }}
+        onClick={() => setOverdrive((current) => !current)}
         title="Konami code works too: ↑ ↑ ↓ ↓ ← → ← → B A"
       >
         <i />

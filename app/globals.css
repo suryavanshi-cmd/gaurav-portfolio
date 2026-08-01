@@ -269,6 +269,48 @@ main {
   right: 0;
 }
 
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 17px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text);
+  transition: transform 200ms ease, opacity 150ms ease;
+}
+
+.nav-toggle[aria-expanded='true'] span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded='true'] span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded='true'] span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 .theme-switcher {
   display: flex;
   gap: 3px;
@@ -1395,8 +1437,12 @@ footer {
     display: none;
   }
 
-  .theme-switcher {
+  .nav-controls {
     justify-self: end;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
   }
 
   .hero-grid,

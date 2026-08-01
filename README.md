@@ -4,7 +4,7 @@ A production-focused Next.js portfolio for an SDET and API-automation engineer w
 
 ## What this version includes
 
-- High-energy motion layer: canvas lightning strikes, click sparks, a plasma cursor, scroll-velocity warp lines, and a scroll charge rail
+- Lightweight motion layer: a plasma cursor, scroll-velocity warp lines, and a scroll charge rail
 - Display typography system (Anton, Chakra Petch, Space Grotesk, JetBrains Mono) with an animated gradient headline and glitch echo
 - Kinetic content: text scramble, terminal typewriter, count-up metrics, high-speed marquee, scroll reveals, 3D tilt and spotlight cards, magnetic buttons
 - OVERDRIVE mode — a faster, louder variant of the whole site, toggled from the control in the corner or with the Konami code
