@@ -149,6 +149,7 @@ h1, h2, h3, h4,
 .card-action,
 .primary-button,
 .secondary-button,
+.ghost-button,
 .modal-kicker {
   font-family: var(--font-mono);
   letter-spacing: 0.06em;

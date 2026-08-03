@@ -831,6 +831,11 @@ export default function Page() {
             <p className="hero-description" data-reveal data-reveal-delay="1">
               SDET with 2+ years owning API automation for large-scale health-insurance claims systems — Java 17, TestNG, Rest-Assured, Oracle SQL, and CI that catches regressions before release.
             </p>
+            <ul className="hero-highlights" data-reveal data-reveal-delay="2">
+              <li>Own and extend a production API automation framework used to ship every release</li>
+              <li>Designed and automated a 190+ case partner-integration regression suite</li>
+              <li>Work directly with engineering to reproduce, triage, and close backend defects</li>
+            </ul>
             <div className="hero-terminal" role="status" aria-live="off">
               <b>▹ now</b>
               <TypeCycle className="type-line" phrases={terminalLines} />
@@ -838,6 +843,7 @@ export default function Page() {
             <div className="hero-actions">
               <a className="primary-button" href="#resume">Read the résumé</a>
               <a className="secondary-button" href="#work">Explore the work</a>
+              <a className="ghost-button" href="#contact">Get in touch ↓</a>
             </div>
           </div>
 
@@ -846,10 +852,10 @@ export default function Page() {
             <div className="hero-console-content">
               <div className="signal-ring"><div><strong>READY</strong><small>production mindset</small></div></div>
               <div className="signal-list">
-                <div><span>LLM workflow engineering</span><b>ACTIVE</b></div>
-                <div><span>Complex API automation</span><b>ACTIVE</b></div>
-                <div><span>Forward deployment</span><b>ACTIVE</b></div>
-                <div><span>Release observability</span><b>ACTIVE</b></div>
+                <div><span>API test automation</span><b>ACTIVE</b></div>
+                <div><span>Regression suite ownership</span><b>ACTIVE</b></div>
+                <div><span>Defect triage &amp; fixes</span><b>ACTIVE</b></div>
+                <div><span>CI/CD &amp; release readiness</span><b>ACTIVE</b></div>
               </div>
             </div>
           </div>
@@ -1031,9 +1037,9 @@ export default function Page() {
           <div data-reveal="left">
             <p className="eyebrow">Let’s build something useful</p>
             <h2>Need an engineer who can <span>understand the workflow and ship it?</span></h2>
-            <p>I am interested in software engineering, LLM application engineering, automation platforms, and forward-deployment roles.</p>
+            <p>I’m open to SDET, API test automation, and LLM application engineering roles — send the role details or a problem you’re stuck on, and I’ll reply within a day or two.</p>
             <a href={`mailto:${resume.email}`} className="email-link">{resume.email} ↗</a>
-            <div className="connection-status"><i /><span>Supabase-backed contact workflow</span></div>
+            <div className="connection-status"><i /><span>Reviewed personally — no recruiter middleman, no auto-responder</span></div>
           </div>
           <form className="contact-form" onSubmit={submitContact} data-reveal="right" data-tilt>
             <label>Name<input name="name" type="text" minLength="2" maxLength="120" autoComplete="name" required placeholder="Your name" /></label>
