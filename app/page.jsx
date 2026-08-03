@@ -4,17 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CountUp, TypeCycle } from '../components/Kinetic';
 
-const marqueeWords = [
-  'API AUTOMATION',
-  'REST-ASSURED',
-  'TESTNG',
-  'ORACLE SQL',
-  'LLM ENGINEERING',
-  'CI/CD',
-  'OBSERVABILITY',
-  'SHIP FAST',
-];
-
 const terminalLines = [
   'running 190+ partner-integration cases in parallel…',
   'replaying HAR captures into repeatable API journeys…',
@@ -836,7 +825,7 @@ export default function Page() {
             <h1>
               <span className="kinetic-line"><span>I turn complex workflows</span></span>
               <span className="kinetic-line open">
-                <span className="charged glitch" data-text="into reliable products.">into reliable products.</span>
+                <span className="charged">into reliable products.</span>
               </span>
             </h1>
             <p className="hero-description" data-reveal data-reveal-delay="1">
@@ -847,8 +836,8 @@ export default function Page() {
               <TypeCycle className="type-line" phrases={terminalLines} />
             </div>
             <div className="hero-actions">
-              <a className="primary-button" href="#resume" data-magnetic>Read the résumé</a>
-              <a className="secondary-button" href="#work" data-magnetic>Explore the work</a>
+              <a className="primary-button" href="#resume">Read the résumé</a>
+              <a className="secondary-button" href="#work">Explore the work</a>
             </div>
           </div>
 
@@ -866,14 +855,6 @@ export default function Page() {
           </div>
         </div>
       </section>
-
-      <div className="hyper-marquee" aria-hidden="true">
-        <div>
-          {[...marqueeWords, ...marqueeWords].map((word, index) => (
-            <span key={`${word}-${index}`}>{word}</span>
-          ))}
-        </div>
-      </div>
 
       <section className="work-section" id="work">
         <div className="container">
@@ -948,7 +929,6 @@ export default function Page() {
                 className="primary-button"
                 href="/Gaurav-Suryavanshi-Resume.pdf"
                 download
-                data-magnetic
               >
                 Download PDF <span aria-hidden="true">↓</span>
               </a>

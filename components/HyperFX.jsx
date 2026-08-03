@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import CursorTrail from './CursorTrail';
 import VelocityRail from './VelocityRail';
 
 /*
@@ -9,10 +8,10 @@ import VelocityRail from './VelocityRail';
   - Reveals [data-reveal] elements as they enter the viewport; a MutationObserver
     keeps newly mounted nodes (e.g. project cards re-created by filtering)
     registered, so nothing stays stuck at opacity 0.
-  - Pointer-tracked spotlight + tilt on [data-tilt] and magnetic pull on
-    [data-magnetic], coalesced into one rAF per frame. Transforms are written as
-    INLINE styles so they cannot lose specificity fights with reveal offsets or
-    legacy :hover transforms in the older stylesheets.
+  - Pointer-tracked spotlight + tilt on [data-tilt], one rAF per frame. The
+    rotation is written as an INLINE style so it cannot lose a specificity
+    fight with reveal offsets or legacy :hover transforms in the older
+    stylesheets.
   - Konami code enables OVERDRIVE.
   Everything degrades to static layout when the user prefers reduced motion.
 */
@@ -75,14 +74,13 @@ export default function HyperFX() {
       mo.observe(document.body, { childList: true, subtree: true });
     }
 
-    /* ----- Pointer pipeline: tilt + magnet, one rAF per frame ----------- */
+    /* ----- Pointer pipeline: tilt only, one rAF per frame ---------------- */
 
     let pointerX = 0;
     let pointerY = 0;
     let pointerTarget = null;
     let frameQueued = false;
     let activeTilt = null;
-    let activeMagnet = null;
 
     function resetTilt(surface) {
       if (!surface) return;
@@ -90,18 +88,12 @@ export default function HyperFX() {
       surface.classList.remove('is-live');
     }
 
-    function resetMagnet(node) {
-      if (!node) return;
-      node.style.transform = '';
-      node.classList.remove('is-pulled');
-    }
-
     function processFrame() {
       frameQueued = false;
       if (reduceMotion.matches || coarsePointer.matches) return;
       const target = pointerTarget instanceof Element ? pointerTarget : null;
 
-      // Tilt: hit-test once per frame; internal child boundaries resolve to the
+      // Hit-test once per frame; internal child boundaries resolve to the
       // same surface, so no flicker, and leaving the surface resets it.
       const tilt = target ? target.closest('[data-tilt]') : null;
       if (tilt !== activeTilt) {
@@ -115,21 +107,8 @@ export default function HyperFX() {
         tilt.style.setProperty('--mx', `${px * 100}%`);
         tilt.style.setProperty('--my', `${py * 100}%`);
         tilt.style.transform =
-          `perspective(900px) rotateX(${((0.5 - py) * 9).toFixed(2)}deg) rotateY(${((px - 0.5) * 11).toFixed(2)}deg)`;
+          `perspective(1100px) rotateX(${((0.5 - py) * 4.5).toFixed(2)}deg) rotateY(${((px - 0.5) * 5.5).toFixed(2)}deg)`;
         tilt.classList.add('is-live');
-      }
-
-      const magnet = target ? target.closest('[data-magnetic]') : null;
-      if (magnet !== activeMagnet) {
-        resetMagnet(activeMagnet);
-        activeMagnet = magnet;
-      }
-      if (magnet) {
-        const rect = magnet.getBoundingClientRect();
-        const dx = clamp((pointerX - (rect.left + rect.width / 2)) * 0.28, -16, 16);
-        const dy = clamp((pointerY - (rect.top + rect.height / 2)) * 0.34, -12, 12);
-        magnet.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
-        magnet.classList.add('is-pulled');
       }
     }
 
@@ -145,9 +124,7 @@ export default function HyperFX() {
 
     function handleWindowExit() {
       resetTilt(activeTilt);
-      resetMagnet(activeMagnet);
       activeTilt = null;
-      activeMagnet = null;
     }
 
     /* ----- Konami ------------------------------------------------------- */
@@ -182,14 +159,5 @@ export default function HyperFX() {
     };
   }, []);
 
-  return (
-    <>
-      <VelocityRail />
-      <CursorTrail />
-      <div className="scanline-veil" aria-hidden="true" />
-      <div className="warp-lines" aria-hidden="true">
-        <i /><i /><i /><i /><i /><i /><i /><i />
-      </div>
-    </>
-  );
+  return <VelocityRail />;
 }

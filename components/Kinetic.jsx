@@ -2,60 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const GLYPHS = '█▓▒░<>/\\{}[]#$%&@*+=~^ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
 function prefersReducedMotion() {
   if (typeof window === 'undefined') return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-/* Decodes text from random glyphs into the final string. Replays on demand. */
-export function ScrambleText({ text, className, speed = 18, as: Tag = 'span', replayOnHover = true }) {
-  const [output, setOutput] = useState(text);
-  const frameRef = useRef(0);
-  const timerRef = useRef(0);
-
-  function run() {
-    if (prefersReducedMotion()) {
-      setOutput(text);
-      return;
-    }
-    window.clearInterval(timerRef.current);
-    frameRef.current = 0;
-    timerRef.current = window.setInterval(() => {
-      frameRef.current += 1;
-      const revealed = Math.ceil(frameRef.current * Math.max(text.length / 40, 1));
-      const next = text
-        .split('')
-        .map((character, index) => {
-          if (character === ' ') return ' ';
-          if (index < revealed) return character;
-          return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-        })
-        .join('');
-      setOutput(next);
-      if (revealed >= text.length) {
-        window.clearInterval(timerRef.current);
-        setOutput(text);
-      }
-    }, speed);
-  }
-
-  useEffect(() => {
-    run();
-    return () => window.clearInterval(timerRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text]);
-
-  return (
-    <Tag
-      className={className}
-      onMouseEnter={replayOnHover ? run : undefined}
-      data-text={text}
-    >
-      {output}
-    </Tag>
-  );
 }
 
 /* Terminal-style typewriter that cycles through a list of phrases. */

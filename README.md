@@ -4,16 +4,17 @@ A production-focused Next.js portfolio for an SDET and API-automation engineer w
 
 ## What this version includes
 
-- Lightweight motion layer: a plasma cursor, scroll-velocity warp lines, and a scroll charge rail
-- Display typography system (Anton, Chakra Petch, Space Grotesk, JetBrains Mono) with an animated gradient headline and glitch echo
-- Kinetic content: text scramble, terminal typewriter, count-up metrics, high-speed marquee, scroll reveals, 3D tilt and spotlight cards, magnetic buttons
-- OVERDRIVE mode — a faster, louder variant of the whole site, toggled from the control in the corner or with the Konami code
+- Calm, focused motion: a scroll-progress rail, subtle scroll reveals, and a light 3D tilt on cards — nothing that competes with the content
+- Display typography system (Anton, Chakra Petch, Space Grotesk, JetBrains Mono) with an animated gradient headline
+- Terminal-style typewriter status line and count-up metrics
+- OVERDRIVE mode — an opt-in, faster variant of the site, toggled from the control in the corner or with the Konami code; off by default
 - Premium responsive portfolio UI with Dark, Cold, Summer, and Rainy weather themes
 - Full résumé section (experience, projects, skills, education, certifications) with a downloadable PDF
-- Three focused project collections:
+- Four focused project collections:
   - LLM & AI Systems
   - Automation & Delivery
   - Web Server & Data
+  - Personal & Academic Projects
 - Recruiter-friendly case studies with architecture, impact, challenges, and future scope
 - Interactive project modal with editable JSON workflow simulation
 - Supabase-backed contact form through a validated Next.js API route

@@ -3,12 +3,10 @@
 import { useEffect, useRef } from 'react';
 
 /*
-  Scroll velocity rail.
-  - Top progress bar charged by scroll depth.
-  - Page-wide "warp" class while scrolling fast, which drives the speed-line overlay in CSS.
-  The scrollable height is cached and refreshed by a ResizeObserver on <body>
-  instead of reading scrollHeight inside the scroll handler — that read forces
-  layout, and with content-visibility sections it is not cheap.
+  Top scroll-progress rail. The scrollable height is cached and refreshed by
+  a ResizeObserver on <body> instead of reading scrollHeight inside the
+  scroll handler — that read forces layout, and with content-visibility
+  sections it is not cheap.
 */
 
 export default function VelocityRail() {
@@ -18,8 +16,6 @@ export default function VelocityRail() {
     const bar = barRef.current;
     if (!bar) return undefined;
 
-    let lastY = window.scrollY;
-    let warpTimer = 0;
     let ticking = false;
     let scrollable = 1;
 
@@ -31,19 +27,6 @@ export default function VelocityRail() {
       ticking = false;
       const scrollTop = window.scrollY;
       bar.style.transform = `scaleX(${Math.min(scrollTop / scrollable, 1)})`;
-
-      const speed = Math.abs(scrollTop - lastY);
-      lastY = scrollTop;
-
-      if (speed > 34) {
-        document.body.classList.add('is-warping');
-        document.documentElement.style.setProperty('--warp', String(Math.min(speed / 120, 1)));
-        window.clearTimeout(warpTimer);
-        warpTimer = window.setTimeout(() => {
-          document.body.classList.remove('is-warping');
-          document.documentElement.style.setProperty('--warp', '0');
-        }, 180);
-      }
     }
 
     function onScroll() {
@@ -70,11 +53,9 @@ export default function VelocityRail() {
     window.addEventListener('resize', onResize, { passive: true });
 
     return () => {
-      window.clearTimeout(warpTimer);
       resizeObserver.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
-      document.body.classList.remove('is-warping');
     };
   }, []);
 
