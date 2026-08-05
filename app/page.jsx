@@ -20,10 +20,8 @@ const pulseMetrics = [
 ];
 
 const themes = [
+  { key: 'light', label: 'Light' },
   { key: 'dark', label: 'Dark' },
-  { key: 'cold', label: 'Cold' },
-  { key: 'summer', label: 'Summer' },
-  { key: 'rainy', label: 'Rainy' },
 ];
 
 const categories = [
@@ -634,7 +632,7 @@ function ProjectModal({ project, input, setInput, runSteps, runOutput, running, 
 }
 
 export default function Page() {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
   const [workflowInput, setWorkflowInput] = useState('');
@@ -642,7 +640,6 @@ export default function Page() {
   const [runOutput, setRunOutput] = useState('Ready. Edit the input and run the workflow.');
   const [running, setRunning] = useState(false);
   const [contactState, setContactState] = useState({ status: 'idle', message: '' });
-  const [overdrive, setOverdrive] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const runIdRef = useRef(0);
 
@@ -666,24 +663,13 @@ export default function Page() {
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('portfolio-theme');
-    setTheme(themes.some((item) => item.key === savedTheme) ? savedTheme : 'dark');
+    setTheme(themes.some((item) => item.key === savedTheme) ? savedTheme : 'light');
   }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem('portfolio-theme', theme);
   }, [theme]);
-
-  useEffect(() => {
-    const enable = () => setOverdrive(true);
-    window.addEventListener('portfolio:overdrive', enable);
-    return () => window.removeEventListener('portfolio:overdrive', enable);
-  }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle('overdrive', overdrive);
-    return () => document.body.classList.remove('overdrive');
-  }, [overdrive]);
 
   useEffect(() => {
     const handleKey = (event) => {
@@ -788,7 +774,7 @@ export default function Page() {
 
   return (
     <main>
-      <div className="ambient-background" aria-hidden="true"><div /><div /><div /></div>
+      <div className="ambient-background" aria-hidden="true" />
 
       <header className="site-header">
         <div className="container nav-row">
@@ -1060,17 +1046,6 @@ export default function Page() {
           <p>Built with Next.js, deployed on Vercel, and connected to Supabase.</p>
         </div>
       </footer>
-
-      <button
-        type="button"
-        className="overdrive-switch"
-        aria-pressed={overdrive}
-        onClick={() => setOverdrive((current) => !current)}
-        title="Konami code works too: ↑ ↑ ↓ ↓ ← → ← → B A"
-      >
-        <i />
-        {overdrive ? 'Overdrive on' : 'Overdrive'}
-      </button>
 
       <ProjectModal
         project={selectedProject}

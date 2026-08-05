@@ -1,98 +1,65 @@
+/* Monochrome design system — black, white, and grays only, no color accent.
+   Buttons and highlights use "accent" as an inversion of the background
+   (black-on-white in light mode, white-on-black in dark), the same
+   inverted-pill pattern the reference site uses throughout. */
 :root {
-  --bg: #070a0f;
-  --bg-soft: #0c1119;
-  --surface: rgba(15, 21, 31, 0.82);
-  --surface-solid: #101722;
-  --surface-raised: #151f2d;
-  --text: #f5f7fb;
-  --muted: #9aa8bb;
-  --line: rgba(167, 188, 214, 0.16);
-  --line-strong: rgba(167, 188, 214, 0.3);
-  --accent: #b9f65c;
-  --accent-2: #69e7d1;
-  --accent-ink: #07100d;
-  --danger: #ff8585;
-  --shadow: 0 28px 90px rgba(0, 0, 0, 0.44);
-  --radius-lg: 28px;
-  --radius-md: 18px;
-  --radius-sm: 12px;
+  --bg: #ffffff;
+  --bg-soft: #f7f7f7;
+  --surface: #ffffff;
+  --surface-solid: #ffffff;
+  --surface-raised: #f0f0f0;
+  --text: #111111;
+  --muted: #666666;
+  --line: #e3e3e3;
+  --line-strong: #cccccc;
+  --accent: #111111;
+  --accent-2: #111111;
+  --accent-ink: #ffffff;
+  --danger: #c0392b;
+  --shadow: 0 20px 48px rgba(0, 0, 0, 0.07);
+  --radius-lg: 64px;
+  --radius-md: 32px;
+  --radius-sm: 16px;
   /* One shared easing curve for every transition and enter animation on the
      site, so motion reads as one system instead of a mix of ad-hoc curves. */
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
   --theme-transition:
-    background-color 320ms var(--ease-smooth),
-    border-color 320ms var(--ease-smooth),
-    color 320ms var(--ease-smooth),
-    box-shadow 320ms var(--ease-smooth),
-    fill 320ms var(--ease-smooth),
-    stroke 320ms var(--ease-smooth);
-  color-scheme: dark;
+    background-color 260ms var(--ease-smooth),
+    border-color 260ms var(--ease-smooth),
+    color 260ms var(--ease-smooth),
+    box-shadow 260ms var(--ease-smooth),
+    fill 260ms var(--ease-smooth),
+    stroke 260ms var(--ease-smooth);
+  color-scheme: light;
 }
 
 /* Theme-switch smoothing: every element transitions its theme-driven colors
    unless it already declares its own `transition` (which simply overrides
    this — no conflict, since a more specific rule replaces the whole
    shorthand list rather than merging with it). Deliberately excludes
-   `transform`, which several components drive every frame from JS
-   (HyperFX tilt/magnet, the plasma cursor) — transitioning it here would
-   fight those and make pointer tracking feel laggy. */
+   `transform`, which HyperFX's tilt effect drives every frame from JS —
+   transitioning it here would fight that and make pointer tracking laggy. */
 *,
 *::before,
 *::after {
   transition: var(--theme-transition);
 }
 
-/* Cold — bright arctic light, frost blues over near-white glass. */
-html[data-theme='cold'] {
-  --bg: #eef5fb;
-  --bg-soft: #dfecf7;
-  --surface: rgba(255, 255, 255, 0.88);
-  --surface-solid: #ffffff;
-  --surface-raised: #e4f0fa;
-  --text: #0f2436;
-  --muted: #4a637a;
-  --line: rgba(23, 92, 143, 0.16);
-  --line-strong: rgba(23, 92, 143, 0.32);
-  --accent: #0a68ab;
-  --accent-2: #0d7183;
-  --accent-ink: #ffffff;
-  --shadow: 0 25px 75px rgba(20, 90, 140, 0.18);
-  color-scheme: light;
-}
-
-/* Summer — warm sunlit sand, amber and citrus accents. */
-html[data-theme='summer'] {
-  --bg: #fff5e6;
-  --bg-soft: #ffe9cd;
-  --surface: rgba(255, 252, 246, 0.9);
-  --surface-solid: #fffdf8;
-  --surface-raised: #ffeed7;
-  --text: #35210c;
-  --muted: #7d6142;
-  --line: rgba(140, 88, 26, 0.18);
-  --line-strong: rgba(140, 88, 26, 0.34);
-  --accent: #b04b04;
-  --accent-2: #8a6600;
-  --accent-ink: #fffdf8;
-  --shadow: 0 25px 72px rgba(150, 88, 20, 0.2);
-  color-scheme: light;
-}
-
-/* Rainy — wet slate dusk, cool teal and petrichor blue. */
-html[data-theme='rainy'] {
-  --bg: #080f18;
-  --bg-soft: #0d1723;
-  --surface: rgba(15, 26, 39, 0.86);
-  --surface-solid: #0e1b28;
-  --surface-raised: #142534;
-  --text: #eaf3fb;
-  --muted: #93a9bd;
-  --line: rgba(140, 180, 214, 0.17);
-  --line-strong: rgba(140, 180, 214, 0.32);
-  --accent: #6fc3e8;
-  --accent-2: #8fe3d0;
-  --accent-ink: #061019;
-  --shadow: 0 28px 95px rgba(0, 10, 20, 0.66);
+html[data-theme='dark'] {
+  --bg: #000000;
+  --bg-soft: #0a0a0a;
+  --surface: #000000;
+  --surface-solid: #000000;
+  --surface-raised: #111111;
+  --text: #ffffff;
+  --muted: #969696;
+  --line: rgba(255, 255, 255, 0.14);
+  --line-strong: rgba(255, 255, 255, 0.26);
+  --accent: #ffffff;
+  --accent-2: #ffffff;
+  --accent-ink: #000000;
+  --danger: #ff6b5b;
+  --shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
   color-scheme: dark;
 }
 
@@ -163,42 +130,7 @@ main {
   z-index: -2;
   overflow: hidden;
   pointer-events: none;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-  background-size: 52px 52px;
-  mask-image: linear-gradient(to bottom, black, transparent 90%);
-}
-
-.ambient-background div {
-  position: absolute;
-  border-radius: 999px;
-  filter: blur(10px);
-  opacity: 0.26;
-}
-
-.ambient-background div:nth-child(1) {
-  width: 520px;
-  height: 520px;
-  left: -180px;
-  top: -170px;
-  background: radial-gradient(circle, var(--accent), transparent 68%);
-}
-
-.ambient-background div:nth-child(2) {
-  width: 620px;
-  height: 620px;
-  right: -280px;
-  top: 18%;
-  background: radial-gradient(circle, var(--accent-2), transparent 70%);
-}
-
-.ambient-background div:nth-child(3) {
-  width: 460px;
-  height: 460px;
-  left: 35%;
-  bottom: -320px;
-  background: radial-gradient(circle, var(--accent), transparent 70%);
+  background: var(--bg);
 }
 
 .site-header {
@@ -778,7 +710,7 @@ main {
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
   transition: transform 180ms var(--ease-smooth), border-color 180ms var(--ease-smooth), box-shadow 180ms var(--ease-smooth);
@@ -795,23 +727,7 @@ main {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #151f34, #284663);
-}
-
-.category-llm .project-visual {
-  background: linear-gradient(135deg, #181c39, #513677);
-}
-
-.category-automation .project-visual {
-  background: linear-gradient(135deg, #0f2b32, #21604f);
-}
-
-.category-platform .project-visual {
-  background: linear-gradient(135deg, #152238, #355c7c);
-}
-
-.category-personal .project-visual {
-  background: linear-gradient(135deg, #2b1c38, #6b3f5c);
+  background: #141414;
 }
 
 .project-visual::before {
@@ -822,7 +738,7 @@ main {
   right: -58px;
   top: -78px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .project-visual::after {
@@ -833,7 +749,7 @@ main {
   left: -40px;
   bottom: -62px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--accent-2) 25%, transparent);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .project-visual > span {
@@ -963,7 +879,7 @@ main {
   min-height: 210px;
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: 19px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   transition: transform 170ms var(--ease-smooth), border-color 170ms var(--ease-smooth);
 }
@@ -1650,23 +1566,6 @@ footer {
 }
 
 @media (max-width: 480px) {
-  .theme-switcher button {
-    width: 25px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-indent: -999px;
-  }
-
-  .theme-switcher button::after {
-    content: '';
-    display: block;
-    width: 7px;
-    height: 7px;
-    margin: auto;
-    border-radius: 50%;
-    background: currentColor;
-  }
-
   .availability {
     align-items: flex-start;
     border-radius: 13px;

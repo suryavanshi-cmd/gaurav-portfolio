@@ -12,15 +12,8 @@ import VelocityRail from './VelocityRail';
     rotation is written as an INLINE style so it cannot lose a specificity
     fight with reveal offsets or legacy :hover transforms in the older
     stylesheets.
-  - Konami code enables OVERDRIVE.
   Everything degrades to static layout when the user prefers reduced motion.
 */
-
-const KONAMI = [
-  'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
-  'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
-  'b', 'a',
-];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
 
@@ -127,26 +120,9 @@ export default function HyperFX() {
       activeTilt = null;
     }
 
-    /* ----- Konami ------------------------------------------------------- */
-
-    let konamiIndex = 0;
-    function handleKey(event) {
-      const expected = KONAMI[konamiIndex];
-      if (event.key.toLowerCase() === expected.toLowerCase()) {
-        konamiIndex += 1;
-        if (konamiIndex === KONAMI.length) {
-          konamiIndex = 0;
-          window.dispatchEvent(new CustomEvent('portfolio:overdrive'));
-        }
-        return;
-      }
-      konamiIndex = event.key === KONAMI[0] ? 1 : 0;
-    }
-
     window.addEventListener('pointermove', handleMove, { passive: true });
     document.documentElement.addEventListener('mouseleave', handleWindowExit);
     window.addEventListener('blur', handleWindowExit);
-    window.addEventListener('keydown', handleKey);
 
     return () => {
       if (io) io.disconnect();
@@ -154,7 +130,6 @@ export default function HyperFX() {
       window.removeEventListener('pointermove', handleMove);
       document.documentElement.removeEventListener('mouseleave', handleWindowExit);
       window.removeEventListener('blur', handleWindowExit);
-      window.removeEventListener('keydown', handleKey);
       handleWindowExit();
     };
   }, []);

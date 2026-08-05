@@ -1,4 +1,4 @@
-import { Anton, Chakra_Petch, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { Inter, Manrope } from 'next/font/google';
 import './globals.css';
 import './modern-responsive.css';
 import './hyperdrive.css';
@@ -7,12 +7,10 @@ import LearningsLauncher from '../components/LearningsLauncher';
 
 /* Self-hosted via next/font: no render-blocking request to fonts.googleapis.com,
    and each family gets a metric-matched fallback so the swap does not shift layout. */
-const anton = Anton({ subsets: ['latin'], weight: '400', variable: '--font-anton', display: 'swap' });
-const chakra = Chakra_Petch({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-chakra', display: 'swap' });
-const jetbrains = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '600', '800'], variable: '--font-jetbrains', display: 'swap' });
-const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-grotesk', display: 'swap' });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-inter', display: 'swap' });
+const manrope = Manrope({ subsets: ['latin'], weight: ['500', '600', '700', '800'], variable: '--font-manrope', display: 'swap' });
 
-const fontVariables = `${anton.variable} ${chakra.variable} ${jetbrains.variable} ${grotesk.variable}`;
+const fontVariables = `${inter.variable} ${manrope.variable}`;
 
 export const metadata = {
   metadataBase: new URL('https://gaurav-portfolio-topaz.vercel.app'),
@@ -53,8 +51,7 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  // The site boots into the dark theme regardless of OS preference.
-  themeColor: '#070a0f',
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({ children }) {

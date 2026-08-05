@@ -1,120 +1,24 @@
 /* ==========================================================================
    HYPERDRIVE
    Loaded last. Typography system and kinetic motion on top of the existing
-   layout in globals.css, plus the opt-in OVERDRIVE mode.
+   layout in globals.css.
    ========================================================================== */
 
 :root {
   /* Families come from next/font variables set on <html>; the literal names
-     are only the fallback if the variables are somehow absent. */
-  --font-display: var(--font-anton, 'Anton', Impact), sans-serif;
-  --font-heading: var(--font-chakra, 'Chakra Petch', system-ui), sans-serif;
-  --font-body: var(--font-grotesk, 'Space Grotesk', system-ui), ui-sans-serif, sans-serif;
-  --font-mono: var(--font-jetbrains, 'JetBrains Mono', ui-monospace), SFMono-Regular, monospace;
+     are only the fallback if the variables are somehow absent. Manrope
+     carries display/heading weight, Inter carries body and UI text —
+     the same two-family system as the reference site. */
+  --font-display: var(--font-manrope, Manrope, system-ui), sans-serif;
+  --font-heading: var(--font-manrope, Manrope, system-ui), sans-serif;
+  --font-body: var(--font-inter, Inter, system-ui), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-inter, Inter, system-ui), ui-sans-serif, sans-serif;
 
   --fx-speed: 1;
-}
-
-html[data-theme='dark'],
-html[data-theme='rainy'],
-html:not([data-theme]) {
-  --glow-strength: 1;
-}
-
-html[data-theme='cold'],
-html[data-theme='summer'] {
-  --glow-strength: 0.35;
-}
-
-/* --------------------------------------------------------------------------
-   0. Weather themes
-   Each theme paints its own ambient layer over the shared background.
-   -------------------------------------------------------------------------- */
-
-.ambient-background::before,
-.ambient-background::after {
-  content: '';
-  position: absolute;
-  inset: -20%;
-  pointer-events: none;
-}
-
-/* Cold — drifting snow on a frost-tinted sky. */
-html[data-theme='cold'] .ambient-background::before {
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1.6px, transparent 2.2px),
-    radial-gradient(circle, rgba(206, 233, 250, 0.85) 0 1.1px, transparent 1.8px);
-  background-position: 0 0, 43px 27px;
-  background-size: 118px 118px, 79px 79px;
-  animation: snow-fall calc(19s / var(--fx-speed)) linear infinite;
-}
-
-html[data-theme='cold'] .ambient-background::after {
-  inset: 0;
-  background:
-    radial-gradient(120% 60% at 50% -10%, rgba(255, 255, 255, 0.85), transparent 60%),
-    linear-gradient(180deg, rgba(190, 226, 248, 0.35), transparent 45%);
-}
-
-@keyframes snow-fall {
-  from { transform: translate3d(0, -12%, 0); }
-  to { transform: translate3d(24px, 12%, 0); }
-}
-
-/* Summer — a high sun, warm haze, and slow light shimmer. */
-html[data-theme='summer'] .ambient-background::before {
-  inset: 0;
-  background:
-    radial-gradient(420px circle at 84% 6%, rgba(255, 214, 120, 0.75), transparent 68%),
-    radial-gradient(720px circle at 84% 6%, rgba(255, 170, 60, 0.28), transparent 70%);
-  animation: sun-breathe calc(7s / var(--fx-speed)) ease-in-out infinite;
-}
-
-html[data-theme='summer'] .ambient-background::after {
-  background: repeating-linear-gradient(
-    104deg,
-    rgba(255, 206, 128, 0.16) 0 2px,
-    transparent 2px 190px
-  );
-  animation: heat-shimmer calc(11s / var(--fx-speed)) linear infinite;
-}
-
-@keyframes sun-breathe {
-  0%, 100% { opacity: 0.82; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-@keyframes heat-shimmer {
-  from { transform: translate3d(-120px, 0, 0); }
-  to { transform: translate3d(120px, 0, 0); }
-}
-
-/* Rainy — slanted rain over a wet slate sky. */
-html[data-theme='rainy'] .ambient-background::before {
-  background-image:
-    repeating-linear-gradient(76deg, rgba(175, 214, 240, 0.42) 0 1px, transparent 1px 9px),
-    repeating-linear-gradient(76deg, rgba(143, 227, 208, 0.22) 0 1px, transparent 1px 21px);
-  background-size: 100% 190px, 100% 260px;
-  mask-image: linear-gradient(to bottom, black 55%, transparent);
-  animation: rain-fall calc(700ms / var(--fx-speed)) linear infinite;
-}
-
-html[data-theme='rainy'] .ambient-background::after {
-  inset: 0;
-  background: radial-gradient(140% 70% at 50% 0%, rgba(111, 195, 232, 0.14), transparent 62%);
-  animation: storm-flash calc(9s / var(--fx-speed)) ease-in-out infinite;
-}
-
-@keyframes rain-fall {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 46px 190px, 62px 260px; }
-}
-
-@keyframes storm-flash {
-  0%, 88%, 100% { opacity: 0.55; }
-  90% { opacity: 1; }
-  92% { opacity: 0.6; }
-  94% { opacity: 0.95; }
+  /* The monochrome system carries no glow effects — zeroed rather than
+     deleted from every box-shadow/drop-shadow declaration below, since
+     `calc(Npx * 0)` collapses each of them to nothing in one place. */
+  --glow-strength: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -224,26 +128,13 @@ textarea,
    headings are static gradient text so they never repaint at rest. */
 .hero h1 .charged {
   position: relative;
-  background: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 34%, var(--accent) 68%, var(--accent-2) 100%);
-  background-size: 280% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: current-flow calc(4.5s / var(--fx-speed)) linear infinite;
-  filter: drop-shadow(0 0 calc(24px * var(--glow-strength)) color-mix(in srgb, var(--accent) 45%, transparent));
+  color: var(--text);
 }
 
 .section-heading h2 span,
 .capabilities-grid h2 span,
 .contact-grid h2 span {
-  background: linear-gradient(120deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-@keyframes current-flow {
-  to { background-position: 280% 0; }
+  color: var(--accent);
 }
 
 /* Typewriter caret */
@@ -441,45 +332,9 @@ textarea,
    `transition-duration: 0.01ms !important` rule further down already
    collapses this open/close transition to a near-instant state change. */
 
-/* Sweep animates transform (compositable), not background-position.
-   No overflow-clip needed on .site-header: body already carries
-   overflow-x: hidden, and clipping the header itself would also clip the
-   mobile nav dropdown panel anchored below it. */
-.site-header::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 36%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
-  opacity: 0.75;
-  animation: header-sweep calc(3.2s / var(--fx-speed)) linear infinite;
-}
-
-@keyframes header-sweep {
-  from { transform: translateX(-110%); }
-  to { transform: translateX(calc(100vw + 10%)); }
-}
-
 .brand > span {
   position: relative;
   font-family: var(--font-display);
-}
-
-.brand > span::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: 0 0 calc(26px * var(--glow-strength)) 2px color-mix(in srgb, var(--accent) 32%, transparent);
-  opacity: 0;
-  animation: badge-pulse calc(3.4s / var(--fx-speed)) ease-in-out infinite;
-}
-
-@keyframes badge-pulse {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
 }
 
 /* Hero status bar */
@@ -533,9 +388,8 @@ textarea,
   position: absolute;
   inset: auto 0 0 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  background-size: 200% 100%;
-  animation: current-flow calc(2.8s / var(--fx-speed)) linear infinite;
+  background: var(--accent);
+  opacity: 0.14;
 }
 
 .pulse-strip strong {
@@ -589,8 +443,7 @@ textarea,
 }
 
 .project-card:hover::after,
-.project-card:focus-within::after,
-body.overdrive .project-card::after {
+.project-card:focus-within::after {
   opacity: 1;
   animation: border-spin calc(3.6s / var(--fx-speed)) linear infinite;
 }
@@ -742,10 +595,6 @@ body.overdrive .project-card::after {
   letter-spacing: -0.03em;
 }
 
-.section-heading .eyebrow::before,
-.group-heading .eyebrow::before {
-  content: '⚡ ';
-}
 
 /* Contact form focus energy */
 .contact-form input:focus,
@@ -859,11 +708,6 @@ body.overdrive .project-card::after {
   font-size: 15px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-}
-
-.resume-block-title::before {
-  content: '⚡ ';
-  color: var(--accent);
 }
 
 .resume-role + .resume-role {
@@ -1059,92 +903,13 @@ footer .footer-row {
   padding-bottom: 46px;
 }
 
-/* Overdrive control */
-.overdrive-switch {
-  position: fixed;
-  left: max(18px, env(safe-area-inset-left));
-  bottom: max(20px, calc(env(safe-area-inset-bottom) + 14px));
-  z-index: 80;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface-solid) 88%, transparent);
-  backdrop-filter: blur(14px);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 160ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth), border-color 200ms var(--ease-smooth);
-}
-
-.overdrive-switch:hover {
-  transform: translateY(-2px) scale(1.03);
-  border-color: var(--accent);
-}
-
-.overdrive-switch i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--muted);
-  transition: background 200ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth);
-}
-
-.overdrive-switch[aria-pressed='true'] {
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: 0 0 calc(30px * var(--glow-strength)) color-mix(in srgb, var(--accent) 40%, transparent);
-}
-
-.overdrive-switch[aria-pressed='true'] i {
-  background: var(--accent);
-  box-shadow: 0 0 14px var(--accent);
-}
-
 /* --------------------------------------------------------------------------
-   5. OVERDRIVE
-   -------------------------------------------------------------------------- */
-
-body.overdrive {
-  --fx-speed: 2.4;
-}
-
-body.overdrive .hero h1 {
-  animation: overdrive-jitter 3.2s steps(3, end) infinite;
-}
-
-body.overdrive .capability-cards article::after {
-  transform: scaleY(1);
-}
-
-@keyframes overdrive-jitter {
-  0%, 92%, 100% { transform: translate3d(0, 0, 0); }
-  94% { transform: translate3d(-3px, 1px, 0) skewX(-1.5deg); }
-  96% { transform: translate3d(4px, -2px, 0) skewX(1.5deg); }
-}
-
-/* --------------------------------------------------------------------------
-   6. Responsive + accessibility
+   5. Responsive + accessibility
    -------------------------------------------------------------------------- */
 
 @media (max-width: 860px) {
   .hero-terminal { font-size: 11px; }
   .pulse-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 560px) {
-  .overdrive-switch {
-    left: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    padding: 9px 12px;
-    font-size: 9px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
