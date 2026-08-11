@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import styles from './LLMWhiteboard.module.css';
+import styles from './LearningsLauncher.module.css';
 
 const LLMWhiteboard = dynamic(() => import('./LLMWhiteboard'), {
   ssr: false,

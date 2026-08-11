@@ -2,6 +2,7 @@ import { Inter, Manrope } from 'next/font/google';
 import './globals.css';
 import './modern-responsive.css';
 import './hyperdrive.css';
+import './performance.css';
 import HyperFX from '../components/HyperFX';
 import LearningsLauncher from '../components/LearningsLauncher';
 
