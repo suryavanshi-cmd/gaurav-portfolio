@@ -1,1 +1,86 @@
-placeholder
+.learningTab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-solid) 92%, transparent);
+  color: var(--text);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+}
+
+.learningTab:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+}
+
+.learningTab > span:first-child {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.learningTab > span:last-child {
+  display: grid;
+  text-align: left;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.learningTab small {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.loadingCard {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface-solid);
+  color: var(--muted);
+}
+
+.loadingPulse {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: learning-spin 0.8s linear infinite;
+}
+
+@keyframes learning-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .learningTab {
+    right: 12px;
+    bottom: 12px;
+    min-height: 48px;
+    padding: 8px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .learningTab:hover { transform: none; }
+  .loadingPulse { animation: none; }
+}
