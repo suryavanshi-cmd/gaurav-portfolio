@@ -336,6 +336,37 @@ const projects = [
   },
 ];
 
+const GITHUB_URL = 'https://github.com/suryavanshi-cmd';
+
+/* Recruiter-facing questions, answered only from facts that are already on the
+   résumé or elsewhere on this page — nothing here is invented. */
+const faqs = [
+  {
+    q: 'What roles are you looking for?',
+    a: 'SDET and API test-automation roles, and LLM application engineering roles. The common thread is owning quality for a backend system end to end rather than executing someone else’s test plan.',
+  },
+  {
+    q: 'What is your strongest stack?',
+    a: 'Java 17 with TestNG and Rest-Assured for API automation, Oracle SQL and PL/SQL for data-level assertions, and Spring Boot / Node.js service testing. On the build side, Next.js, React, Node.js, and Supabase.',
+  },
+  {
+    q: 'Do you only test, or do you also build?',
+    a: 'Both. I own a production automation framework at work, and outside of it I have built a curl-generating test microservice off ELK logs, an Apache HTTPS deployment and monitoring setup, and several Next.js and LLM-workflow applications.',
+  },
+  {
+    q: 'How much experience do you have?',
+    a: '2+ years, currently as an SDET at Vidal Health TPA in Pune working on large-scale health-insurance claims systems, after a backend automation internship at Bajaj Finserv Health.',
+  },
+  {
+    q: 'Where are you based?',
+    a: 'Pune, India.',
+  },
+  {
+    q: 'How quickly do you reply?',
+    a: 'Within a day or two. Messages from the form below reach me directly — there is no recruiter middleman and no auto-responder.',
+  },
+];
+
 const resume = {
   name: 'Gaurav Suryavanshi',
   role: 'Software Development Engineer in Test (SDET)',
@@ -783,9 +814,11 @@ export default function Page() {
             <div><strong>Gaurav Suryavanshi</strong><small>SDET · API Automation</small></div>
           </a>
           <nav aria-label="Primary navigation" id="primary-nav" className={menuOpen ? 'is-open' : ''}>
+            <a href="#about" onClick={closeMenu}>About</a>
             <a href="#work" onClick={closeMenu}>Work</a>
             <a href="#resume" onClick={closeMenu}>Résumé</a>
             <a href="#capabilities" onClick={closeMenu}>Capabilities</a>
+            <a href="#faq" onClick={closeMenu}>FAQ</a>
             <a href="#contact" onClick={closeMenu}>Contact</a>
           </nav>
           <div className="nav-controls">
@@ -833,17 +866,55 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="hero-console" role="group" aria-label="Current engineering focus" data-tilt data-reveal="right">
-            <div className="console-bar"><div><i /><i /><i /></div><span>delivery-console</span></div>
-            <div className="hero-console-content">
-              <div className="signal-ring"><div><strong>READY</strong><small>production mindset</small></div></div>
-              <div className="signal-list">
-                <div><span>API test automation</span><b>ACTIVE</b></div>
-                <div><span>Regression suite ownership</span><b>ACTIVE</b></div>
-                <div><span>Defect triage &amp; fixes</span><b>ACTIVE</b></div>
-                <div><span>CI/CD &amp; release readiness</span><b>ACTIVE</b></div>
+          <aside className="hero-console" aria-label="Profile at a glance" data-tilt data-reveal="right">
+            <div className="hero-card-head">
+              <span className="hero-card-mark" aria-hidden="true">GS</span>
+              <div>
+                <strong>{resume.name}</strong>
+                <small>{resume.role}</small>
               </div>
             </div>
+            <dl className="hero-card-facts">
+              <div><dt>Based in</dt><dd>{resume.location}</dd></div>
+              <div><dt>Experience</dt><dd>2+ years in test automation</dd></div>
+              <div><dt>Core stack</dt><dd>Java 17 · TestNG · Rest-Assured · Oracle SQL</dd></div>
+              <div><dt>Also builds</dt><dd>Next.js · Node.js · LLM workflows</dd></div>
+            </dl>
+            <div className="hero-card-links">
+              <a href={GITHUB_URL} target="_blank" rel="noreferrer noopener">GitHub ↗</a>
+              <a href={`mailto:${resume.email}`}>Email ↗</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      {/* Decorative: every one of these is already listed, as real text, in the
+          skills cloud and the résumé section below. */}
+      <div className="stack-marquee" aria-hidden="true">
+        <div className="stack-marquee-track">
+          {[...skills, ...skills].map((skill, index) => (
+            <span key={`${skill}-${index}`}>{skill}</span>
+          ))}
+        </div>
+      </div>
+
+      <section className="about-section" id="about">
+        <div className="container about-grid">
+          <div data-reveal="left">
+            <p className="eyebrow">01 / About</p>
+            <h2>Testing is how I learned to <span>read systems.</span></h2>
+          </div>
+          <div className="about-body" data-reveal="right">
+            <p>
+              I’m an SDET at Vidal Health TPA, where I own the API automation framework behind a health-insurance claims platform. Claims systems are unforgiving — a wrong status code or an unvalidated database write becomes someone’s rejected claim — so the tests have to understand the business rules, not just the endpoints.
+            </p>
+            <p>
+              That pushed me past writing test cases. I read the schemas, the SQL, the logs, and the partner contracts, then design coverage around where the system actually breaks: bulk uploads, partner integrations, database migrations, blue-green cutovers, and real-time claim streams.
+            </p>
+            <p>
+              The same instinct is why I build. Next.js applications, LLM workflows with guardrails, and small tools that turn traffic logs into runnable tests. Shipping something end to end is what teaches you which parts are worth testing.
+            </p>
+            <a className="secondary-button" href="#work">See what I’ve built →</a>
           </div>
         </div>
       </section>
@@ -861,7 +932,7 @@ export default function Page() {
 
           <div className="section-heading" data-reveal>
             <div>
-              <p className="eyebrow">Selected engineering work</p>
+              <p className="eyebrow">02 / Selected work</p>
               <h2>Projects designed around <span>real delivery problems.</span></h2>
             </div>
             <p>Each case study includes the problem, architecture, technical decisions, and an editable workflow simulation.</p>
@@ -900,7 +971,7 @@ export default function Page() {
         <div className="container">
           <div className="section-heading" data-reveal>
             <div>
-              <p className="eyebrow">Résumé</p>
+              <p className="eyebrow">03 / Résumé</p>
               <h2>The full <span>track record.</span></h2>
             </div>
             <p>Every role, project, skill group, and credential — the same content as the PDF, laid out to be read on a screen.</p>
@@ -1002,7 +1073,7 @@ export default function Page() {
       <section className="capabilities-section" id="capabilities">
         <div className="container capabilities-grid">
           <div data-reveal="left">
-            <p className="eyebrow">Engineering capabilities</p>
+            <p className="eyebrow">04 / Capabilities</p>
             <h2>Strong at the boundary between <span>customer needs and production systems.</span></h2>
             <p>My work combines hands-on development, automation quality, solution design, debugging, and release ownership.</p>
           </div>
@@ -1018,10 +1089,33 @@ export default function Page() {
         </div>
       </section>
 
+      <section className="faq-section" id="faq">
+        <div className="container">
+          <div className="section-heading" data-reveal>
+            <div>
+              <p className="eyebrow">05 / Questions</p>
+              <h2>The things recruiters <span>ask me first.</span></h2>
+            </div>
+            <p>Answered up front so you don’t have to send an email to find out whether it’s a fit.</p>
+          </div>
+          <div className="faq-list">
+            {faqs.map((item, index) => (
+              <details key={item.q} className="faq-item" data-reveal data-reveal-delay={String((index % 4) + 1)}>
+                <summary>
+                  <span>{item.q}</span>
+                  <i aria-hidden="true" />
+                </summary>
+                <p>{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="contact-section" id="contact">
         <div className="container contact-grid">
           <div data-reveal="left">
-            <p className="eyebrow">Let’s build something useful</p>
+            <p className="eyebrow">06 / Contact</p>
             <h2>Need an engineer who can <span>understand the workflow and ship it?</span></h2>
             <p>I’m open to SDET, API test automation, and LLM application engineering roles — send the role details or a problem you’re stuck on, and I’ll reply within a day or two.</p>
             <a href={`mailto:${resume.email}`} className="email-link">{resume.email} ↗</a>
@@ -1041,9 +1135,32 @@ export default function Page() {
       </section>
 
       <footer>
-        <div className="container footer-row">
-          <div><strong>Gaurav Suryavanshi</strong><span>SDET · API Automation · LLM · Delivery</span></div>
+        <div className="container footer-grid">
+          <div className="footer-brand">
+            <strong>{resume.name}</strong>
+            <span>SDET · API Automation · LLM · Delivery</span>
+            <p>Open to SDET, API test automation, and LLM application engineering roles.</p>
+          </div>
+          <nav className="footer-links" aria-label="Footer navigation">
+            <h3>Explore</h3>
+            <a href="#about">About</a>
+            <a href="#work">Work</a>
+            <a href="#resume">Résumé</a>
+            <a href="#capabilities">Capabilities</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <div className="footer-links">
+            <h3>Elsewhere</h3>
+            <a href={GITHUB_URL} target="_blank" rel="noreferrer noopener">GitHub ↗</a>
+            <a href={`mailto:${resume.email}`}>Email ↗</a>
+            <a href="/Gaurav-Suryavanshi-Resume.pdf" download>Résumé PDF ↓</a>
+          </div>
+        </div>
+        <div className="container footer-base">
+          <p>© {resume.name}</p>
           <p>Built with Next.js, deployed on Vercel, and connected to Supabase.</p>
+          <a href="#top">Back to top ↑</a>
         </div>
       </footer>
 

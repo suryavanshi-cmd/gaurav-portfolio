@@ -350,14 +350,10 @@ main {
   letter-spacing: -0.075em;
 }
 
-.hero h1 span,
 .section-heading h2,
 .capabilities-grid h2,
 .contact-grid h2 {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--text);
 }
 
 .hero-description {
@@ -491,127 +487,255 @@ main {
   font-weight: 700;
 }
 
+/* Hero "at a glance" card. Keeps the .hero-console class so it inherits the
+   existing hero-grid column sizing and the responsive rules further down. */
 .hero-console {
   position: relative;
   overflow: hidden;
+  padding: 28px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--surface), var(--surface-solid));
+  background: var(--surface);
   box-shadow: var(--shadow);
 }
 
-.hero-console::before {
-  content: '';
-  position: absolute;
-  inset: 50px 0 auto;
-  height: 170px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent), transparent 68%);
-}
-
-.console-bar {
-  position: relative;
-  z-index: 2;
-  min-height: 48px;
+.hero-card-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
+  gap: 14px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface-solid) 70%, transparent);
 }
 
-.console-bar > div {
-  display: flex;
-  gap: 6px;
-}
-
-.console-bar i {
-  width: 8px;
-  height: 8px;
+.hero-card-mark {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
   border-radius: 50%;
-  background: #ff7676;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-.console-bar i:nth-child(2) {
-  background: #ffd166;
+.hero-card-head strong {
+  display: block;
+  font-size: 17px;
+  letter-spacing: -0.02em;
 }
 
-.console-bar i:nth-child(3) {
-  background: #6fdda1;
-}
-
-.console-bar span {
+.hero-card-head small {
+  display: block;
+  margin-top: 3px;
   color: var(--muted);
-  font-size: 9px;
-  font-weight: 850;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.hero-card-facts {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.hero-card-facts > div {
+  display: grid;
+  grid-template-columns: minmax(0, 88px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-card-facts dt {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.hero-console-content {
-  position: relative;
-  z-index: 1;
-  padding: 35px 28px 28px;
+.hero-card-facts dd {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
 }
 
-.signal-ring {
-  width: 205px;
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 28px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, var(--surface-solid) 0 57%, transparent 58%),
-    conic-gradient(var(--accent), var(--accent-2), var(--accent), var(--accent-2));
-  animation: ring-rotate 14s linear infinite;
-}
-
-.signal-ring > div {
-  display: grid;
-  text-align: center;
-  animation: ring-rotate 14s linear infinite reverse;
-}
-
-.signal-ring strong {
-  font-size: 32px;
-  letter-spacing: -0.04em;
-}
-
-.signal-ring small {
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.signal-list {
-  display: grid;
+.hero-card-links {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  margin-top: 20px;
 }
 
-.signal-list div {
+.hero-card-links a {
+  padding: 9px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 160ms var(--ease-smooth), background 160ms var(--ease-smooth), color 160ms var(--ease-smooth);
+}
+
+.hero-card-links a:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Scrolling stack strip. Purely decorative — the same list is rendered as real
+   text in the skills cloud, so this carries aria-hidden. */
+.stack-marquee {
+  overflow: hidden;
+  padding: 18px 0;
+  border-block: 1px solid var(--line);
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.stack-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 42px;
+  animation: marquee-drift 46s linear infinite;
+}
+
+.stack-marquee-track span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* The track holds the list twice, so translating by exactly -50% lands on an
+   identical frame and the loop is seamless. */
+@keyframes marquee-drift {
+  to { transform: translateX(-50%); }
+}
+
+.about-section {
+  padding: 95px 0;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 56px;
+  align-items: start;
+}
+
+.about-grid h2 {
+  margin: 12px 0 0;
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+}
+
+.about-grid h2 span {
+  color: var(--muted);
+}
+
+.about-body p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.about-body .secondary-button {
+  margin-top: 6px;
+}
+
+.faq-section {
+  padding: 95px 0;
+  border-top: 1px solid var(--line);
+}
+
+.faq-list {
+  display: grid;
+  gap: 10px;
+}
+
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: border-color 180ms var(--ease-smooth);
+}
+
+.faq-item:hover,
+.faq-item[open] {
+  border-color: var(--line-strong);
+}
+
+.faq-item summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--surface-raised) 65%, transparent);
-}
-
-.signal-list span {
-  color: var(--muted);
-  font-size: 10px;
+  gap: 20px;
+  padding: 20px 22px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-heading);
+  font-size: clamp(15px, 1.6vw, 18px);
   font-weight: 700;
+  letter-spacing: -0.015em;
 }
 
-.signal-list b {
-  color: var(--accent);
-  font-size: 8px;
-  letter-spacing: 0.09em;
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Plus sign built from the element's own border and a pseudo-element, so the
+   rotation to a minus is a single transform on one node. */
+.faq-item summary i {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  flex: none;
+  transition: transform 240ms var(--ease-smooth);
+}
+
+.faq-item summary i::before,
+.faq-item summary i::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1.5px;
+  background: var(--text);
+}
+
+.faq-item summary i::after {
+  transform: rotate(90deg);
+  transition: opacity 240ms var(--ease-smooth);
+}
+
+.faq-item[open] summary i {
+  transform: rotate(180deg);
+}
+
+.faq-item[open] summary i::after {
+  opacity: 0;
+}
+
+.faq-item > p {
+  margin: 0;
+  padding: 0 22px 22px;
+  max-width: 78ch;
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.75;
 }
 
 .work-section,
@@ -1042,33 +1166,95 @@ main {
 }
 
 footer {
-  padding: 32px 0 45px;
+  padding: 64px 0 0;
   border-top: 1px solid var(--line);
 }
 
-.footer-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-  align-items: flex-end;
-}
-
-.footer-row > div {
+.footer-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 44px;
+  padding-bottom: 52px;
 }
 
-.footer-row strong {
-  font-size: 13px;
+.footer-brand strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  letter-spacing: -0.025em;
 }
 
-.footer-row span,
-.footer-row p {
+.footer-brand span {
+  display: block;
+  margin-top: 6px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.footer-row p {
+.footer-brand p {
+  margin: 16px 0 0;
+  max-width: 40ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.footer-links {
+  display: grid;
+  align-content: start;
+  gap: 11px;
+}
+
+.footer-links h3 {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer-links a {
+  width: fit-content;
+  color: var(--muted);
+  font-size: 14px;
+  transition: color 150ms var(--ease-smooth);
+}
+
+.footer-links a:hover {
+  color: var(--text);
+}
+
+.footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  /* Deep bottom padding keeps this last row clear of the fixed "Learnings"
+     launcher, which floats over the bottom-right of the viewport. */
+  padding: 22px 0 96px;
+  border-top: 1px solid var(--line);
+}
+
+.footer-base p {
   margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer-base a {
+  color: var(--muted);
+  font-size: 12px;
+  transition: color 150ms var(--ease-smooth);
+}
+
+.footer-base a:hover {
+  color: var(--text);
 }
 
 .modal-backdrop {
@@ -1405,10 +1591,6 @@ footer {
   word-break: break-word;
 }
 
-@keyframes ring-rotate {
-  to { transform: rotate(1turn); }
-}
-
 @keyframes status-pulse {
   0%, 100% { opacity: 0.65; }
   50% { opacity: 1; }
@@ -1559,9 +1741,22 @@ footer {
     border-bottom: 1px solid var(--line);
   }
 
-  .footer-row {
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-base {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .about-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
   }
 }
 
@@ -1579,14 +1774,6 @@ footer {
   .secondary-button,
   .ghost-button {
     width: 100%;
-  }
-
-  .hero-console-content {
-    padding-inline: 16px;
-  }
-
-  .signal-ring {
-    width: 175px;
   }
 
   .project-grid {

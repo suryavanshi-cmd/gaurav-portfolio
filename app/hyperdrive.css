@@ -32,8 +32,7 @@ body {
 
 h1, h2, h3, h4,
 .brand strong,
-.hero-stats strong,
-.signal-ring strong {
+.hero-stats strong {
   font-family: var(--font-heading);
   font-weight: 700;
 }
@@ -42,8 +41,6 @@ h1, h2, h3, h4,
 .project-meta span,
 .tag-list span,
 .section-label,
-.console-bar span,
-.signal-list b,
 .availability,
 .connection-status span,
 .hero-stats span,
@@ -83,18 +80,8 @@ textarea,
   margin-bottom: -0.06em;
 }
 
-/* globals.css paints every `.hero h1 span` with a clipped gradient. The line
-   wrappers must opt out of it, or the empty gradient box shows behind the text. */
-.hero h1 .kinetic-line,
-.hero h1 .kinetic-line > span:not(.charged) {
-  background: none;
-  -webkit-background-clip: border-box;
-  background-clip: border-box;
-  color: var(--text);
-  -webkit-text-fill-color: currentColor;
-}
-
-/* The charged line carries a drop-shadow glow, so it must not be clipped. */
+/* The second line animates in with a blur, which would be cut off by the
+   overflow clip the other lines use to mask their slide-up. */
 .hero h1 .kinetic-line.open {
   overflow: visible;
   padding-bottom: 0;
@@ -124,17 +111,13 @@ textarea,
   to { transform: translate3d(0, 0, 0) skewY(0); opacity: 1; }
 }
 
-/* Electrified gradient headline — only the hero line animates; section
-   headings are static gradient text so they never repaint at rest. */
-.hero h1 .charged {
-  position: relative;
-  color: var(--text);
-}
-
+/* Two-tone headlines: the highlighted clause drops to the muted grey, which is
+   the only "accent" a monochrome palette has to work with. */
+.hero h1 .charged,
 .section-heading h2 span,
 .capabilities-grid h2 span,
 .contact-grid h2 span {
-  color: var(--accent);
+  color: var(--muted);
 }
 
 /* Typewriter caret */
@@ -229,10 +212,8 @@ textarea,
     box-shadow 240ms var(--ease-smooth),
     border-color 240ms var(--ease-smooth),
     opacity calc(620ms / var(--fx-speed)) var(--ease-smooth);
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--line-strong));
-  box-shadow:
-    0 26px 70px rgba(0, 0, 0, 0.4),
-    0 0 calc(46px * var(--glow-strength)) color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow);
 }
 
 [data-tilt]::before {
@@ -245,7 +226,7 @@ textarea,
   pointer-events: none;
   background: radial-gradient(
     340px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--accent) 22%, transparent),
+    color-mix(in srgb, var(--accent) 5%, transparent),
     transparent 62%
   );
   transition: opacity 220ms var(--ease-smooth);
@@ -570,16 +551,6 @@ textarea,
   transform: scaleY(1);
 }
 
-/* Signal list gets a running state */
-.signal-list b {
-  position: relative;
-  animation: signal-flicker calc(2.6s / var(--fx-speed)) ease-in-out infinite;
-}
-
-.signal-list div:nth-child(2) b { animation-delay: 300ms; }
-.signal-list div:nth-child(3) b { animation-delay: 600ms; }
-.signal-list div:nth-child(4) b { animation-delay: 900ms; }
-
 @keyframes signal-flicker {
   0%, 100% { opacity: 1; }
   46% { opacity: 1; }
@@ -898,11 +869,6 @@ textarea,
   .resume-identity .primary-button { justify-self: start; }
 }
 
-/* Keep the fixed controls clear of the last line of footer text. */
-footer .footer-row {
-  padding-bottom: 46px;
-}
-
 /* --------------------------------------------------------------------------
    5. Responsive + accessibility
    -------------------------------------------------------------------------- */
@@ -928,5 +894,11 @@ footer .footer-row {
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* The blanket rule above collapses the marquee's duration to ~0, which would
+     leave it parked mid-loop; stop it on the first frame instead. */
+  .stack-marquee-track {
+    animation: none !important;
   }
 }

@@ -6,7 +6,10 @@ A production-focused Next.js portfolio for an SDET and API-automation engineer w
 
 - Calm, focused motion: a scroll-progress rail, subtle scroll reveals, and a light 3D tilt on cards — nothing that competes with the content
 - Monochrome design system (Manrope + Inter, large-radius cards, hairline borders, no color accents) with a Light and Dark theme
+- Numbered sections (01–06) with two-tone editorial headlines and a scrolling tech-stack strip
 - Terminal-style status line and count-up metrics
+- Hero "at a glance" card: location, experience, core stack, and direct GitHub / email links
+- About section, and an FAQ answering the questions recruiters ask first
 - Full résumé section (experience, projects, skills, education, certifications) with a downloadable PDF
 - Four focused project collections:
   - LLM & AI Systems

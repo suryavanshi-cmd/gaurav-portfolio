@@ -280,23 +280,6 @@ input {
     gap: 12px;
   }
 
-  .hero-console-content {
-    padding: 22px 16px;
-  }
-
-  .signal-ring {
-    transform: scale(.9);
-    transform-origin: center;
-  }
-
-  .signal-list > div {
-    gap: 10px;
-  }
-
-  .signal-list span {
-    font-size: 12px;
-  }
-
   .section-heading,
   .category-heading {
     gap: 18px;
