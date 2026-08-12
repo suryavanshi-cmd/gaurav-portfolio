@@ -26,8 +26,10 @@ routing rather than by naming discipline:
 - The switcher uses plain `<a>`, never `next/link`. Version changes must be full
   document loads, or the previous version's stylesheet stays attached and the
   two designs blend.
-- V1's four display fonts are declared with `preload: false`, so their files are
-  only downloaded on the route that renders them.
+- Fonts are self-hosted from `assets/fonts` via `next/font/local`, so the build
+  makes no network requests — see that folder's README for why. V1's four
+  display families are declared with `preload: false`, so their files are only
+  downloaded on the route that renders them (`/` fetches 3 woff2, `/v1` fetches 6).
 - `latestVersionKey` in `app/versions.js` decides which version `/` serves and
   which one the switcher marks current.
 
