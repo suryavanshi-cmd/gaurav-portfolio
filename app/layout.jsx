@@ -1,17 +1,25 @@
-import { Inter, Manrope } from 'next/font/google';
-import './globals.css';
-import './modern-responsive.css';
-import './hyperdrive.css';
-import './performance.css';
-import HyperFX from '../components/HyperFX';
-import LearningsLauncher from '../components/LearningsLauncher';
+import { Anton, Chakra_Petch, Inter, JetBrains_Mono, Manrope, Space_Grotesk } from 'next/font/google';
 
-/* Self-hosted via next/font: no render-blocking request to fonts.googleapis.com,
-   and each family gets a metric-matched fallback so the swap does not shift layout. */
+/*
+  The root layout deliberately imports NO stylesheet. Each version under
+  app/(v2)/ and app/v1/ owns a complete global design system, and loading two
+  of them into one document would have them fight over the same selectors.
+
+  Fonts are the exception and have to live here, because both versions read
+  them as custom properties off :root and a nested layout can only put them on
+  a wrapper element. V1's four display families carry `preload: false`, so the
+  @font-face rules ship on every page but the font files themselves are only
+  fetched on the version that actually renders them.
+*/
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-inter', display: 'swap' });
 const manrope = Manrope({ subsets: ['latin'], weight: ['500', '600', '700', '800'], variable: '--font-manrope', display: 'swap' });
 
-const fontVariables = `${inter.variable} ${manrope.variable}`;
+const anton = Anton({ subsets: ['latin'], weight: '400', variable: '--font-anton', display: 'swap', preload: false });
+const chakra = Chakra_Petch({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-chakra', display: 'swap', preload: false });
+const jetbrains = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '600', '800'], variable: '--font-jetbrains', display: 'swap', preload: false });
+const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-grotesk', display: 'swap', preload: false });
+
+const fontVariables = [inter, manrope, anton, chakra, jetbrains, grotesk].map((font) => font.variable).join(' ');
 
 export const metadata = {
   metadataBase: new URL('https://gaurav-portfolio-topaz.vercel.app'),
@@ -58,11 +66,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
-      <body>
-        <HyperFX />
-        {children}
-        <LearningsLauncher />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

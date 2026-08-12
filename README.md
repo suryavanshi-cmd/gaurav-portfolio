@@ -2,7 +2,36 @@
 
 A production-focused Next.js portfolio for an SDET and API-automation engineer who also builds LLM applications and developer tooling.
 
-## What this version includes
+## Versions
+
+Every version of the site stays online at its own address, each frozen with the
+design it shipped with. A switcher in the header moves between them, and
+`/versions` lists them all.
+
+| Route | Version | Design |
+| --- | --- | --- |
+| `/` and `/v2` | **V2 — Editorial** (current) | Monochrome, Manrope + Inter, large radii, Light/Dark |
+| `/v1` | **V1 — Terminal** | Neon-on-black, Anton + Chakra Petch, Dark/Cold/Summer/Rainy, OVERDRIVE mode |
+
+Each version owns a complete global stylesheet, so they are kept apart by the
+routing rather than by naming discipline:
+
+- `app/layout.jsx` imports **no** CSS — only fonts (shared, because both
+  versions read them as `:root` custom properties) and metadata.
+- `app/(v2)/layout.jsx` and `app/v1/layout.jsx` each import their own design
+  system. A route group keeps `/` and `/v2` on the same layout without adding a
+  URL segment.
+- The switcher uses plain `<a>`, never `next/link`. Version changes must be full
+  document loads, or the previous version's stylesheet stays attached and the
+  two designs blend.
+- V1's four display fonts are declared with `preload: false`, so their files are
+  only downloaded on the route that renders them.
+
+To add a version: drop its page and CSS under a new route, give it a layout that
+imports them, and add an entry to `app/versions.js` — the switcher and the
+`/versions` index both read from that registry.
+
+## What the current version (V2) includes
 
 - Calm, focused motion: a scroll-progress rail, subtle scroll reveals, and a light 3D tilt on cards — nothing that competes with the content
 - Monochrome design system (Manrope + Inter, large-radius cards, hairline borders, no color accents) with a Light and Dark theme

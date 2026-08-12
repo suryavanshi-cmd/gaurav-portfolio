@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { CountUp, TypeCycle } from '../components/Kinetic';
+import { CountUp, TypeCycle } from '../Kinetic';
+import VersionSwitcher from '../VersionSwitcher';
 
 const terminalLines = [
   'running 190+ partner-integration cases in parallel…',
@@ -662,7 +663,7 @@ function ProjectModal({ project, input, setInput, runSteps, runOutput, running, 
   );
 }
 
-export default function Page() {
+export default function PortfolioV2() {
   const [theme, setTheme] = useState('light');
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
@@ -820,8 +821,10 @@ export default function Page() {
             <a href="#capabilities" onClick={closeMenu}>Capabilities</a>
             <a href="#faq" onClick={closeMenu}>FAQ</a>
             <a href="#contact" onClick={closeMenu}>Contact</a>
+            <a href="/versions">Versions</a>
           </nav>
           <div className="nav-controls">
+            <VersionSwitcher current="v2" />
             <ThemeSwitcher theme={theme} onChange={setTheme} />
             <button
               type="button"
@@ -1149,6 +1152,7 @@ export default function Page() {
             <a href="#capabilities">Capabilities</a>
             <a href="#faq">FAQ</a>
             <a href="#contact">Contact</a>
+            <a href="/versions">All versions</a>
           </nav>
           <div className="footer-links">
             <h3>Elsewhere</h3>
