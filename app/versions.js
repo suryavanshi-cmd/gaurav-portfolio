@@ -27,11 +27,21 @@ export const versions = [
     year: '2026',
     tagline: 'Monochrome, large-radius, and built to be read by a recruiter.',
     description:
-      'The current build. Black-and-white only, Manrope and Inter, 64px radii and hairline borders, with the content reorganised around what a hiring manager actually looks for: an about section, an at-a-glance card, case studies, the full résumé, and an FAQ.',
+      'Black-and-white only, Manrope and Inter, 64px radii and hairline borders, with the content reorganised around what a hiring manager actually looks for: an about section, an at-a-glance card, case studies, the full résumé, and an FAQ.',
+  },
+  {
+    key: 'v3',
+    label: 'V3',
+    name: 'Notebook',
+    href: '/v3',
+    year: '2026',
+    tagline: 'One narrow column, written as prose instead of laid out as cards.',
+    description:
+      'The current build, and the quietest. A single 40rem column of small type where the résumé is a paragraph rather than a grid: the facts stay inside the sentences as underlined chips you can hover for the detail. Projects and career are plain dated lists, and the only moving part is the clock in Pune.',
   },
 ];
 
 /* The version `/` serves, and the one the switcher marks as current. */
-export const latestVersionKey = 'v2';
+export const latestVersionKey = 'v3';
 
 export const latestVersion = versions.find((v) => v.key === latestVersionKey);

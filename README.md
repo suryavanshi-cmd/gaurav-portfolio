@@ -10,7 +10,8 @@ design it shipped with. A switcher in the header moves between them, and
 
 | Route | Version | Design |
 | --- | --- | --- |
-| `/` and `/v2` | **V2 — Editorial** (current) | Monochrome, Manrope + Inter, large radii, Light/Dark |
+| `/` and `/v3` | **V3 — Notebook** (current) | One 40rem prose column, Inter, inline hoverable fact chips, dated lists |
+| `/v2` | **V2 — Editorial** | Monochrome, Manrope + Inter, large radii, Light/Dark |
 | `/v1` | **V1 — Terminal** | Neon-on-black, Anton + Chakra Petch, Dark/Cold/Summer/Rainy, OVERDRIVE mode |
 
 Each version owns a complete global stylesheet, so they are kept apart by the
@@ -18,20 +19,23 @@ routing rather than by naming discipline:
 
 - `app/layout.jsx` imports **no** CSS — only fonts (shared, because both
   versions read them as `:root` custom properties) and metadata.
-- `app/(v2)/layout.jsx` and `app/v1/layout.jsx` each import their own design
-  system. A route group keeps `/` and `/v2` on the same layout without adding a
-  URL segment.
+- Each version imports its own design system: `app/v1/layout.jsx`,
+  `app/(v2)/layout.jsx`, and `app/v3/page.jsx`. `/` lives at the app root
+  (`app/page.jsx`) rather than in a route group, so it picks up the latest
+  version's stylesheet and none of the others'.
 - The switcher uses plain `<a>`, never `next/link`. Version changes must be full
   document loads, or the previous version's stylesheet stays attached and the
   two designs blend.
 - V1's four display fonts are declared with `preload: false`, so their files are
   only downloaded on the route that renders them.
+- `latestVersionKey` in `app/versions.js` decides which version `/` serves and
+  which one the switcher marks current.
 
 To add a version: drop its page and CSS under a new route, give it a layout that
 imports them, and add an entry to `app/versions.js` — the switcher and the
 `/versions` index both read from that registry.
 
-## What the current version (V2) includes
+## What V2 — Editorial includes
 
 - Calm, focused motion: a scroll-progress rail, subtle scroll reveals, and a light 3D tilt on cards — nothing that competes with the content
 - Monochrome design system (Manrope + Inter, large-radius cards, hairline borders, no color accents) with a Light and Dark theme
