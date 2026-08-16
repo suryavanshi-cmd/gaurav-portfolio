@@ -98,8 +98,8 @@ export const projects = [
   {
     key: 'llm-eval',
     title: 'LLM Red-Team Arena',
-    note: 'A playable round of the prompt-injection triage I run against our own assistants — ten prompts, allow or block, scored on precision and recall.',
-    game: 'redteam',
+    note: 'An actual game about guardrails — catch the injection attacks falling down the context window without catching the legitimate traffic. Plus a slower triage round scored on precision and recall.',
+    game: 'guardrail',
     problem:
       'Guardrail work is usually described rather than demonstrated. The judgement it takes — spotting an injection without blocking the legitimate question that merely looks like one — is easier to show than to write about.',
     flow: ['Corpus', 'Classify', 'Score', 'Precision/recall', 'Verdict'],

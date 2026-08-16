@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
+import GuardrailGame from './GuardrailGame';
 import RedTeamArena from './RedTeamArena';
 import { projectCategories } from './projects';
 
@@ -62,8 +63,6 @@ export default function ProjectDialog({ project, onClose }) {
 
   if (!project) return null;
 
-  const isGame = Boolean(project.game);
-
   return (
     <div
       className="dialog-backdrop"
@@ -109,11 +108,17 @@ export default function ProjectDialog({ project, onClose }) {
             </section>
           ) : null}
 
-          {isGame ? (
-            <section className="dialog-section">
-              <h3>Play a round</h3>
-              <RedTeamArena />
-            </section>
+          {project.game === 'guardrail' ? (
+            <>
+              <section className="dialog-section">
+                <h3>Arcade mode</h3>
+                <GuardrailGame />
+              </section>
+              <section className="dialog-section">
+                <h3>Triage mode — same call, no clock</h3>
+                <RedTeamArena />
+              </section>
+            </>
           ) : null}
 
           {project.challenges ? (
