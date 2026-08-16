@@ -1,10 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import LLMWhiteboard from './LLMWhiteboard';
+import ProjectDialog from './ProjectDialog';
+import { projects, projectCategories } from './projects';
 
 const GITHUB_URL = 'https://github.com/suryavanshi-cmd';
 const EMAIL = 'gauravsuryvanshi06@gmail.com';
+
+const FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'llm-flow', label: 'LLM flows' },
+  { key: 'llm-eval', label: 'LLM testing' },
+  { key: 'automation', label: 'Automation' },
+];
 
 /* A fact kept inside the sentence. `mark` is the two-character stand-in that
    sits where a logo would go; `tip` is the detail revealed on hover. */
@@ -35,15 +44,6 @@ function Stack({ items }) {
     </span>
   );
 }
-
-const projects = [
-  { key: 'automation', title: 'Generic Dynamic Journey Builder', note: 'Parses Chrome DevTools HAR exports and replays them as repeatable REST journeys, with variable extraction and dependency chaining.' },
-  { key: 'automation', title: 'JSON-Driven API Sequencing Engine', note: 'Config-driven orchestration of chained API calls, with retry/polling, SSE streaming, and a visual builder for composing runs.' },
-  { key: 'release', title: 'API Contract Drift Detector', note: 'Diffs OpenAPI specs between environments, classifies every change as breaking or safe, and gates the deploy on the verdict.' },
-  { key: 'llm', title: 'LLM Evaluation & Guardrails Console', note: 'Scores generated answers for correctness, business-rule compliance, and hallucination risk before a feature ships.' },
-  { key: 'llm', title: 'Grounded Knowledge Assistant', note: 'Retrieval-backed assistant over runbooks and API specs that keeps every answer attached to its source.' },
-  { key: 'ml', title: 'Wildlife Conservation Analysis', note: 'Computer-vision pipeline for species analysis — the work behind my copyright registration.' },
-];
 
 const timeline = [
   { when: '2024 — now', title: 'SDET · Vidal Health TPA, Pune', note: 'Own the Java 17 + TestNG + Rest-Assured API automation framework behind health-insurance claims processing.' },
@@ -132,9 +132,17 @@ function FileIcon() {
 
 export default function Portfolio() {
   const [labOpen, setLabOpen] = useState(false);
+  const [openProject, setOpenProject] = useState(null);
+  const [filter, setFilter] = useState('all');
+
+  const visibleProjects = useMemo(
+    () => (filter === 'all' ? projects : projects.filter((project) => project.key === filter)),
+    [filter],
+  );
 
   /* While the lab is open it owns the screen: lock the page behind it and let
-     Escape close it. Restores the previous overflow rather than clearing it. */
+     Escape close it. Restores the previous overflow rather than clearing it.
+     The project dialog manages its own lock, so only one is ever open. */
   useEffect(() => {
     if (!labOpen) return undefined;
     const onKey = (event) => { if (event.key === 'Escape') setLabOpen(false); };
@@ -184,6 +192,11 @@ export default function Portfolio() {
             I work in Java 17, TestNG, Rest-Assured and Oracle SQL
             <Stack items={['J', 'T', 'R', 'S']} />
           </li>
+          <li>
+            Most of what I build now is <strong>LLM automation flows</strong> — agentic pipelines,
+            document extraction, a routing gateway — and the <strong>LLM testing</strong> that keeps
+            them honest: evals in CI, grounding checks, and red-teaming
+          </li>
           <li>2+ years into test automation, based in Pune</li>
           <li>
             I automated a <strong>190+</strong> case partner-integration regression suite across
@@ -212,19 +225,41 @@ export default function Portfolio() {
 
       <section className="section" id="projects">
         <h2 className="section-label">Projects</h2>
+
+        <div className="filters" role="group" aria-label="Filter projects">
+          {FILTERS.map((entry) => (
+            <button
+              type="button"
+              key={entry.key}
+              className={filter === entry.key ? 'is-on' : undefined}
+              aria-pressed={filter === entry.key}
+              onClick={() => setFilter(entry.key)}
+            >
+              {entry.label}
+            </button>
+          ))}
+        </div>
+
         <ul className="list">
-          {projects.map((project) => (
+          {visibleProjects.map((project) => (
             <li key={project.title}>
-              <div className="row">
+              <button type="button" className="row row-open" onClick={() => setOpenProject(project)}>
                 <span className="row-key">{project.key}</span>
                 <span>
-                  <span className="row-title">{project.title}</span>
+                  <span className="row-title">
+                    {project.title}
+                    {project.game ? <span className="row-flag">playable</span> : null}
+                  </span>
                   <span className="row-note">{project.note}</span>
                 </span>
-              </div>
+              </button>
             </li>
           ))}
         </ul>
+        <p className="list-hint">
+          {visibleProjects.length} {visibleProjects.length === 1 ? 'project' : 'projects'} — open any
+          one for the problem, the flow, and what made it hard.
+        </p>
       </section>
 
       <section className="section" id="timeline">
@@ -248,7 +283,8 @@ export default function Portfolio() {
         <h2 className="section-label">Say hello</h2>
         <ul className="bullets">
           <li>
-            I’m open to SDET, API test automation, and LLM application engineering roles
+            I’m open to LLM application engineering, AI evaluation and testing, and SDET / API
+            automation roles
           </li>
           <li>
             Send me the role or a problem you’re stuck on at{' '}
@@ -261,6 +297,9 @@ export default function Portfolio() {
       <footer className="foot">Gaurav Suryavanshi — SDET · API automation · Pune</footer>
 
       {labOpen ? <LLMWhiteboard onClose={() => setLabOpen(false)} /> : null}
+      {openProject ? (
+        <ProjectDialog project={openProject} onClose={() => setOpenProject(null)} />
+      ) : null}
     </div>
   );
 }
