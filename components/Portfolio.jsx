@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import LLMWhiteboard from './LLMWhiteboard';
 import ProjectDialog from './ProjectDialog';
 import { projects, projectCategories } from './projects';
+import { useActiveSection, useProgress, useReveal } from './useReveal';
 
 const GITHUB_URL = 'https://github.com/suryavanshi-cmd';
 const EMAIL = 'gauravsuryvanshi06@gmail.com';
@@ -14,6 +15,60 @@ const FILTERS = [
   { key: 'llm-eval', label: 'LLM testing' },
   { key: 'automation', label: 'Automation' },
 ];
+
+/* The reader's position indicator, and the anchor targets it tracks. */
+const SECTIONS = [
+  { id: 'top', label: 'Intro' },
+  { id: 'summary', label: 'Summary' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'timeline', label: 'Timeline' },
+  { id: 'contact', label: 'Contact' },
+];
+const SECTION_IDS = SECTIONS.map((section) => section.id);
+
+const TICKER = [
+  'Java 17', 'TestNG', 'Rest-Assured', 'Oracle SQL', 'Next.js', 'React', 'Node.js',
+  'Playwright', 'RAG', 'Embeddings', 'Vector search', 'Guardrails', 'Evals in CI',
+  'OpenTelemetry', 'GitHub Actions', 'Supabase', 'Docker',
+];
+
+/* A quiet index down the left margin on wide screens. Purely a shortcut — every
+   section is reachable by scrolling, and the header nav covers narrow screens. */
+function SectionIndex({ active }) {
+  return (
+    <nav className="index" aria-label="Page sections">
+      {SECTIONS.map((section, position) => (
+        <a
+          key={section.id}
+          href={`#${section.id}`}
+          className={active === section.id ? 'is-here' : undefined}
+          aria-current={active === section.id ? 'true' : undefined}
+        >
+          <i aria-hidden="true" />
+          <span className="index-num">{String(position + 1).padStart(2, '0')}</span>
+          <span className="index-label">{section.label}</span>
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+function Ticker() {
+  /* Duplicated once so the translation can loop seamlessly; the copy is hidden
+     from assistive tech so the list is not announced twice. */
+  return (
+    <div className="ticker" aria-label="Technologies I work in">
+      <div className="ticker-move">
+        <span className="ticker-run">
+          {TICKER.map((item) => <b key={item}>{item}</b>)}
+        </span>
+        <span className="ticker-run" aria-hidden="true">
+          {TICKER.map((item) => <b key={`${item}-copy`}>{item}</b>)}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 /* A fact kept inside the sentence. `mark` is the two-character stand-in that
    sits where a logo would go; `tip` is the detail revealed on hover. */
@@ -140,6 +195,11 @@ export default function Portfolio() {
     [filter],
   );
 
+  const progressRef = useProgress();
+  const activeSection = useActiveSection(SECTION_IDS);
+  // Re-scan after filtering so newly mounted rows are observed too.
+  useReveal([filter]);
+
   /* While the lab is open it owns the screen: lock the page behind it and let
      Escape close it. Restores the previous overflow rather than clearing it.
      The project dialog manages its own lock, so only one is ever open. */
@@ -156,7 +216,10 @@ export default function Portfolio() {
   }, [labOpen]);
 
   return (
-    <div className="shell">
+    <div className="shell" id="top">
+      <div className="grain" aria-hidden="true" />
+      <SectionIndex active={activeSection} />
+
       <header className="head">
         <span className="head-name">Gaurav Suryavanshi</span>
         <HeadMeta />
@@ -165,20 +228,23 @@ export default function Portfolio() {
           <a href="#timeline">timeline</a>
           <a href={`mailto:${EMAIL}`}>contact</a>
         </nav>
+        <span className="head-progress" aria-hidden="true"><i ref={progressRef} /></span>
       </header>
 
       <div className="intro">
-        <p>
+        <p data-rise>
           Hello! I’m Gaurav and you’ve found my tiny corner of the internet. I test and
           build the backend systems behind health insurance — the kind where a bug
           doesn’t just look wrong, it reaches somebody’s claim.
         </p>
-        <span className="avatar" aria-hidden="true">GS</span>
+        <span className="avatar" aria-hidden="true" data-rise style={{ '--rise': 1 }}>GS</span>
       </div>
 
-      <section className="section">
-        <h2 className="section-label">Summary</h2>
-        <ul className="bullets">
+      <Ticker />
+
+      <section className="section" id="summary">
+        <h2 className="section-label" data-rise><span aria-hidden="true">01</span>Summary</h2>
+        <ul className="bullets stagger" data-rise>
           <li>
             Currently I’m an SDET at{' '}
             <Chip mark="VH" tip="Health-insurance TPA · Pune">Vidal Health TPA</Chip>, owning the
@@ -212,7 +278,7 @@ export default function Portfolio() {
           </li>
         </ul>
 
-        <div className="icon-row">
+        <div className="icon-row" data-rise>
           <a href={`mailto:${EMAIL}`} aria-label="Email"><MailIcon /></a>
           <a href={GITHUB_URL} target="_blank" rel="noreferrer noopener" aria-label="GitHub"><GitHubIcon /></a>
           <a href="/Gaurav-Suryavanshi-Resume.pdf" download aria-label="Résumé PDF"><FileIcon /></a>
@@ -224,9 +290,9 @@ export default function Portfolio() {
       </section>
 
       <section className="section" id="projects">
-        <h2 className="section-label">Projects</h2>
+        <h2 className="section-label" data-rise><span aria-hidden="true">02</span>Projects</h2>
 
-        <div className="filters" role="group" aria-label="Filter projects">
+        <div className="filters" role="group" aria-label="Filter projects" data-rise>
           {FILTERS.map((entry) => (
             <button
               type="button"
@@ -240,7 +306,7 @@ export default function Portfolio() {
           ))}
         </div>
 
-        <ul className="list">
+        <ul className="list stagger" data-rise key={filter}>
           {visibleProjects.map((project) => (
             <li key={project.title}>
               <button type="button" className="row row-open" onClick={() => setOpenProject(project)}>
@@ -252,19 +318,20 @@ export default function Portfolio() {
                   </span>
                   <span className="row-note">{project.note}</span>
                 </span>
+                <span className="row-go" aria-hidden="true">→</span>
               </button>
             </li>
           ))}
         </ul>
-        <p className="list-hint">
+        <p className="list-hint" data-rise>
           {visibleProjects.length} {visibleProjects.length === 1 ? 'project' : 'projects'} — open any
           one for the problem, the flow, and what made it hard.
         </p>
       </section>
 
       <section className="section" id="timeline">
-        <h2 className="section-label">Timeline</h2>
-        <ul className="list">
+        <h2 className="section-label" data-rise><span aria-hidden="true">03</span>Timeline</h2>
+        <ul className="list stagger" data-rise>
           {timeline.map((entry) => (
             <li key={entry.title}>
               <div className="row">
@@ -279,9 +346,9 @@ export default function Portfolio() {
         </ul>
       </section>
 
-      <section className="section">
-        <h2 className="section-label">Say hello</h2>
-        <ul className="bullets">
+      <section className="section" id="contact">
+        <h2 className="section-label" data-rise><span aria-hidden="true">04</span>Say hello</h2>
+        <ul className="bullets stagger" data-rise>
           <li>
             I’m open to LLM application engineering, AI evaluation and testing, and SDET / API
             automation roles
@@ -294,7 +361,7 @@ export default function Portfolio() {
         </ul>
       </section>
 
-      <footer className="foot">Gaurav Suryavanshi — SDET · API automation · Pune</footer>
+      <footer className="foot" data-rise>Gaurav Suryavanshi — SDET · API automation · Pune</footer>
 
       {labOpen ? <LLMWhiteboard onClose={() => setLabOpen(false)} /> : null}
       {openProject ? (

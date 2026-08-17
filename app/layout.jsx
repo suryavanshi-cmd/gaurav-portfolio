@@ -141,9 +141,22 @@ export const viewport = {
   themeColor: '#ffffff',
 };
 
+/* Arms the entrance animations before first paint, and only when the visitor
+   has not asked for reduced motion. Without this flag every `[data-rise]`
+   element renders plainly visible, so a blocked script degrades to a static
+   page rather than a blank one. */
+const motionFlag = `(function(){try{
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.documentElement.dataset.motion='1';
+  }
+}catch(e){}})();`;
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
+      </head>
       <body>{children}</body>
     </html>
   );

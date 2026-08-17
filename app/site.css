@@ -17,6 +17,11 @@
   --gray-100: #f3f4f6;
   --gray-50: #f9fafb;
   --measure: 44rem;
+  /* Expo-out. Fast departure, long settle — the reason the motion reads as
+     considered rather than springy. */
+  --expo: cubic-bezier(0.23, 1, 0.32, 1);
+  --grain: 0.03;
+  --grid-line: rgba(11, 11, 13, 0.045);
   color-scheme: light;
 }
 
@@ -32,6 +37,8 @@
     --gray-200: #2a2c31;
     --gray-100: #1c1e22;
     --gray-50: #141619;
+    --grain: 0.042;
+    --grid-line: rgba(244, 244, 245, 0.04);
     color-scheme: dark;
   }
 }
@@ -40,6 +47,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keeps an anchored section clear of the sticky header instead of landing
+     underneath it. */
+  scroll-padding-top: 78px;
   background: var(--bg);
 }
 
@@ -423,6 +433,199 @@ a.row:hover .row-title {
   font-size: 14px;
 }
 
+/* ----- Ambient layer ------------------------------------------------------ */
+
+/* A hairline grid faded out by a radial mask, plus fine SVG grain. Both fixed,
+   both inert, both barely perceptible — the point is that the page stops
+   looking like a blank sheet without anything competing with the text. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: radial-gradient(120% 80% at 50% 0%, #000 0%, transparent 78%);
+  -webkit-mask-image: radial-gradient(120% 80% at 50% 0%, #000 0%, transparent 78%);
+}
+
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ----- Scroll reveal ------------------------------------------------------ */
+
+html[data-motion] [data-rise] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 640ms var(--expo), transform 640ms var(--expo);
+  transition-delay: calc(var(--rise, 0) * 90ms);
+}
+
+html[data-motion] [data-rise].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* A container that hands the entrance to its children instead of moving
+   itself, so a list arrives row by row. */
+html[data-motion] [data-rise].stagger {
+  opacity: 1;
+  transform: none;
+}
+
+html[data-motion] [data-rise].stagger > * {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition: opacity 560ms var(--expo), transform 560ms var(--expo);
+}
+
+html[data-motion] [data-rise].stagger.is-in > * {
+  opacity: 1;
+  transform: none;
+}
+
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(1) { transition-delay: 0ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(2) { transition-delay: 55ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(3) { transition-delay: 110ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(4) { transition-delay: 165ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(5) { transition-delay: 220ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(6) { transition-delay: 265ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(7) { transition-delay: 305ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(n + 8) { transition-delay: 340ms; }
+
+/* ----- Section index ------------------------------------------------------ */
+
+/* Lives in the left margin, outside the reading column, so it only appears once
+   there is genuinely room for it. */
+.index {
+  position: fixed;
+  left: 26px;
+  top: 50%;
+  z-index: 30;
+  display: none;
+  transform: translateY(-50%);
+}
+
+@media (min-width: 1220px) {
+  .index { display: grid; gap: 11px; }
+}
+
+.index a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--gray-400);
+  font-family: var(--font-jetbrains, ui-monospace), ui-monospace, monospace;
+  font-size: 11px;
+  transition: color 200ms var(--expo);
+}
+
+/* The dash grows as the section becomes current — position read at a glance,
+   without a heavy active pill. */
+.index i {
+  width: 10px;
+  height: 1px;
+  background: var(--gray-300);
+  transition: width 220ms var(--expo), background 220ms var(--expo);
+}
+
+.index a:hover { color: var(--gray-600); }
+.index a:hover i { width: 16px; background: var(--gray-500); }
+
+.index a.is-here { color: var(--fg); }
+.index a.is-here i { width: 24px; background: var(--fg); }
+
+.index-num { opacity: 0.55; }
+.index-label { letter-spacing: 0.02em; }
+
+/* ----- Technology ticker -------------------------------------------------- */
+
+.ticker {
+  position: relative;
+  margin-top: 30px;
+  padding: 11px 0;
+  overflow: hidden;
+  border-top: 1px solid var(--gray-100);
+  border-bottom: 1px solid var(--gray-100);
+  /* Fades the type into the page at both edges instead of clipping it. */
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.ticker-move {
+  display: flex;
+  width: max-content;
+  animation: ticker 46s linear infinite;
+}
+
+.ticker:hover .ticker-move { animation-play-state: paused; }
+
+.ticker-run {
+  display: flex;
+  flex: none;
+  gap: 26px;
+  padding-right: 26px;
+}
+
+.ticker-run b {
+  color: var(--gray-500);
+  font-family: var(--font-jetbrains, ui-monospace), ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+@keyframes ticker {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ----- Section numbering -------------------------------------------------- */
+
+.section-label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.section-label span {
+  color: var(--gray-300);
+  font-family: var(--font-jetbrains, ui-monospace), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+/* ----- Reading progress --------------------------------------------------- */
+
+.head-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.head-progress i {
+  display: block;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: var(--fg);
+}
+
 /* ----- Project filters --------------------------------------------------- */
 
 .filters {
@@ -457,9 +660,11 @@ a.row:hover .row-title {
 
 /* ----- Openable project row ---------------------------------------------- */
 
-/* Same grid as .row, with the button chrome stripped back off. */
+/* Same grid as .row, with the button chrome stripped back off. A third column
+   holds the arrow that appears on hover. */
 .row-open {
   width: 100%;
+  grid-template-columns: 104px minmax(0, 1fr) 18px;
   border-top: 0;
   border-right: 0;
   border-left: 0;
@@ -468,18 +673,64 @@ a.row:hover .row-title {
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background 140ms ease, box-shadow 140ms ease;
 }
 
-.row-open:hover {
-  background: var(--gray-50);
-  box-shadow: 0 0 0 12px var(--gray-50);
+/* The category key steps toward the title and darkens. */
+.row-open .row-key {
+  transition: transform 200ms var(--expo), color 200ms var(--expo);
 }
 
-.row-open:hover .row-title {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--gray-300);
+.row-open:hover .row-key,
+.row-open:focus-visible .row-key {
+  transform: translateX(3px);
+  color: var(--fg);
+}
+
+/* An underline that draws in from the left rather than a background fill —
+   it points along the direction of reading instead of flooding the row. */
+.row-open .row-title {
+  position: relative;
+  display: inline-block;
+}
+
+.row-open .row-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 240ms var(--expo);
+}
+
+.row-open:hover .row-title::after,
+.row-open:focus-visible .row-title::after {
+  transform: scaleX(1);
+}
+
+.row-go {
+  align-self: start;
+  margin-top: 2px;
+  color: var(--fg);
+  font-family: var(--font-jetbrains, ui-monospace), ui-monospace, monospace;
+  font-size: 12px;
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: opacity 200ms var(--expo), transform 200ms var(--expo);
+}
+
+.row-open:hover .row-go,
+.row-open:focus-visible .row-go {
+  opacity: 1;
+  transform: none;
+}
+
+.row-open:hover .row-flag {
+  border-color: var(--gray-400);
+  color: var(--fg);
 }
 
 .row-flag {
@@ -1098,7 +1349,25 @@ a.row:hover .row-title {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
   .chip:hover { transform: none; }
+
+  /* The entrance styles are already gated behind html[data-motion], which is
+     not set for these visitors. This is the belt-and-braces guarantee that
+     nothing decorative can leave content invisible. */
+  [data-rise],
+  [data-rise].stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* A looping marquee is the one thing here that cannot be salvaged by
+     shortening it, so it stops and simply reads as a row of labels. */
+  .ticker-move { animation: none; transform: none; }
+  .ticker { mask-image: none; -webkit-mask-image: none; overflow-x: auto; }
+
+  .row-open .row-title::after { transform: scaleX(1); }
 }
