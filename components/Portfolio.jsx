@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import LLMWhiteboard from './LLMWhiteboard';
 import ProjectDialog from './ProjectDialog';
 import { projects, projectCategories } from './projects';
+import { posts } from './posts';
 import { useActiveSection, useProgress, useReveal } from './useReveal';
 
 const GITHUB_URL = 'https://github.com/suryavanshi-cmd';
@@ -28,8 +30,9 @@ const SECTIONS = [
 const SECTION_IDS = SECTIONS.map((section) => section.id);
 
 /* Things I'm interested in and writing about. `lab` opens the interactive
-   explainer; `href` makes the row a link. A row with neither is just a
-   statement of interest, which is why the pattern allows all three. */
+   explainer, `href` makes the row a link, and a row with neither is just a
+   statement of interest — which is why the pattern allows all three.
+   Written posts are pulled from the same source the article pages render. */
 const INTERESTS = [
   {
     key: 'interactive',
@@ -38,16 +41,12 @@ const INTERESTS = [
     lab: true,
     flag: 'interactive',
   },
-  {
-    key: 'evaluation',
-    title: 'Evaluation beats model choice',
-    note: 'Most LLM products are limited by the absence of a test harness, not by the model behind them. Golden sets, grounding checks and CI gates decide whether a feature is shippable.',
-  },
-  {
-    key: 'automation',
-    title: 'Automation that survives the API changing',
-    note: 'Journeys described as data rather than code, so a renamed field is an edit to a config file instead of a rewrite of a test class.',
-  },
+  ...posts.map((post) => ({
+    key: `${post.readingMinutes} min`,
+    title: post.title,
+    note: post.summary,
+    href: `/blog/${post.slug}`,
+  })),
   {
     key: 'vision',
     title: 'Computer vision for conservation',
@@ -385,6 +384,17 @@ export default function Portfolio() {
                     {inner}
                     <span className="row-go" aria-hidden="true">→</span>
                   </button>
+                </li>
+              );
+            }
+
+            if (entry.href) {
+              return (
+                <li key={entry.title}>
+                  <Link className="row row-open" href={entry.href}>
+                    {inner}
+                    <span className="row-go" aria-hidden="true">→</span>
+                  </Link>
                 </li>
               );
             }
