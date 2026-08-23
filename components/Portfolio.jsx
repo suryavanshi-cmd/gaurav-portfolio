@@ -21,10 +21,39 @@ const SECTIONS = [
   { id: 'top', label: 'Intro' },
   { id: 'summary', label: 'Summary' },
   { id: 'projects', label: 'Projects' },
+  { id: 'interests', label: 'Interests' },
   { id: 'timeline', label: 'Timeline' },
   { id: 'contact', label: 'Contact' },
 ];
 const SECTION_IDS = SECTIONS.map((section) => section.id);
+
+/* Things I'm interested in and writing about. `lab` opens the interactive
+   explainer; `href` makes the row a link. A row with neither is just a
+   statement of interest, which is why the pattern allows all three. */
+const INTERESTS = [
+  {
+    key: 'interactive',
+    title: 'How an LLM actually works',
+    note: 'A walkthrough from prompt to generated token — tokenisation, embeddings, attention, logits, softmax, and the pick — animated one step at a time.',
+    lab: true,
+    flag: 'interactive',
+  },
+  {
+    key: 'evaluation',
+    title: 'Evaluation beats model choice',
+    note: 'Most LLM products are limited by the absence of a test harness, not by the model behind them. Golden sets, grounding checks and CI gates decide whether a feature is shippable.',
+  },
+  {
+    key: 'automation',
+    title: 'Automation that survives the API changing',
+    note: 'Journeys described as data rather than code, so a renamed field is an edit to a config file instead of a rewrite of a test class.',
+  },
+  {
+    key: 'vision',
+    title: 'Computer vision for conservation',
+    note: 'The work behind my copyright registration — species analysis from survey imagery, and the class-imbalance problem that makes the rare species hardest to see.',
+  },
+];
 
 const TICKER = [
   'Java 17', 'TestNG', 'Rest-Assured', 'Oracle SQL', 'Next.js', 'React', 'Node.js',
@@ -45,7 +74,7 @@ function SectionIndex({ active }) {
           aria-current={active === section.id ? 'true' : undefined}
         >
           <i aria-hidden="true" />
-          <span className="index-num">{String(position + 1).padStart(2, '0')}</span>
+          <span className="index-num">{String(position).padStart(2, '0')}</span>
           <span className="index-label">{section.label}</span>
         </a>
       ))}
@@ -225,6 +254,7 @@ export default function Portfolio() {
         <HeadMeta />
         <nav className="head-nav" aria-label="Sections">
           <a href="#projects">projects</a>
+          <a href="#interests">interests</a>
           <a href="#timeline">timeline</a>
           <a href={`mailto:${EMAIL}`}>contact</a>
         </nav>
@@ -282,10 +312,6 @@ export default function Portfolio() {
           <a href={`mailto:${EMAIL}`} aria-label="Email"><MailIcon /></a>
           <a href={GITHUB_URL} target="_blank" rel="noreferrer noopener" aria-label="GitHub"><GitHubIcon /></a>
           <a href="/Gaurav-Suryavanshi-Resume.pdf" download aria-label="Résumé PDF"><FileIcon /></a>
-          <span className="icon-row-divider" aria-hidden="true" />
-          <button type="button" onClick={() => setLabOpen(true)} aria-haspopup="dialog" aria-expanded={labOpen}>
-            ✦ How an LLM actually works
-          </button>
         </div>
       </section>
 
@@ -329,8 +355,54 @@ export default function Portfolio() {
         </p>
       </section>
 
+      <section className="section" id="interests">
+        <h2 className="section-label" data-rise><span aria-hidden="true">03</span>Interests &amp; writing</h2>
+        <ul className="list stagger" data-rise>
+          {INTERESTS.map((entry) => {
+            const inner = (
+              <>
+                <span className="row-key">{entry.key}</span>
+                <span>
+                  <span className="row-title">
+                    {entry.title}
+                    {entry.flag ? <span className="row-flag">{entry.flag}</span> : null}
+                  </span>
+                  <span className="row-note">{entry.note}</span>
+                </span>
+              </>
+            );
+
+            if (entry.lab) {
+              return (
+                <li key={entry.title}>
+                  <button
+                    type="button"
+                    className="row row-open"
+                    onClick={() => setLabOpen(true)}
+                    aria-haspopup="dialog"
+                    aria-expanded={labOpen}
+                  >
+                    {inner}
+                    <span className="row-go" aria-hidden="true">→</span>
+                  </button>
+                </li>
+              );
+            }
+
+            return (
+              <li key={entry.title}>
+                <div className="row">{inner}</div>
+              </li>
+            );
+          })}
+        </ul>
+        <p className="list-hint" data-rise>
+          The first one is playable — it animates a single next-token prediction end to end.
+        </p>
+      </section>
+
       <section className="section" id="timeline">
-        <h2 className="section-label" data-rise><span aria-hidden="true">03</span>Timeline</h2>
+        <h2 className="section-label" data-rise><span aria-hidden="true">04</span>Timeline</h2>
         <ul className="list stagger" data-rise>
           {timeline.map((entry) => (
             <li key={entry.title}>
@@ -347,7 +419,7 @@ export default function Portfolio() {
       </section>
 
       <section className="section" id="contact">
-        <h2 className="section-label" data-rise><span aria-hidden="true">04</span>Say hello</h2>
+        <h2 className="section-label" data-rise><span aria-hidden="true">05</span>Say hello</h2>
         <ul className="bullets stagger" data-rise>
           <li>
             I’m open to LLM application engineering, AI evaluation and testing, and SDET / API
