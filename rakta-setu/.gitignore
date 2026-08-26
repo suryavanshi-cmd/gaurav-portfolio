@@ -1,0 +1,22 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Runtime state — contains patient data. NEVER commit.
+data/
+*.sqlite
+*.sqlite-journal
+*.db
+
+# Incoming/processed analyzer output — real reports live here.
+inbox/
+archive/
+failed/
+
+# Logs
+*.log
+logs/
+
+.DS_Store
+Thumbs.db
