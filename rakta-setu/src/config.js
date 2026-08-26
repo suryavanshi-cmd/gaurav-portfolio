@@ -64,6 +64,17 @@ export const config = {
     },
   },
 
+  // When set, the folder watcher parses locally and pushes the result to a
+  // remote deployment instead of writing to a local database. This is how the
+  // lab PC talks to a Vercel deployment, which cannot watch a folder itself.
+  remote: {
+    url: (process.env.REMOTE_INGEST_URL || '').replace(/\/+$/, ''),
+    apiKey: process.env.LAB_API_KEY || '',
+    get enabled() {
+      return Boolean(this.url && this.apiKey);
+    },
+  },
+
   supabase: {
     url: process.env.SUPABASE_URL || '',
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',

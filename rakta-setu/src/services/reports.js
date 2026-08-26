@@ -1,9 +1,7 @@
 import { db } from '../db.js';
 import { config } from '../config.js';
 import { log, maskName, maskPhone } from '../logger.js';
-import { randomId, reportToken, sha256, safeEqual } from '../util/ids.js';
-import { lastFour } from '../util/phone.js';
-import { interpretReport } from '../domain/interpret.js';
+import { randomId, sha256, safeEqual } from '../util/ids.js';
 
 const insertPatient = db.prepare(`
   INSERT INTO patients (id, name, phone, age, sex) VALUES (@id, @name, @phone, @age, @sex)
@@ -30,9 +28,9 @@ export function findBySourceHash(hash) {
  * carries. Everything happens in one transaction so a crash mid-way can never
  * leave a report the patient can open but staff cannot see.
  */
-export const createReport = db.transaction(({ patient, measurements, sourceFile, sourceHash, labNo, collectedAt, reportedAt, doctor }) => {
-  const interpretation = interpretReport(measurements, patient);
-
+export const createReport = db.transaction(({
+  patient, measurements, prepared, labNo, sourceFile, sourceHash, collectedAt, reportedAt, doctor,
+}) => {
   const patientId = randomId(10);
   insertPatient.run({
     id: patientId,
@@ -42,14 +40,9 @@ export const createReport = db.transaction(({ patient, measurements, sourceFile,
     sex: patient.sex ?? null,
   });
 
-  const pin = patient.phone ? lastFour(patient.phone) : null;
-  const expiresAt = config.links.ttlHours > 0
-    ? new Date(Date.now() + config.links.ttlHours * 3600_000).toISOString()
-    : null;
-
   const report = {
     id: randomId(10),
-    token: reportToken(),
+    token: prepared.token,
     patient_id: patientId,
     lab_no: labNo ?? null,
     source_file: sourceFile ?? null,
@@ -58,19 +51,37 @@ export const createReport = db.transaction(({ patient, measurements, sourceFile,
     reported_at: reportedAt ?? null,
     doctor: doctor ?? null,
     measurements_json: JSON.stringify(measurements),
-    interpretation_json: JSON.stringify(interpretation),
-    pin_hash: pin ? sha256(pin) : null,
+    interpretation_json: JSON.stringify(prepared.interpretation),
+    pin_hash: prepared.pinHash,
     status: 'pending',
-    expires_at: expiresAt,
+    expires_at: prepared.expiresAt,
   };
 
   insertReport.run(report);
-  audit(report.id, 'report.created', { measurements: measurements.length, abnormal: interpretation.counts.abnormal });
+  audit(report.id, 'report.created', {
+    measurements: measurements.length,
+    abnormal: prepared.interpretation.counts.abnormal,
+  });
 
-  log.info(`अहवाल तयार · report created ${report.id} for ${maskName(patient.name)} (${maskPhone(patient.phone)}) — ${interpretation.counts.abnormal}/${interpretation.counts.total} abnormal`);
+  log.info(`अहवाल तयार · report created ${report.id} for ${maskName(patient.name)} (${maskPhone(patient.phone)}) — ${prepared.interpretation.counts.abnormal}/${prepared.interpretation.counts.total} abnormal`);
 
-  return { ...report, interpretation, patient: { ...patient, id: patientId } };
+  return {
+    ...report,
+    interpretation: prepared.interpretation,
+    patient: { ...patient, id: patientId },
+  };
 });
+
+const selectLatestForPhone = db.prepare(`
+  SELECT r.token, r.status
+  FROM reports r JOIN patients p ON p.id = r.patient_id
+  WHERE p.phone = ?
+  ORDER BY r.created_at DESC LIMIT 1
+`);
+
+export function latestReportForPhone(phone) {
+  return selectLatestForPhone.get(String(phone || '')) ?? null;
+}
 
 const selectFull = db.prepare(`
   SELECT r.*, p.name AS patient_name, p.phone AS patient_phone, p.age AS patient_age, p.sex AS patient_sex

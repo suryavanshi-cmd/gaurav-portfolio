@@ -11,7 +11,7 @@ import {
 } from '../billing/pricing.js';
 import { extractFromPdf, countInputTokens, ExtractionFailed } from '../services/extraction.js';
 import { interpretReport } from '../domain/interpret.js';
-import { createReport } from '../services/reports.js';
+import { createReport } from '../store/index.js';
 import { sendReportLink } from '../services/whatsapp/index.js';
 import { reportUrl } from '../services/ingest.js';
 
@@ -223,7 +223,7 @@ async function maybeDeliver({ req, result, interpretation, pdfId }) {
   }
 
   try {
-    const report = createReport({
+    const report = await createReport({
       patient: { ...result.patient, phone },
       measurements: result.measurements,
       sourceFile: `ai-extract:${pdfId}`,

@@ -6,7 +6,7 @@ import { displayPhone } from '../util/phone.js';
 import {
   getReportByToken, verifyPin, isExpired, recordOpen,
   recordQuestion, listQuestions, listRecent, audit,
-} from '../services/reports.js';
+} from '../store/index.js';
 import { answerQuestion } from '../services/ai.js';
 import { resendReport } from '../services/ingest.js';
 
@@ -40,8 +40,14 @@ const unlockLimiter = rateLimiter({ windowMs: 10 * 60_000, max: 12, key: (req) =
 const askLimiter = rateLimiter({ windowMs: 60_000, max: 10 });
 
 /** Resolves the token and enforces expiry. Attaches `req.report`. */
-function loadReport(req, res, next) {
-  const report = getReportByToken(req.params.token);
+async function loadReport(req, res, next) {
+  let report;
+  try {
+    report = await getReportByToken(req.params.token);
+  } catch (err) {
+    log.error(`report lookup failed: ${err.message}`);
+    return res.status(503).json({ error: 'अहवाल उघडता आला नाही. कृपया पुन्हा प्रयत्न करा.' });
+  }
   if (!report) {
     return res.status(404).json({ error: 'हा अहवाल सापडला नाही. कृपया प्रयोगशाळेशी संपर्क साधा.' });
   }
@@ -56,7 +62,7 @@ function loadReport(req, res, next) {
 function requirePin(req, res, next) {
   const pin = req.body?.pin ?? req.get('x-report-pin');
   if (!verifyPin(req.report, pin)) {
-    audit(req.report.id, 'report.pin_failed');
+    audit(req.report.id, 'report.pin_failed').catch(() => {});
     return res.status(401).json({ error: 'दिलेले शेवटचे ४ अंक जुळत नाहीत. कृपया पुन्हा तपासा.' });
   }
   return next();
@@ -81,9 +87,9 @@ api.get('/report/:token/meta', loadReport, (req, res) => {
 });
 
 /** Full report, gated by the PIN. */
-api.post('/report/:token', unlockLimiter, loadReport, requirePin, (req, res) => {
+api.post('/report/:token', unlockLimiter, loadReport, requirePin, async (req, res) => {
   const { report } = req;
-  recordOpen(report.id);
+  await recordOpen(report.id);
   res.json({
     labName: config.lab.name,
     labPhone: config.lab.phone,
@@ -101,7 +107,7 @@ api.post('/report/:token', unlockLimiter, loadReport, requirePin, (req, res) => 
       },
       interpretation: report.interpretation,
     },
-    history: listQuestions(report.id),
+    history: await listQuestions(report.id),
   });
 });
 
@@ -121,7 +127,7 @@ api.post('/report/:token/ask', askLimiter, loadReport, requirePin, async (req, r
 
   try {
     const { answer, source } = await answerQuestion({ report: req.report, question, history });
-    recordQuestion({ reportId: req.report.id, question, answer, source });
+    await recordQuestion({ reportId: req.report.id, question, answer, source });
     return res.json({ answer, source });
   } catch (err) {
     log.error(`ask failed: ${err.message}`);
@@ -140,9 +146,14 @@ function requireAdmin(req, res, next) {
   return next();
 }
 
-api.get('/admin/reports', requireAdmin, (req, res) => {
+api.get('/admin/reports', requireAdmin, async (req, res) => {
   const limit = Math.min(200, Math.max(1, Number.parseInt(req.query.limit, 10) || 50));
-  res.json({ reports: listRecent(limit) });
+  try {
+    res.json({ reports: await listRecent(limit) });
+  } catch (err) {
+    log.error(`listRecent failed: ${err.message}`);
+    res.status(503).json({ error: 'यादी मिळवता आली नाही.' });
+  }
 });
 
 api.post('/admin/reports/:id/resend', requireAdmin, async (req, res) => {

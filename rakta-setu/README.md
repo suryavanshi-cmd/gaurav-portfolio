@@ -134,6 +134,7 @@ Full guides:
 - **[docs/SETUP.mr.md](docs/SETUP.mr.md)** — मराठीत, टप्प्याटप्प्याने सेटअप (for the lab)
 - **[docs/WHATSAPP.md](docs/WHATSAPP.md)** — Meta Cloud API + getting a Marathi template approved
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — how it fits together, and how to extend it
+- **[docs/DEPLOY-VERCEL.md](docs/DEPLOY-VERCEL.md)** — hosting on Vercel + Supabase, and exactly which keys go where
 - **[docs/BILLING.md](docs/BILLING.md)** — the credit system, Razorpay, and the spend caps
 - **[supabase/README.md](supabase/README.md)** — applying the Postgres migrations
 - **[docs/SAFETY.md](docs/SAFETY.md)** — the medical and privacy limits this project holds itself to
@@ -143,8 +144,13 @@ Full guides:
 ## प्रकल्पाची रचना · Project layout
 
 ```
+api/index.js             Vercel serverless entry (exports the Express app)
+vercel.json              routing + function limits
 src/
+  app.js                 the Express app — no listen(), no watcher
+  server.js              long-running entry for the lab PC (adds both)
   config.js              env parsing + startup validation
+  store/                 report storage: sqlite (lab PC) | supabase (serverless)
   db.js                  SQLite schema
   domain/
     analytes.js          ★ the knowledge base — 33 tests in Marathi

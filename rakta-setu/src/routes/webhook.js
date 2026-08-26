@@ -1,7 +1,7 @@
 import express from 'express';
 import { config } from '../config.js';
 import { log, maskPhone } from '../logger.js';
-import { db } from '../db.js';
+import { latestReportForPhone } from '../store/index.js';
 import { normalisePhone } from '../util/phone.js';
 import { sendPlainText } from '../services/whatsapp/index.js';
 import { reportUrl } from '../services/ingest.js';
@@ -26,14 +26,6 @@ webhook.get('/whatsapp', (req, res) => {
   return res.sendStatus(403);
 });
 
-const latestForPhone = db.prepare(`
-  SELECT r.token, r.status
-  FROM reports r JOIN patients p ON p.id = r.patient_id
-  WHERE p.phone = ?
-  ORDER BY r.created_at DESC
-  LIMIT 1
-`);
-
 webhook.post('/whatsapp', async (req, res) => {
   // Meta retries aggressively on anything but a fast 200.
   res.sendStatus(200);
@@ -53,7 +45,7 @@ webhook.post('/whatsapp', async (req, res) => {
           const text = message.text?.body?.trim() ?? '';
           log.info(`इनकमिंग संदेश · inbound message from ${maskPhone(from)}`);
 
-          const row = from ? latestForPhone.get(from) : null;
+          const row = from ? await latestReportForPhone(from) : null;
           const reply = row
             ? `नमस्कार! तुमचा अहवाल इथे पाहू शकता 👇\n${reportUrl(row.token)}\n\nपान उघडल्यावर तुमच्या मोबाईल नंबरचे शेवटचे ४ अंक टाका.\n\nअडचण असल्यास ${config.lab.name} ला ${config.lab.phone} या नंबरवर फोन करा.`
             : `नमस्कार! या नंबरवर आम्हाला तुमचा अहवाल सापडला नाही.\n\nकृपया ${config.lab.name} ला ${config.lab.phone} या नंबरवर संपर्क साधा.`;
