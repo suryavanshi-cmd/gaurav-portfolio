@@ -57,6 +57,7 @@ they cannot read.
 | 🤖 **AI किंवा नियम** | With an Anthropic API key, answers come from Claude under strict medical guardrails. **Without one, the app still answers** from the built-in Marathi knowledge base |
 | 🔒 **सुरक्षा** | Capability-token links + last-4-digits PIN, expiring links, no health data before unlock, masked logs |
 | 👩‍⚕️ **कर्मचारी कक्ष** | Staff console to see delivery status and resend |
+| 💳 **पे-पर-यूज क्रेडिट** | *Optional.* Supabase + Razorpay credit system metering AI extraction of **scanned** reports — reserve-then-reconcile billing, idempotent webhooks, per-account and platform-wide spend caps |
 
 ---
 
@@ -106,11 +107,35 @@ export is far more reliable than scraping a PDF's text layer.
 > app fails loudly and moves the file to `failed/` rather than guessing. Sending
 > a patient a mis-read blood result is worse than sending nothing.
 
+### स्कॅन केलेले अहवाल · Scanned reports (paid, optional)
+
+The local parser cannot read a PDF with no text layer, and refuses rather than
+guessing. Turning on `BILLING_ENABLED` adds an AI extraction path for exactly
+those, metered per use:
+
+```
+POST /api/extract        Content-Type: application/pdf, raw bytes
+GET  /api/user/balance   remaining credits
+POST /api/payment/create-order   Razorpay top-up
+```
+
+Credits are held before the call and reconciled against the real
+`usage.input_tokens` / `usage.output_tokens` afterwards, so an over-estimate
+costs the user nothing and concurrent uploads cannot overdraw an account.
+Everything stays off — and free — unless you enable it.
+
+Setup: **[supabase/README.md](supabase/README.md)** then
+**[docs/BILLING.md](docs/BILLING.md)**.
+
+---
+
 Full guides:
 
 - **[docs/SETUP.mr.md](docs/SETUP.mr.md)** — मराठीत, टप्प्याटप्प्याने सेटअप (for the lab)
 - **[docs/WHATSAPP.md](docs/WHATSAPP.md)** — Meta Cloud API + getting a Marathi template approved
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — how it fits together, and how to extend it
+- **[docs/BILLING.md](docs/BILLING.md)** — the credit system, Razorpay, and the spend caps
+- **[supabase/README.md](supabase/README.md)** — applying the Postgres migrations
 - **[docs/SAFETY.md](docs/SAFETY.md)** — the medical and privacy limits this project holds itself to
 
 ---
@@ -132,9 +157,17 @@ src/
     ingest.js            parse → dedupe → store → send → archive
     reports.js           storage, tokens, PIN verification
     ai.js                Marathi Q&A (Claude) + rule-based fallback
+    extraction.js        AI extraction of scanned PDFs (the metered feature)
     whatsapp/            cloud.js · twilio.js · console.js
+  billing/               optional — off unless BILLING_ENABLED=true
+    pricing.js           model rates, INR conversion, estimation
+    credits.js           reserve → settle, over atomic SQL
+    razorpay.js          orders + both signature schemes
+    platformCap.js       monthly spend backstop
+    auth.js              Supabase JWT verification
   watcher/index.js       chokidar folder watcher
-  routes/                api.js · webhook.js
+  routes/                api.js · webhook.js · payment.js · user.js · extract.js
+supabase/migrations/     credit schema + atomic functions
 public/                  patient page, staff console, voice module
 scripts/                 seed · ingest-file · send-test · eject-to-new-repo
 ```

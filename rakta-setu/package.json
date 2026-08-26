@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "description": "Automated WhatsApp delivery of blood reports in Marathi, with a voice-enabled Marathi web app that explains results.",
   "type": "module",
-  "engines": { "node": ">=20.11" },
+  "engines": {
+    "node": ">=20.11"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "seed": "node scripts/seed-demo.js",
     "send-test": "node scripts/send-test.js",
-    "ingest": "node scripts/ingest-file.js"
+    "ingest": "node scripts/ingest-file.js",
+    "billing-check": "node scripts/billing-selftest.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.0",
+    "@supabase/supabase-js": "^2.48.1",
     "better-sqlite3": "^11.10.0",
     "chokidar": "^4.0.3",
     "dotenv": "^16.4.7",
