@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="mr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#b3261e">
+  <title>तुमचा रक्त तपासणी अहवाल · रक्त-सेतू</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- ── Unlock gate ─────────────────────────────────────────── -->
+<section id="gate" class="wrap gate" hidden>
+  <p class="brandmark" style="color:var(--brand)">रक्त-सेतू</p>
+  <h1 id="gateTitle" style="font-size:1.2rem">तुमचा अहवाल तयार आहे</h1>
+  <p class="muted" id="gateHint">सुरक्षिततेसाठी, तुमच्या मोबाईल नंबरचे शेवटचे ४ अंक टाका.</p>
+
+  <form id="pinForm" autocomplete="off">
+    <label class="sr-only" for="pin">मोबाईल नंबरचे शेवटचे ४ अंक</label>
+    <input class="pin" id="pin" name="pin" type="text" inputmode="numeric" pattern="[0-9]*"
+           maxlength="4" placeholder="••••" aria-describedby="gateHint" required>
+    <p class="error" id="gateError" role="alert"></p>
+    <button class="btn btn-primary btn-block" type="submit" id="unlockBtn">अहवाल उघडा</button>
+  </form>
+
+  <p class="muted" id="gateFooter" style="margin-top:24px"></p>
+</section>
+
+<!-- ── Loading ─────────────────────────────────────────────── -->
+<div id="loading" class="skeleton">अहवाल उघडत आहे…</div>
+
+<!-- ── Report ──────────────────────────────────────────────── -->
+<main id="app" hidden>
+  <header class="topbar">
+    <div class="inner">
+      <p class="brandmark">रक्त-सेतू</p>
+      <h1 id="labName">प्रयोगशाळा</h1>
+      <p class="sub" id="labSub"></p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <!-- summary -->
+    <section class="card" aria-labelledby="summaryTitle">
+      <h2 id="summaryTitle">तुमच्या अहवालाचा सारांश</h2>
+      <p class="headline" id="headline"></p>
+      <div class="patient-meta" id="patientMeta"></div>
+    </section>
+
+    <div id="criticalAlert"></div>
+
+    <!-- voice assistant -->
+    <section class="card assistant" aria-labelledby="assistantTitle">
+      <h2 id="assistantTitle">🎙️ मराठीत प्रश्न विचारा</h2>
+      <p class="muted" id="voiceSupport">माइकचं बटण दाबा आणि मराठीत बोला. किंवा खाली टाइप करा.</p>
+
+      <div class="mic-row">
+        <button class="mic" id="micBtn" type="button" aria-pressed="false" aria-label="बोलण्यासाठी दाबा">🎤</button>
+        <textarea class="ask-input" id="askInput" rows="2"
+                  placeholder="उदा. माझं हिमोग्लोबिन कमी का आहे?" aria-label="तुमचा प्रश्न"></textarea>
+      </div>
+      <button class="btn btn-primary btn-block" id="askBtn" type="button">प्रश्न विचारा</button>
+
+      <div class="chips" id="chips" role="group" aria-label="नेहमीचे प्रश्न"></div>
+      <div class="thread" id="thread" aria-live="polite"></div>
+    </section>
+
+    <!-- advice -->
+    <section class="card" id="adviceCard" hidden aria-labelledby="adviceTitle">
+      <h2 id="adviceTitle">🥗 तुमच्यासाठी आहाराचा सल्ला</h2>
+      <ul id="adviceList"></ul>
+      <button class="btn btn-small" id="readAdvice" type="button">🔊 सल्ला ऐका</button>
+    </section>
+
+    <!-- results -->
+    <section aria-labelledby="resultsTitle">
+      <h2 id="resultsTitle" class="group-title" style="margin-top:30px">सर्व तपासण्या</h2>
+      <div id="results"></div>
+    </section>
+
+    <div class="disclaimer">
+      <strong>महत्त्वाची सूचना:</strong> या पानावरील माहिती आणि सल्ला हे सर्वसाधारण मार्गदर्शनासाठी आहेत.
+      हे कोणत्याही प्रकारे डॉक्टरांच्या तपासणीला किंवा सल्ल्याला पर्याय नाहीत.
+      कोणतंही औषध सुरू करण्यापूर्वी किंवा बंद करण्यापूर्वी तुमच्या डॉक्टरांचाच सल्ला घ्या.
+      तातडीचा त्रास होत असल्यास लगेच जवळच्या दवाखान्यात जा.
+    </div>
+
+    <div class="no-print" style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="printBtn" type="button">🖨️ अहवाल प्रिंट करा</button>
+      <a class="btn" id="callLab" href="#" hidden>📞 प्रयोगशाळेला फोन करा</a>
+    </div>
+  </div>
+</main>
+
+<script src="/js/voice.js"></script>
+<script src="/js/report.js"></script>
+</body>
+</html>

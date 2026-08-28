@@ -1,0 +1,19 @@
+Patient Name,Sunita Jadhav
+Age,32
+Sex,Female
+Mobile No,9765432109
+Lab No,SPL/2026/04822
+Collected,14/08/2026
+Ref. By,Dr. A. Deshmukh
+,
+Test,Result,Unit,Reference
+Haemoglobin,11.8,g/dL,12.0 - 15.0
+Total Leucocyte Count,7.4,10^3/uL,4.0 - 11.0
+Platelet Count,2.6,lakhs/cumm,1.5 - 4.5
+Serum Ferritin,9,ng/mL,15 - 150
+TSH,7.8,uIU/mL,0.4 - 4.0
+Vitamin D,18.5,ng/mL,30 - 100
+Vitamin B12,410,pg/mL,200 - 900
+Serum Calcium,8.9,mg/dL,8.6 - 10.3
+Blood Sugar Fasting,88,mg/dL,70 - 100
+Total Cholesterol,178,mg/dL,125 - 200

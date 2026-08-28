@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="mr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>कर्मचारी कक्ष · रक्त-सेतू</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: start; padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); }
+    .scroll { overflow-x: auto; }
+    code { font-size: .8rem; word-break: break-all; }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="inner">
+    <p class="brandmark">रक्त-सेतू</p>
+    <h1>कर्मचारी कक्ष · Staff console</h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="card" id="loginCard">
+    <h2>प्रवेश · Sign in</h2>
+    <p class="muted">Paste the <code>ADMIN_TOKEN</code> from the server's <code>.env</code> file.</p>
+    <form id="loginForm">
+      <input class="ask-input" id="tokenInput" type="password" placeholder="ADMIN_TOKEN"
+             style="width:100%;margin:12px 0" autocomplete="off" required>
+      <button class="btn btn-primary btn-block" type="submit">उघडा</button>
+    </form>
+    <p class="error" id="loginError" role="alert"></p>
+  </section>
+
+  <section id="listCard" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <h2 style="margin:0">अलीकडचे अहवाल</h2>
+      <button class="btn btn-small" id="refreshBtn" type="button">↻ रिफ्रेश</button>
+    </div>
+    <div class="card scroll" style="padding:6px 12px">
+      <table>
+        <thead>
+          <tr>
+            <th>रुग्ण</th><th>नंबर</th><th>अहवाल क्र.</th>
+            <th>स्थिती</th><th>उघडलं</th><th>लिंक</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="muted" id="emptyNote" hidden>अजून एकही अहवाल आलेला नाही.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var KEY = 'rakta-setu:admin';
+  var token = sessionStorage.getItem(KEY);
+
+  var STATUS_MR = {
+    pending: 'प्रलंबित', sent: 'पाठवलं', opened: 'रुग्णाने पाहिलं',
+    send_failed: 'पाठवता आलं नाही', needs_phone: 'नंबर नाही'
+  };
+
+  function el(id) { return document.getElementById(id); }
+
+  function request(path, method) {
+    return fetch('/api' + path, {
+      method: method || 'GET',
+      headers: { Authorization: 'Bearer ' + token }
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (j) {
+        if (!res.ok) throw new Error(j.error || ('HTTP ' + res.status));
+        return j;
+      });
+    });
+  }
+
+  el('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    token = el('tokenInput').value.trim();
+    load(true);
+  });
+  el('refreshBtn').addEventListener('click', function () { load(false); });
+
+  function load(fromForm) {
+    request('/admin/reports?limit=100').then(function (data) {
+      sessionStorage.setItem(KEY, token);
+      el('loginCard').hidden = true;
+      el('listCard').hidden = false;
+      renderRows(data.reports || []);
+    }).catch(function (err) {
+      sessionStorage.removeItem(KEY);
+      el('listCard').hidden = true;
+      el('loginCard').hidden = false;
+      if (fromForm) el('loginError').textContent = 'टोकन जुळत नाही. (' + err.message + ')';
+    });
+  }
+
+  function cell(content) {
+    var td = document.createElement('td');
+    td.appendChild(document.createTextNode(content == null ? '—' : String(content)));
+    return td;
+  }
+
+  function renderRows(reports) {
+    var tbody = el('rows');
+    tbody.textContent = '';
+    el('emptyNote').hidden = reports.length > 0;
+
+    reports.forEach(function (r) {
+      var tr = document.createElement('tr');
+      tr.appendChild(cell(r.patientName));
+      tr.appendChild(cell(r.patientPhone));
+      tr.appendChild(cell(r.labNo));
+      tr.appendChild(cell(STATUS_MR[r.status] || r.status));
+      tr.appendChild(cell(r.openCount));
+
+      var linkTd = document.createElement('td');
+      var a = document.createElement('a');
+      a.href = r.url; a.target = '_blank'; a.rel = 'noopener';
+      a.appendChild(document.createTextNode('उघडा'));
+      linkTd.appendChild(a);
+      tr.appendChild(linkTd);
+
+      var actionTd = document.createElement('td');
+      var btn = document.createElement('button');
+      btn.className = 'btn btn-small';
+      btn.type = 'button';
+      btn.appendChild(document.createTextNode('पुन्हा पाठवा'));
+      btn.addEventListener('click', function () {
+        btn.disabled = true;
+        btn.textContent = 'पाठवत आहे…';
+        request('/admin/reports/' + r.id + '/resend', 'POST')
+          .then(function () { btn.textContent = '✓ पाठवलं'; })
+          .catch(function (err) { btn.textContent = '✗ ' + err.message; btn.disabled = false; });
+      });
+      actionTd.appendChild(btn);
+      tr.appendChild(actionTd);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  if (token) load(false);
+}());
+</script>
+</body>
+</html>
