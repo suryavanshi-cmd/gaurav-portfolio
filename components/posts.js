@@ -6,7 +6,9 @@
   code, quote, table.
 */
 
-export const posts = [
+import { engineeringPosts } from './engineeringPosts';
+
+const llmPosts = [
   {
     slug: 'false-positives-kill-guardrails',
     title: 'False positives are what kill a guardrail',
@@ -555,6 +557,12 @@ export function fuse(rankings, k = 60) {
     ],
   },
 ];
+
+/* Newest first. Sorting here rather than by array position means adding a
+   post is one append, in whichever file it belongs to. */
+export const posts = [...llmPosts, ...engineeringPosts].sort(
+  (a, b) => b.date.localeCompare(a.date),
+);
 
 export const postsBySlug = Object.fromEntries(posts.map((post) => [post.slug, post]));
 
