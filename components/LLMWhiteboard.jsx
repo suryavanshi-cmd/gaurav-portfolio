@@ -66,18 +66,6 @@ const NARRATION = {
   ],
 };
 
-const EXPLORE_CARDS = [
-  ['Tokenizer', 'Text is split into reusable token pieces before the neural network processes it.'],
-  ['Embeddings', 'Each token becomes a compact numerical vector that represents learned features.'],
-  ['Self-attention', 'Tokens exchange information so each token can use the most relevant surrounding context.'],
-  ['Softmax', 'Raw model scores are normalized into a probability distribution over candidate tokens.'],
-  ['Training', 'During training, cross-entropy loss compares the expected token with the predicted probability.'],
-  ['Inference', 'During inference, model weights stay fixed while the model predicts and appends one token at a time.'],
-  ['Temperature', 'Temperature rescales logits before softmax: low values make the model confident and repetitive, high values make it varied and riskier.'],
-  ['Context window', 'The context window is how many tokens the model can attend to at once. Everything outside it is invisible to the prediction.'],
-  ['Top-k / top-p', 'Instead of always taking the most likely token, sampling can keep the k best candidates, or the smallest set whose probabilities add up to p.'],
-];
-
 const tokenize = (text) => text.trim().split(/\s+/).filter(Boolean);
 
 function tokenId(token, index) {
@@ -171,7 +159,7 @@ function StageVisual({ stage, tokens, rows, distribution, selectedToken, generat
 
   if (stage === 3) {
     return (
-      <div>
+      <div className={styles.attentionWrap}>
         <div className={styles.formula}>Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V</div>
         <AttentionPreview tokens={tokens} active />
         <small className={styles.helperText}>Thicker lines represent stronger simulated attention between tokens.</small>
@@ -240,7 +228,6 @@ export default function LLMWhiteboard({ onClose }) {
   const [generatedTokens, setGeneratedTokens] = useState([]);
   const [round, setRound] = useState(0);
   const [completed, setCompleted] = useState(false);
-  const [expandedConcept, setExpandedConcept] = useState(null);
   const wasPlayingRef = useRef(false);
 
   const tokens = useMemo(() => [...tokenize(PROMPT), ...generatedTokens], [generatedTokens]);
@@ -255,7 +242,6 @@ export default function LLMWhiteboard({ onClose }) {
     setRound(0);
     setCurrentStage(0);
     setCompleted(false);
-    setExpandedConcept(null);
     setPlaying(true);
   }, []);
 
@@ -343,83 +329,78 @@ export default function LLMWhiteboard({ onClose }) {
     return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [playing]);
 
+  const lastStage = STAGES.length - 1;
+
   return (
     <div className={styles.overlay} role="presentation" onMouseDown={onClose}>
-      <section className={styles.whiteboard} role="dialog" aria-modal="true" aria-labelledby="llm-whiteboard-title" onMouseDown={(event) => event.stopPropagation()}>
+      <section
+        className={styles.whiteboard}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="llm-whiteboard-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         <header className={styles.header}>
-          <div className={styles.productMark}><span>G</span><div><strong>LLM Learning Lab</strong><small>Interactive educational preview</small></div></div>
-          <div className={styles.headerActions}>
-            <span className={playing ? styles.liveBadge : styles.readyBadge}>{playing ? 'Running' : completed ? 'Complete' : 'Paused'}</span>
-            <button type="button" onClick={onClose} aria-label="Close learning experience">×</button>
+          <div className={styles.mark}>
+            <span aria-hidden="true">✦</span>
+            <div>
+              <strong id="llm-whiteboard-title">My notes on next-token prediction</strong>
+              <small>Working out what actually happens between a prompt and a word</small>
+            </div>
           </div>
+          <button type="button" className={styles.close} onClick={onClose} aria-label="Close">×</button>
         </header>
 
-        <div className={styles.heroCopy}>
-          <p>INTERACTIVE LEARNINGS</p>
-          <h2 id="llm-whiteboard-title">See how an LLM predicts the next token.</h2>
-          <span>A simple, automatic walkthrough from prompt to probability to generated text.</span>
-        </div>
-
         <div className={styles.progressArea}>
-          <div className={styles.progressMeta}><span>{STAGES[activeStage].label}</span><strong>{Math.round(progress)}%</strong></div>
-          <div className={styles.progressTrack}><i style={{ transform: `scaleX(${progress / 100})` }} /></div>
+          <div className={styles.progressMeta}>
+            <span>
+              {String(activeStage + 1).padStart(2, '0')} / {String(STAGES.length).padStart(2, '0')}
+              {' · '}{STAGES[activeStage].label}
+            </span>
+            <strong>word {Math.min(round + 1, ROUNDS.length)} of {ROUNDS.length}</strong>
+          </div>
+          <div className={styles.progressTrack}>
+            <i style={{ transform: `scaleX(${progress / 100})` }} />
+          </div>
+          <div className={styles.dots} aria-hidden="true">
+            {STAGES.map((stage, index) => (
+              <i
+                key={stage.key}
+                className={
+                  index < activeStage || completed ? styles.dotDone
+                    : index === activeStage ? styles.dotNow : ''
+                }
+              />
+            ))}
+          </div>
         </div>
 
-        <main className={styles.labGrid}>
-          <aside className={styles.stageRail} aria-label="LLM processing steps">
-            {STAGES.map((stage, index) => {
-              const state = index < activeStage || completed ? styles.stageDone : index === activeStage ? styles.stageCurrent : '';
-              return (
-                <div className={`${styles.stageItem} ${state}`} key={stage.key}>
-                  <span>{index < activeStage || completed ? '✓' : index + 1}</span>
-                  <div><strong>{stage.label}</strong><small>{stage.caption}</small></div>
-                </div>
-              );
-            })}
-          </aside>
-
-          <section className={styles.focusCard}>
-            <div className={styles.focusHeading}>
-              <div><small>STEP {String(activeStage + 1).padStart(2, '0')}</small><h3>{STAGES[activeStage].label}</h3></div>
-              <span>{round + 1} / {ROUNDS.length} prediction</span>
-            </div>
-            <StageVisual
-              stage={activeStage}
-              tokens={tokens}
-              rows={rows}
-              distribution={distribution}
-              selectedToken={selectedToken}
-              generatedTokens={generatedTokens}
-            />
-            <div className={styles.narration}>
-              <small>WHAT IS HAPPENING</small>
-              {(NARRATION[STAGES[activeStage].key] || []).map((sentence) => (
-                <p key={sentence}>{sentence}</p>
-              ))}
-            </div>
-          </section>
-
-          <aside className={styles.outputCard}>
-            <small>GENERATED OUTPUT</small>
-            <p><span>{PROMPT}</span>{generatedTokens.map((token, index) => <strong key={`${token}-${index}`}> {token}</strong>)}{playing && activeStage === 7 ? <em> {selectedToken}</em> : null}<i /></p>
-            <div className={styles.roundStatus}>
-              <span>Prompt tokens</span><strong>{tokenize(PROMPT).length}</strong>
-              <span>Generated tokens</span><strong>{generatedTokens.length}</strong>
-              <span>Current prediction</span><strong>{selectedToken}</strong>
-            </div>
-            <p className={styles.simulationNote}>Educational simulation. Token IDs, vectors, attention, logits, probabilities, and metrics are simulated.</p>
-          </aside>
+        {/* The only flexible row. Everything else is sized by its content, so
+            this is what absorbs a short viewport. */}
+        <main className={styles.stage} aria-live="polite">
+          <StageVisual
+            stage={activeStage}
+            tokens={tokens}
+            rows={rows}
+            distribution={distribution}
+            selectedToken={selectedToken}
+            generatedTokens={generatedTokens}
+          />
         </main>
 
+        <p className={styles.caption}>
+          {(NARRATION[STAGES[activeStage].key] || [])[0]}
+        </p>
+
+        <p className={styles.output}>
+          <span>{PROMPT}</span>
+          {generatedTokens.map((token, index) => <strong key={`${token}-${index}`}> {token}</strong>)}
+          {playing && activeStage === lastStage ? <em> {selectedToken}</em> : null}
+        </p>
+
         <div className={styles.controls}>
-          <button
-            type="button"
-            className={styles.controlPill}
-            onClick={replay}
-            aria-label="Restart from the first step"
-          >
-            <span aria-hidden="true">⟲</span>
-            <span><small>Start over</small>Restart</span>
+          <button type="button" className={styles.controlPill} onClick={replay} aria-label="Restart from the first step">
+            <span aria-hidden="true">⟲</span><em>Restart</em>
           </button>
 
           <button
@@ -427,54 +408,25 @@ export default function LLMWhiteboard({ onClose }) {
             className={styles.controlPill}
             onClick={previous}
             disabled={activeStage === 0 && !completed}
-            aria-label="Go to the previous step"
+            aria-label="Previous step"
           >
-            <span aria-hidden="true">‹</span>
-            <span><small>Step back</small>Previous</span>
+            <span aria-hidden="true">‹</span><em>Back</em>
           </button>
 
           <button
             type="button"
             className={`${styles.controlPill} ${styles.controlPrimary}`}
             onClick={togglePlay}
-            aria-label={playing ? 'Pause the walkthrough' : 'Continue the walkthrough'}
+            aria-label={playing ? 'Pause' : 'Play'}
           >
             <span aria-hidden="true">{playing ? '❚❚' : '▶'}</span>
-            <span>
-              <small>{playing ? 'Running' : completed ? 'Finished' : 'Paused'}</small>
-              {playing ? 'Pause' : completed ? 'Replay' : 'Continue'}
-            </span>
+            <em>{playing ? 'Pause' : completed ? 'Replay' : 'Play'}</em>
           </button>
 
-          <button
-            type="button"
-            className={styles.controlPill}
-            onClick={next}
-            aria-label="Go to the next step"
-          >
-            <span aria-hidden="true">›</span>
-            <span><small>Step forward</small>Next</span>
+          <button type="button" className={styles.controlPill} onClick={next} aria-label="Next step">
+            <span aria-hidden="true">›</span><em>Next</em>
           </button>
         </div>
-
-        {completed ? (
-          <section className={styles.exploreSection}>
-            <div className={styles.exploreHeading}><div><small>EXPLORE FURTHER</small><h3>Understand the ideas behind the animation.</h3></div><p>Select a concept for a concise technical explanation.</p></div>
-            <div className={styles.exploreGrid}>
-              {EXPLORE_CARDS.map(([title, explanation], index) => (
-                <button type="button" key={title} className={expandedConcept === index ? styles.exploreActive : ''} onClick={() => setExpandedConcept(expandedConcept === index ? null : index)}>
-                  <span>{String(index + 1).padStart(2, '0')}</span><strong>{title}</strong><i>↗</i>
-                  {expandedConcept === index ? <p>{explanation}</p> : null}
-                </button>
-              ))}
-            </div>
-            <div className={styles.trainingStrip}>
-              <div><small>SIMULATED TRAINING LOSS</small><strong>0.33</strong></div>
-              <div className={styles.lossLine}><i /><i /><i /><i /><i /><i /></div>
-              <p>Expected token: <strong>“change”</strong> · Predicted probability: <strong>0.72</strong> · Loss = -log(0.72)</p>
-            </div>
-          </section>
-        ) : null}
       </section>
     </div>
   );

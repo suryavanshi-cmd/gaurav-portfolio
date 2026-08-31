@@ -36,10 +36,10 @@ const SECTION_IDS = SECTIONS.map((section) => section.id);
 const INTERESTS = [
   {
     key: 'interactive',
-    title: 'How an LLM actually works',
-    note: 'A walkthrough from prompt to generated token — tokenisation, embeddings, attention, logits, softmax, and the pick — animated one step at a time.',
+    title: 'My notes on next-token prediction',
+    note: 'Me working out what actually happens between a prompt and a word — tokens, embeddings, attention, logits, softmax, the pick. Notes I made while learning it, not a tutorial.',
     lab: true,
-    flag: 'interactive',
+    flag: 'notes',
   },
   ...posts.map((post) => ({
     key: `${post.readingMinutes} min`,
