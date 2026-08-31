@@ -12,7 +12,8 @@
     "seed": "node scripts/seed-demo.js",
     "send-test": "node scripts/send-test.js",
     "ingest": "node scripts/ingest-file.js",
-    "billing-check": "node scripts/billing-selftest.js"
+    "billing-check": "node scripts/billing-selftest.js",
+    "test": "bash tests/run.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.0",
@@ -23,5 +24,8 @@
     "express": "^4.21.2",
     "pdf-parse": "^1.1.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "pg": "^8.13.1"
+  }
 }

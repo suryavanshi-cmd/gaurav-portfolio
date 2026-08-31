@@ -1,0 +1,35 @@
+name: tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # The suite starts its own throwaway Postgres, so only the server
+      # binaries are needed — no service container, no credentials.
+      - name: Install PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+
+      - run: npm ci
+
+      - name: Syntax check every source file
+        run: |
+          find src public scripts api tests -name '*.js' -o -name '*.mjs' \
+            | xargs -I{} node --check {}
+
+      - name: Run the full suite
+        run: npm test

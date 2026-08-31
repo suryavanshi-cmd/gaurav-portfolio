@@ -118,14 +118,18 @@ api.post('/report/:token/ask', askLimiter, loadReport, requirePin, async (req, r
     return res.status(400).json({ error: 'कृपया प्रश्न लिहा किंवा बोला.' });
   }
 
-  const history = Array.isArray(req.body?.history)
-    ? req.body.history
-      .filter((h) => h && (h.role === 'user' || h.role === 'assistant') && typeof h.content === 'string')
-      .slice(-6)
-      .map((h) => ({ role: h.role, content: h.content.slice(0, 2000) }))
-    : [];
-
   try {
+    // Conversation history is read from the database, never from the request.
+    // A forged `assistant` turn in a client-supplied history is a prompt
+    // injection: it lets the caller put words in the model's mouth and walk it
+    // past the medical guardrails in the system prompt. The stored transcript
+    // is the only history the model is allowed to see.
+    const stored = await listQuestions(req.report.id);
+    const history = stored.slice(-3).flatMap((row) => ([
+      { role: 'user', content: row.question },
+      { role: 'assistant', content: row.answer },
+    ]));
+
     const { answer, source } = await answerQuestion({ report: req.report, question, history });
     await recordQuestion({ reportId: req.report.id, question, answer, source });
     return res.json({ answer, source });

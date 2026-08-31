@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { log } from './logger.js';
-import { storeName } from './store/index.js';
+import { storeName, getReportByToken } from './store/index.js';
 import { api } from './routes/api.js';
 import { webhook } from './routes/webhook.js';
 import { paymentRoutes } from './routes/payment.js';
@@ -58,10 +58,24 @@ if (config.billing.enabled) {
   app.use('/api/extract', extractRoutes);
 }
 
-app.get('/health', (req, res) => {
-  res.json({
-    ok: true,
+app.get('/health', async (req, res) => {
+  // Probe the store. A health check that only proves the process is running
+  // will report green while every report request fails on a bad connection
+  // string — exactly the case worth catching on a fresh deployment.
+  let storeOk = true;
+  let storeError = null;
+  try {
+    await getReportByToken('__healthcheck__');
+  } catch (err) {
+    storeOk = false;
+    storeError = err.message;
+  }
+
+  res.status(storeOk ? 200 : 503).json({
+    ok: storeOk,
     store: storeName(),
+    store_ok: storeOk,
+    store_error: storeError,
     driver: config.whatsapp.driver,
     ai: config.ai.enabled,
     billing: config.billing.enabled

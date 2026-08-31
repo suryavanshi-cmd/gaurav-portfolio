@@ -46,11 +46,32 @@ export class InsufficientCredit extends Error {
  * both proceed. Throws InsufficientCredit, which the route turns into a 402.
  */
 export async function reserve({ userId, tokens, pdfId }) {
-  const row = await rpc('fn_reserve_credits', {
+  let row = await rpc('fn_reserve_credits', {
     p_user_id: userId,
     p_tokens: tokens,
     p_pdf_id: pdfId ?? null,
   });
+
+  // Self-healing. A process that died mid-extraction — a serverless timeout, a
+  // cold-start kill — leaves its reservation behind. On a long-running server
+  // the boot-time sweep clears those; a serverless deployment never boots, so
+  // nothing would ever release them and the user could not spend credit they
+  // had already paid for. Notice it exactly where it bites: a refusal while
+  // the account still shows tokens reserved.
+  if (!row?.ok) {
+    const balance = await getBalance(userId);
+    if (balance.reservedTokens > 0) {
+      const freed = Number(await rpc('fn_expire_user_holds', { p_user_id: userId }) ?? 0);
+      if (freed > 0) {
+        log.warn(`released ${freed} stale hold(s) for ${userId} and retrying the reservation`);
+        row = await rpc('fn_reserve_credits', {
+          p_user_id: userId,
+          p_tokens: tokens,
+          p_pdf_id: pdfId ?? null,
+        });
+      }
+    }
+  }
 
   if (!row?.ok) {
     throw new InsufficientCredit({

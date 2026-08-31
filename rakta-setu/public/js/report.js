@@ -367,7 +367,8 @@
     addMessage('user', question);
     var pending = addTyping();
 
-    api('/ask', { pin: state.pin, question: question, history: state.history.slice(-6) })
+    // History deliberately not sent — the server reads it from its own store.
+    api('/ask', { pin: state.pin, question: question })
       .then(function (res) {
         pending.remove();
         addMessage('bot', res.answer, res.source, true);
