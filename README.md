@@ -34,6 +34,29 @@ Fonts are self-hosted via `next/font/local` rather than `next/font/google`,
 which fetches from `fonts.gstatic.com` at build time and fails the build if a
 request does not land. The build makes no network requests.
 
+## Writing
+
+Posts live in `components/posts.js` (LLM topics) and
+`components/engineeringPosts.js`. Bodies are block arrays, rendered by
+`app/blog/[slug]/page.jsx`, which prerenders every post at build time.
+
+On the homepage a post title does not navigate. It opens a summary panel
+underneath — the summary, the tags, and a "Read more" link — so a reader can
+see what a post is about before committing to it. The panel animates
+`grid-template-rows` from `0fr` to `1fr`, which eases open at the content's own
+height without measuring anything in JS, and is `inert` while closed so it stays
+out of the tab order.
+
+Getting back is handled by `components/BackToList.jsx`. A plain
+`<Link href="/#interests">` pushes a *new* history entry and lands on the
+section heading, so the reader ends up somewhere other than where they left.
+When they actually came from the list, the control calls `router.back()`
+instead, which unwinds that entry and lets the router restore the scroll
+position exactly. "Came from the list" is a single-use `sessionStorage` token
+set by "Read more" and consumed on mount, so a deep link, a refresh, or an
+arrival from search finds nothing and gets the ordinary link — which is also
+what renders on the server, keeping hydration stable.
+
 ## Adding a profile photo
 
 The intro currently shows a `GS` monogram. To use a real photo, drop it in

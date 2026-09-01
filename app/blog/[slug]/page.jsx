@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BackToList from '../../../components/BackToList';
 import { notFound } from 'next/navigation';
 import '../../site.css';
 import { posts, postsBySlug, formatDate } from '../../../components/posts';
@@ -100,7 +101,7 @@ export default async function PostPage({ params }) {
       </header>
 
       <article className="post">
-        <Link href="/#interests" className="post-back">← Interests &amp; writing</Link>
+        <BackToList href="/#interests">← Interests &amp; writing</BackToList>
 
         <h1 className="post-title">{post.title}</h1>
         <p className="post-summary">{post.summary}</p>

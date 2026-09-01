@@ -44,8 +44,9 @@ const INTERESTS = [
   ...posts.map((post) => ({
     key: `${post.readingMinutes} min`,
     title: post.title,
-    note: post.summary,
-    href: `/blog/${post.slug}`,
+    /* No `note`: a post row stays terse until it is opened, and the summary
+       lives in the panel below rather than being shown twice. */
+    post,
   })),
   {
     key: 'vision',
@@ -215,6 +216,19 @@ function FileIcon() {
 
 export default function Portfolio() {
   const [labOpen, setLabOpen] = useState(false);
+  const [openPost, setOpenPost] = useState(null);
+
+  /* A single-use token saying "this article was reached from the list", so the
+     article's back control can return you to the exact spot you left instead of
+     pushing a fresh /#interests entry. The article clears it on read, so a
+     later deep link or refresh falls back to a plain link. */
+  const rememberReturn = () => {
+    try {
+      window.sessionStorage.setItem('return-to-list', '1');
+    } catch {
+      /* Private mode or blocked storage — the article just uses its fallback. */
+    }
+  };
   const [openProject, setOpenProject] = useState(null);
   const [filter, setFilter] = useState('all');
 
@@ -388,13 +402,45 @@ export default function Portfolio() {
               );
             }
 
-            if (entry.href) {
+            /* Two stages: the row opens a summary, and only "Read more"
+               leaves the page. Clicking a title used to jump straight into the
+               article with no chance to see what it was about. */
+            if (entry.post) {
+              const isOpen = openPost === entry.post.slug;
               return (
                 <li key={entry.title}>
-                  <Link className="row row-open" href={entry.href}>
+                  <button
+                    type="button"
+                    className={`row row-open row-peek ${isOpen ? 'is-open' : ''}`}
+                    aria-expanded={isOpen}
+                    aria-controls={`peek-${entry.post.slug}`}
+                    onClick={() => setOpenPost(isOpen ? null : entry.post.slug)}
+                  >
                     {inner}
-                    <span className="row-go" aria-hidden="true">→</span>
-                  </Link>
+                    <span className="row-go row-caret" aria-hidden="true">›</span>
+                  </button>
+
+                  <div
+                    id={`peek-${entry.post.slug}`}
+                    className={`peek ${isOpen ? 'is-open' : ''}`}
+                    inert={!isOpen}
+                  >
+                    <div>
+                      <div className="peek-inner">
+                        <p>{entry.post.summary}</p>
+                        <ul className="peek-tags">
+                          {entry.post.tags.map((tag) => <li key={tag}>{tag}</li>)}
+                        </ul>
+                        <Link
+                          className="peek-more"
+                          href={`/blog/${entry.post.slug}`}
+                          onClick={rememberReturn}
+                        >
+                          Read more <span aria-hidden="true">→</span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 </li>
               );
             }
