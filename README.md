@@ -34,6 +34,33 @@ Fonts are self-hosted via `next/font/local` rather than `next/font/google`,
 which fetches from `fonts.gstatic.com` at build time and fails the build if a
 request does not land. The build makes no network requests.
 
+## Light and dark
+
+A three-way control in the header: **light**, **dark**, **system**. System is a
+real option, not a gap — without it, a visitor who just wants to follow their OS
+has no way back once they have touched the control, and on a phone that also
+means losing the automatic switch at sunset.
+
+The stylesheet reads one attribute on `<html>`:
+
+| `data-theme` | Result |
+| --- | --- |
+| *absent* | follow the OS — the media query decides |
+| `light` | force light, even on a dark OS |
+| `dark` | force dark, even on a light OS |
+
+The dark palette is therefore declared twice: once under
+`@media (prefers-color-scheme: dark)` guarded by `:root:not([data-theme='light'])`,
+so an explicit light choice still wins on a dark OS, and once under
+`:root[data-theme='dark']` for the explicit choice. Neither is the default, so
+the light values stand until one matches.
+
+A stored choice is applied by the inline script in `app/layout.jsx`, before
+first paint. That has to be synchronous and inline — applying it in an effect
+paints the system theme first and flashes on every load. With no stored choice
+the attribute stays off and the media query does the work, so a blocked script
+degrades to exactly the OS-following behaviour.
+
 ## Writing
 
 Posts live in `components/posts.js` (LLM topics) and

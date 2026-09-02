@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BackToList from '../../../components/BackToList';
+import ThemeToggle from '../../../components/ThemeToggle';
 import { notFound } from 'next/navigation';
 import '../../site.css';
 import { posts, postsBySlug, formatDate } from '../../../components/posts';
@@ -98,6 +99,7 @@ export default async function PostPage({ params }) {
           <Link href="/#projects">projects</Link>
           <Link href="/">home</Link>
         </nav>
+        <ThemeToggle />
       </header>
 
       <article className="post">

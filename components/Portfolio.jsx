@@ -6,6 +6,7 @@ import LLMWhiteboard from './LLMWhiteboard';
 import ProjectDialog from './ProjectDialog';
 import { projects, projectCategories } from './projects';
 import { posts } from './posts';
+import ThemeToggle from './ThemeToggle';
 import { useActiveSection, useProgress, useReveal } from './useReveal';
 
 const GITHUB_URL = 'https://github.com/suryavanshi-cmd';
@@ -271,6 +272,7 @@ export default function Portfolio() {
           <a href="#timeline">timeline</a>
           <a href={`mailto:${EMAIL}`}>contact</a>
         </nav>
+        <ThemeToggle />
         <span className="head-progress" aria-hidden="true"><i ref={progressRef} /></span>
       </header>
 

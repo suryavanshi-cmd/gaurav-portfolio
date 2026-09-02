@@ -14,10 +14,9 @@ import localFont from 'next/font/local';
   that is not an explicitly written literal — no shared fallback constants, no
   helper that builds the `src` array.
 
-  The root layout still imports no stylesheet. Each version under app/v1,
-  app/(v2) and app/v3 owns a complete design system of its own, and these
-  variables are declared here on <html> because all three read them as :root
-  custom properties.
+  The root layout imports no stylesheet — each route brings its own — so these
+  font variables are declared here on <html>, where every page's CSS reads them
+  as :root custom properties.
 */
 
 /* Used by V2 and V3 — V3 is served at `/`, so these two preload. */
@@ -141,21 +140,33 @@ export const viewport = {
   themeColor: '#ffffff',
 };
 
-/* Arms the entrance animations before first paint, and only when the visitor
-   has not asked for reduced motion. Without this flag every `[data-rise]`
-   element renders plainly visible, so a blocked script degrades to a static
-   page rather than a blank one. */
-const motionFlag = `(function(){try{
-  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    document.documentElement.dataset.motion='1';
-  }
+/* Runs before first paint, and does two things.
+
+   Motion: arms the entrance animations, and only when the visitor has not asked
+   for reduced motion. Without this flag every `[data-rise]` element renders
+   plainly visible, so a blocked script degrades to a static page, not a blank
+   one.
+
+   Theme: applies a stored light/dark choice to <html> before anything is
+   painted. This has to be inline and synchronous — doing it in an effect would
+   paint the system theme first and flash the wrong colours on every load. With
+   no stored choice the attribute stays off and the stylesheet's media query
+   follows the OS, so a blocked script degrades to exactly the old behaviour. */
+const bootScript = `(function(){try{
+  var d=document.documentElement;
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.dataset.motion='1';}
+  var t=null;try{t=localStorage.getItem('theme');}catch(e){}
+  if(t==='light'||t==='dark'){d.dataset.theme=t;}
+  var dark=(t==='dark')||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m){m.setAttribute('content',dark?'#0b0b0d':'#ffffff');}
 }catch(e){}})();`;
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body>{children}</body>
     </html>
