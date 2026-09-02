@@ -55,6 +55,13 @@ so an explicit light choice still wins on a dark OS, and once under
 `:root[data-theme='dark']` for the explicit choice. Neither is the default, so
 the light values stand until one matches.
 
+The control's active option is marked by a single indicator that slides between
+the three, driven by a `--i` custom property — one transform on one element
+rather than three backgrounds crossfading. It carries two flags: `is-ready`
+reveals it once the stored choice is known, and `is-armed`, set only by a click,
+is what permits it to travel. Without that split both would change in the same
+React commit and the indicator would slide across on every page load.
+
 A stored choice is applied by the inline script in `app/layout.jsx`, before
 first paint. That has to be synchronous and inline — applying it in an effect
 paints the system theme first and flashes on every load. With no stored choice

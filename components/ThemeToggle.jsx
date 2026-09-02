@@ -45,6 +45,11 @@ export default function ThemeToggle() {
      matches; the effect below corrects it once we can read storage. */
   const [mode, setMode] = useState('system');
   const [ready, setReady] = useState(false);
+  /* The indicator may only animate in response to a click. Arming it on mount
+     instead is subtly wrong: `ready` flips in the same commit that moves the
+     indicator to the stored choice, so the browser sees the transition switch
+     on and the position change together and slides it across on every load. */
+  const [armed, setArmed] = useState(false);
 
   useEffect(() => {
     let stored = null;
@@ -68,6 +73,7 @@ export default function ThemeToggle() {
   }, [mode]);
 
   const choose = (next) => {
+    setArmed(true);
     setMode(next);
     applyTheme(next);
     try {
@@ -78,8 +84,20 @@ export default function ThemeToggle() {
     }
   };
 
+  const index = OPTIONS.findIndex((option) => option.key === mode);
+
   return (
-    <div className="theme" role="group" aria-label="Colour theme">
+    /* --i drives the sliding indicator's position, so the movement is one
+       transform on one element rather than three backgrounds crossfading.
+       is-ready reveals the indicator once storage has been read; is-armed, set
+       only by a click, is what permits it to travel. */
+    <div
+      className={`theme ${ready ? 'is-ready' : ''} ${armed ? 'is-armed' : ''}`}
+      style={{ '--i': index < 0 ? 2 : index }}
+      role="group"
+      aria-label="Colour theme"
+    >
+      <span className="theme-thumb" aria-hidden="true" />
       {OPTIONS.map((option) => (
         <button
           key={option.key}
@@ -89,7 +107,7 @@ export default function ThemeToggle() {
           title={option.label}
           onClick={() => choose(option.key)}
         >
-          <span aria-hidden="true">{option.glyph}</span>
+          <span className="theme-glyph" aria-hidden="true">{option.glyph}</span>
           <span className="sr-only">{option.label}</span>
         </button>
       ))}

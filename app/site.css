@@ -1724,21 +1724,49 @@ button.post-back {
   border: 0;
 }
 
+/* Fixed-width columns rather than flexible ones: the sliding indicator is
+   positioned in the same unit, so the two can never drift apart. */
 .theme {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
+  --opt-w: 28px;
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: repeat(3, var(--opt-w));
   flex: none;
-  padding: 2px;
+  padding: 3px;
   border: 1px solid var(--gray-200);
   border-radius: 999px;
   background: var(--gray-50);
 }
 
+/* One element that slides, instead of three backgrounds crossfading. */
+.theme-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: var(--opt-w);
+  height: calc(100% - 6px);
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 9%);
+  transform: translateX(calc(var(--i, 2) * var(--opt-w)));
+  opacity: 0;
+}
+
+/* Two separate flags. is-ready reveals the indicator once the stored choice is
+   known, so it appears already under the right option. is-armed is set only by
+   a click — without that split, the class and the position would change in the
+   same commit and the indicator would slide across on every page load. */
+.theme.is-ready .theme-thumb { opacity: 1; }
+
+.theme.is-armed .theme-thumb {
+  transition: transform 340ms var(--expo), background-color 240ms var(--expo);
+}
+
 .theme-option {
+  position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
-  width: 27px;
   height: 24px;
   padding: 0;
   border: 0;
@@ -1749,16 +1777,26 @@ button.post-back {
   font-size: 12.5px;
   line-height: 1;
   cursor: pointer;
-  transition: color 160ms var(--expo), background 160ms var(--expo);
+  transition: color 200ms var(--expo);
 }
 
 .theme-option:hover { color: var(--gray-600); }
 
-.theme-option.is-active {
-  background: var(--bg);
-  color: var(--fg);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+.theme-option.is-active { color: var(--fg); }
+
+/* The glyph settles into place as its option becomes active: a small turn and
+   a nudge in scale, landing as the indicator arrives under it. */
+.theme-glyph {
+  display: block;
+  transform-origin: 50% 50%;
+  transition: transform 340ms var(--expo);
 }
+
+.theme-option.is-active .theme-glyph { transform: rotate(360deg) scale(1.12); }
+
+.theme-option:hover:not(.is-active) .theme-glyph { transform: scale(1.1); }
+
+.theme-option:active .theme-glyph { transform: scale(0.92); }
 
 /* The colours move together across the whole page on a theme change, so the
    switch reads as one motion rather than each element popping on its own.
@@ -1778,8 +1816,15 @@ body,
   body, .head, .theme, .theme-option, .row, .peek-tags li, .chip-mark, .avatar {
     transition: none;
   }
+
+  /* The indicator still moves to the right option — it just gets there without
+     travelling, and the glyph stops spinning. */
+  .theme.is-armed .theme-thumb { transition: none; }
+  .theme-glyph { transition: none; }
+  .theme-option.is-active .theme-glyph { transform: scale(1.12); }
 }
 
 @media (max-width: 720px) {
-  .theme-option { width: 25px; height: 23px; font-size: 12px; }
+  .theme { --opt-w: 26px; }
+  .theme-option { height: 23px; font-size: 12px; }
 }
