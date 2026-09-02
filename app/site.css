@@ -144,7 +144,23 @@ a { color: inherit; text-decoration: none; }
   text-overflow: ellipsis;
 }
 
-.head-time { font-variant-numeric: tabular-nums; }
+/* Both of these land asynchronously — the clock on mount, the temperature when
+   the request returns — so they fade in rather than appearing between frames.
+   An entrance animation, not a transition: they mount already in place. */
+.head-time,
+.head-temp {
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-motion] .head-time,
+html[data-motion] .head-temp {
+  animation: meta-in 420ms var(--expo) both;
+}
+
+@keyframes meta-in {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: none; }
+}
 
 .head-place {
   display: inline-flex;
@@ -152,7 +168,7 @@ a { color: inherit; text-decoration: none; }
   gap: 6px;
 }
 
-.head-temp { font-variant-numeric: tabular-nums; }
+
 
 .head-nav {
   display: flex;
@@ -161,12 +177,33 @@ a { color: inherit; text-decoration: none; }
   font-size: 15px;
 }
 
+/* The same underline the list rows use, drawn from the left rather than
+   switched on — the nav was the one navigational surface still doing nothing
+   but change colour. */
 .head-nav a {
+  position: relative;
   color: var(--gray-500);
-  transition: color 140ms ease;
+  transition: color 180ms var(--expo);
 }
 
-.head-nav a:hover { color: var(--fg); }
+.head-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms var(--expo);
+}
+
+.head-nav a:hover,
+.head-nav a:focus-visible { color: var(--fg); }
+
+.head-nav a:hover::after,
+.head-nav a:focus-visible::after { transform: scaleX(1); }
 
 /* ----- Intro ------------------------------------------------------------- */
 
@@ -382,6 +419,12 @@ a { color: inherit; text-decoration: none; }
 
 .icon-row a:hover,
 .icon-row button:hover { color: var(--fg); }
+
+.icon-row svg,
+.icon-row span { transition: transform 260ms var(--expo); }
+
+.icon-row a:hover svg,
+.icon-row button:hover svg { transform: translateY(-2px); }
 
 .icon-row svg {
   width: 19px;
