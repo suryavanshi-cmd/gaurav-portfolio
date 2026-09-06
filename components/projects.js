@@ -253,11 +253,11 @@ export const projects = [
   {
     key: 'ml',
     title: 'Wildlife Conservation Analysis',
-    note: 'Computer-vision pipeline for species analysis — the work behind my copyright registration.',
+    note: 'Counts wildlife populations from images and video and classifies species against IUCN Red List criteria — YOLOv5 and Inception V3, and the work behind my copyright registration.',
     problem:
       'Survey imagery was being classified by hand, which does not scale and is inconsistent between people doing the classifying.',
     flow: ['Collect', 'Preprocess', 'Train', 'Evaluate', 'Publish'],
-    stack: ['Python', 'Computer vision', 'Classification', 'Evaluation'],
+    stack: ['Python', 'YOLOv5', 'Inception V3', 'IUCN Red List', 'Copyright-registered'],
     challenges: [
       'Heavy class imbalance — rare species are exactly the ones that matter and the ones with the fewest samples',
       'Field imagery quality varies enormously with light and distance',

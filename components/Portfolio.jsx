@@ -57,9 +57,11 @@ const INTERESTS = [
 ];
 
 const TICKER = [
-  'Java 17', 'TestNG', 'Rest-Assured', 'Oracle SQL', 'Next.js', 'React', 'Node.js',
-  'Playwright', 'RAG', 'Embeddings', 'Vector search', 'Guardrails', 'Evals in CI',
-  'OpenTelemetry', 'GitHub Actions', 'Supabase', 'Docker',
+  'Java 17', 'TestNG', 'Rest-Assured', 'JUnit', 'Selenium', 'Postman', 'Oracle SQL/PLSQL',
+  'Spring Boot', 'Node.js', 'Express', 'NestJS', 'Microservices', 'JWT', 'SSE', 'MongoDB',
+  'JavaScript/TypeScript', 'Python', 'C++', 'Next.js', 'React', 'Playwright',
+  'YOLOv5', 'Inception V3', 'RAG', 'Embeddings', 'Vector search', 'Guardrails', 'Evals in CI',
+  'OpenTelemetry', 'GitHub Actions', 'Supabase', 'Docker', 'Maven', 'ELK',
 ];
 
 /* A quiet index down the left margin on wide screens. Purely a shortcut — every
@@ -130,9 +132,13 @@ function Stack({ items }) {
   );
 }
 
+/* Roles, dates and wording taken from the résumé PDF in public/, not from
+   recollection. The Esenceweb role and the NestJS migration were on the résumé
+   but had never made it onto the page. */
 const timeline = [
-  { when: '2024 — now', title: 'SDET · Vidal Health TPA, Pune', note: 'Own the Java 17 + TestNG + Rest-Assured API automation framework behind health-insurance claims processing.' },
-  { when: '2024', title: 'Backend Automation Test Intern · Bajaj Finserv Health', note: 'Built a microservice that generated and ran curl commands from HTTPS response logs pulled off the ELK stack.' },
+  { when: '2024 — now', title: 'SDET · Vidal Health TPA, Pune', note: 'Own the Java 17 + TestNG + Rest-Assured API automation framework behind health-insurance claims processing, covering end-to-end claim, enrollment and partner-integration flows.' },
+  { when: '2024', title: 'Backend Automation Test Intern · Bajaj Finserv Health', note: 'Built a microservice that generated and ran curl commands from HTTPS response logs pulled off the ELK stack, then migrated it from Node.js to NestJS for better performance and scalability.' },
+  { when: '2024', title: 'Backend Developer Intern · Esenceweb IT Solutions', note: 'Backend services in Node.js/Express with MongoDB, JWT auth and real-time messaging over Socket.io, plus a Dialogflow chatbot for automated responses.' },
   { when: '2020 — 2024', title: 'B.E. Computer Science · PCCOER, Pune', note: 'CGPA 8.96 / 10.' },
   { when: 'Certificate', title: 'Introduction to Generative AI · Udemy' },
   { when: 'Certificate', title: 'Introduction to Machine Learning · Coursera' },
@@ -314,8 +320,22 @@ export default function Portfolio() {
             multiple REST APIs
           </li>
           <li>
-            I hold a <Chip mark="©" tip="Wildlife conservation using machine learning">copyright</Chip>{' '}
-            for a machine-learning conservation system
+            I also write the services, not just the tests — <strong>Node.js</strong>, Express and{' '}
+            <Chip mark="NJ" tip="Migrated a service from Node.js to NestJS">NestJS</Chip>, with
+            MongoDB, JWT auth and Socket.io, from a backend developer internship onward
+          </li>
+          <li>
+            Day to day that runs against <strong>Spring Boot</strong> and Node.js services, in
+            Java 17, JavaScript/TypeScript, Python and SQL/PLSQL
+          </li>
+          <li>
+            On the ML side: a computer-vision pipeline in{' '}
+            <Chip mark="PY" tip="Python · YOLOv5 · Inception V3">Python</Chip> that counts wildlife
+            populations from images and video and classifies species against IUCN Red List criteria
+          </li>
+          <li>
+            That work is <Chip mark="©" tip="Wildlife Conservation and Analysis Using Machine Learning">copyright-registered</Chip>,
+            alongside certificates in generative AI and machine learning
           </li>
           <li>
             Outside work I build API tooling and LLM apps, all on{' '}

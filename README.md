@@ -91,6 +91,17 @@ set by "Read more" and consumed on mount, so a deep link, a refresh, or an
 arrival from search finds nothing and gets the ordinary link — which is also
 what renders on the server, keeping hydration stable.
 
+## Where the facts come from
+
+Roles, dates, tooling and project details on the page are taken from
+`public/Gaurav-Suryavanshi-Resume.pdf`, which is the source of truth. When the
+résumé changes, update `timeline` and the summary bullets in
+`components/Portfolio.jsx` and the `stack` entries in `components/projects.js`
+to match — the page should never claim something the PDF does not.
+
+The PDF embeds subset fonts, so `pdftotext` (poppler) or `pdfjs-dist` reads it
+properly; a naive stream decode returns mojibake.
+
 ## Adding a profile photo
 
 The intro currently shows a `GS` monogram. To use a real photo, drop it in
