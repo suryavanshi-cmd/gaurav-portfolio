@@ -105,6 +105,17 @@ is free to invent a job Gaurav never had. With no generation step this cannot
 state anything he has not published, and a question that retrieves nothing says
 so instead of returning the least-bad passage.
 
+It opens with **⌘K / Ctrl-K** or **`/`**, closes on Escape, and keeps its thread
+in `sessionStorage` so closing the panel does not make a reader start over.
+Each answer underlines the terms the retriever actually matched on, cites its
+sources, can be copied, and offers two follow-up questions.
+
+Those follow-ups are the retriever's runners-up rather than a fixed prompt list,
+so they can only lead somewhere the corpus answers well. Note the two different
+thresholds: a **source** must clear 45% of the top score to be cited as
+evidence, while a **follow-up** only has to be related — gating both at 45% left
+most answers with no follow-ups at all, because one document usually dominates.
+
 Two decisions worth keeping if you edit it:
 
 - **BM25, not raw TF-IDF.** The corpus mixes one-line résumé facts with
