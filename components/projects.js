@@ -251,6 +251,24 @@ export const projects = [
     next: ['Role-based collections', 'Feedback-driven reranking', 'Automated freshness checks'],
   },
   {
+    key: 'llm-flow',
+    title: 'Portfolio RAG Assistant — running on this page',
+    note: 'The "Ask about Gaurav" button, bottom right. A retrieval pipeline over this site\u2019s own content: chunk, index, retrieve, answer with the source attached. No API key, no request leaves the browser.',
+    problem:
+      'A portfolio answers the questions its author anticipated, in the order they chose. A reader with a specific question — does he know Oracle, has he shipped a service, what is the CGPA — has to skim for it. The obvious fix is a chatbot wired to a hosted model, which costs money per visitor, needs a key that a static site cannot hold safely, and is free to invent a job he never had.',
+    flow: ['Chunk', 'Index', 'Retrieve', 'Rank', 'Answer with source'],
+    stack: ['BM25', 'Chunking', 'Synonym expansion', 'Grounded answers', 'Zero-dependency'],
+    challenges: [
+      'Chunking per idea, not per document — a whole article matches many questions weakly and answers none of them precisely, so paragraphs and single r\u00e9sum\u00e9 facts are indexed separately',
+      'Lexical retrieval misses the vocabulary gap: a visitor asks for "tech", the corpus says "Java 17, TestNG". A domain synonym map closes it where an embedding model would have, without shipping one',
+      'BM25 rather than raw TF-IDF, because the corpus mixes one-line facts with long article passages and without length normalisation the long passages win on term count alone',
+      'Refusing rather than guessing: with no generation step it cannot fabricate, and a query that retrieves nothing says so instead of returning the least-bad passage',
+    ],
+    outcome:
+      'Every answer is a passage Gaurav actually published, shown with a link to where it came from, so a reader can check it rather than trust it. It costs nothing to run and works with the network off.',
+    next: ['Embeddings for the vocabulary gap the synonym map does not cover', 'An optional generation step over the retrieved passages, for phrasing rather than facts', 'Logging which questions retrieve nothing, as a list of what the site fails to answer'],
+  },
+  {
     key: 'ml',
     title: 'Wildlife Conservation Analysis',
     note: 'Counts wildlife populations from images and video and classifies species against IUCN Red List criteria — YOLOv5 and Inception V3, and the work behind my copyright registration.',

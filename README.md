@@ -91,6 +91,35 @@ set by "Read more" and consumed on mount, so a deep link, a refresh, or an
 arrival from search finds nothing and gets the ordinary link — which is also
 what renders on the server, keeping hydration stable.
 
+## The assistant (RAG)
+
+The "Ask about Gaurav" button opens a retrieval assistant built from the site's
+own content. `components/rag/corpus.js` chunks the résumé facts, project
+write-ups and article paragraphs; `components/rag/retriever.js` indexes them
+with BM25 and retrieves for a question; `components/Chat.jsx` shows the passage
+with a link to its source.
+
+There is **no model call**. That is deliberate rather than a shortcut: a hosted
+model needs a key a static site cannot hold safely, costs money per visitor, and
+is free to invent a job Gaurav never had. With no generation step this cannot
+state anything he has not published, and a question that retrieves nothing says
+so instead of returning the least-bad passage.
+
+Two decisions worth keeping if you edit it:
+
+- **BM25, not raw TF-IDF.** The corpus mixes one-line résumé facts with
+  multi-hundred-word article passages; without length normalisation the long
+  passages win every query on term count alone.
+- **A synonym map and an aggressive stemmer.** A visitor asks about "tech", the
+  corpus says "Java 17, TestNG" — no shared term, so BM25 scores zero. The map
+  closes that gap where an embedding model would have. The stemmer reduces
+  `automate`, `automated` and `automation` to one root; its output is not real
+  words (`validation` → `validat`), which does not matter because the same
+  function runs over both the query and the corpus.
+
+To add an LLM later, keep retrieval as-is and feed the retrieved passages to a
+model for phrasing only — the facts should still come from the corpus.
+
 ## Where the facts come from
 
 Roles, dates, tooling and project details on the page are taken from

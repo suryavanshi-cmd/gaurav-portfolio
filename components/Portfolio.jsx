@@ -157,11 +157,20 @@ function HeadMeta() {
   useEffect(() => {
     const format = () =>
       new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false,
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
       }).format(new Date());
-    setTime(format());
-    const id = window.setInterval(() => setTime(format()), 30_000);
-    return () => window.clearInterval(id);
+
+    let timer;
+    /* Re-align to the top of each second rather than running a flat 1000ms
+       interval, which drifts as the tab is throttled and eventually ticks
+       visibly late or skips a second. */
+    const tick = () => {
+      setTime(format());
+      timer = window.setTimeout(tick, 1000 - (Date.now() % 1000));
+    };
+    tick();
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -239,10 +248,22 @@ export default function Portfolio() {
   const [openProject, setOpenProject] = useState(null);
   const [filter, setFilter] = useState('all');
 
+  const [showAll, setShowAll] = useState(false);
+
   const visibleProjects = useMemo(
     () => (filter === 'all' ? projects : projects.filter((project) => project.key === filter)),
     [filter],
   );
+
+  /* Sixteen dense rows is most of the page's weight. Six is enough to show the
+     range; the rest are one click away and every project stays reachable. */
+  const PREVIEW = 6;
+  const shownProjects = showAll ? visibleProjects : visibleProjects.slice(0, PREVIEW);
+  const hiddenCount = visibleProjects.length - shownProjects.length;
+
+  /* Changing the filter starts a new list, so the preview should start closed
+     again rather than staying expanded from the previous one. */
+  useEffect(() => { setShowAll(false); }, [filter]);
 
   const progressRef = useProgress();
   const activeSection = useActiveSection(SECTION_IDS);
@@ -368,7 +389,7 @@ export default function Portfolio() {
         </div>
 
         <ul className="list stagger" data-rise key={filter}>
-          {visibleProjects.map((project) => (
+          {shownProjects.map((project) => (
             <li key={project.title}>
               <button type="button" className="row row-open" onClick={() => setOpenProject(project)}>
                 <span className="row-key">{project.key}</span>
@@ -384,6 +405,12 @@ export default function Portfolio() {
             </li>
           ))}
         </ul>
+        {hiddenCount > 0 ? (
+          <button type="button" className="more" onClick={() => setShowAll(true)} data-rise>
+            Show {hiddenCount} more {hiddenCount === 1 ? 'project' : 'projects'}
+            <span aria-hidden="true">↓</span>
+          </button>
+        ) : null}
         <p className="list-hint" data-rise>
           {visibleProjects.length} {visibleProjects.length === 1 ? 'project' : 'projects'} — open any
           one for the problem, the flow, and what made it hard.
