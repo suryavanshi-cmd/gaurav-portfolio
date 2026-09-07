@@ -174,6 +174,17 @@ SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key_here
 Level Security should allow validated `INSERT` and no public reads. Never commit
 secret or service-role keys.
 
+## Other projects in this repository
+
+Two products live alongside the site, each self-contained with its own README,
+dependencies and deploy settings:
+
+- **`connect-to-nature/`** — a farm-stay marketplace for the Kokan and Nashik
+  vibhags. Next.js 15 and Supabase, two portals (traveller and shetkari) on one
+  database, in English, Hindi and Marathi.
+- **`rakta-setu/`** — automated WhatsApp delivery of blood reports in Marathi,
+  with a voice-enabled web app that explains the results.
+
 ## Stack
 
 Next.js 15, React 19, Supabase, deployed on Vercel.
