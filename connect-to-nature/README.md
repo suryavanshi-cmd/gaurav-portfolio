@@ -206,7 +206,16 @@ says which mode you are in.
 
 ### Deploying
 
-**Vercel** — import the repository and set **Root Directory** to
+**Deployed at** <https://connect-to-nature-ob8pw1aue.vercel.app> — behind
+Vercel Authentication until someone turns it off (Project → Settings →
+Deployment Protection → Vercel Authentication → Disabled), which is the default
+for a new project.
+
+That deployment is a bootstrap: the Vercel Git integration was not authorised
+for this account when it was made, so the project could not be linked to the
+repository, and its install step fetches this directory from a pinned commit
+instead. It does not redeploy on push. **Connecting the repository supersedes
+it** — import the repository and set **Root Directory** to
 `connect-to-nature`. No environment variables are needed for the first deploy:
 `.env.production` already points at the live database. Add
 `SUPABASE_SERVICE_ROLE_KEY` and the Razorpay pair when you want approvals and
