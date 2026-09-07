@@ -1,0 +1,237 @@
+@import "tailwindcss";
+
+/* Theme is an explicit attribute on <html>, written by the toggle and by the
+   inline script in layout.tsx. "System" is resolved to light or dark before
+   paint rather than left to a media query, so one rule set covers both and
+   nothing flashes. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --color-canvas: #fbfbfd;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f5f7;
+  --color-ink: #1d1d1f;
+  --color-ink-2: #424245;
+  --color-muted: #6e6e73;
+  --color-line: rgba(0, 0, 0, 0.09);
+  --color-line-strong: rgba(0, 0, 0, 0.16);
+
+  /* The sky the field stands under. Two stops, no imagery: the movement in the
+     hero comes from the grass, and a busy sky would fight it. */
+  --sky-top: #e8f2f7;
+  --sky-bottom: #f4f7ea;
+
+  --color-leaf: #157f5f;
+  --color-leaf-soft: #e6f4ee;
+  --color-grape: #6d4bb5;
+  --color-grape-soft: #efe9fb;
+  --color-clay: #b4622f;
+  --color-sun: #e8a33d;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Noto Sans Devanagari",
+    "Nirmala UI", system-ui, sans-serif;
+
+  --radius-xl2: 20px;
+  --radius-xl3: 28px;
+
+  /* Fast departure, long settle. Everything that moves uses one of these two. */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --sky-top: #0d1620;
+  --sky-bottom: #101a16;
+  --color-canvas: #08090b;
+  --color-surface: #121316;
+  --color-surface-2: #1b1c20;
+  --color-ink: #f5f5f7;
+  --color-ink-2: #d2d2d7;
+  --color-muted: #98989d;
+  --color-line: rgba(255, 255, 255, 0.1);
+  --color-line-strong: rgba(255, 255, 255, 0.18);
+  --color-leaf: #34c48c;
+  --color-leaf-soft: rgba(52, 196, 140, 0.14);
+  --color-grape: #a78bfa;
+  --color-grape-soft: rgba(167, 139, 250, 0.15);
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+
+  /* Devanagari sits lower and needs more room between lines than Latin at the
+     same size; without this, Marathi headings clip their own matras. */
+  :lang(hi) h1, :lang(hi) h2, :lang(hi) h3,
+  :lang(mr) h1, :lang(mr) h2, :lang(mr) h3 {
+    line-height: 1.28;
+    letter-spacing: 0;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+
+  p { text-wrap: pretty; }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-leaf) 22%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-leaf);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  input, select, textarea, button { font: inherit; color: inherit; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .glass {
+    background: color-mix(in srgb, var(--color-canvas) 72%, transparent);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl3);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 8px 24px -12px rgba(0, 0, 0, 0.12);
+  }
+
+  [data-theme="dark"] .card {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.4),
+      0 12px 32px -16px rgba(0, 0, 0, 0.8);
+  }
+
+  .card-hover {
+    transition: transform 0.5s var(--ease-spring), box-shadow 0.5s var(--ease-spring);
+    will-change: transform;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.05),
+      0 24px 48px -20px rgba(0, 0, 0, 0.22);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    /* A two-word label that wraps turns a pill into a lozenge and breaks the
+       header's rhythm. Long labels shrink the row instead. */
+    white-space: nowrap;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    padding: 0.75rem 1.4rem;
+    transition: transform 0.35s var(--ease-spring), background-color 0.25s var(--ease-smooth),
+      opacity 0.25s var(--ease-smooth), color 0.25s var(--ease-smooth);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--color-leaf);
+    color: #fff;
+  }
+  .btn-primary:hover { background: color-mix(in srgb, var(--color-leaf) 88%, #000); }
+  [data-theme="dark"] .btn-primary { color: #06120d; }
+
+  .btn-ghost {
+    background: color-mix(in srgb, var(--color-ink) 6%, transparent);
+    color: var(--color-ink);
+  }
+  .btn-ghost:hover { background: color-mix(in srgb, var(--color-ink) 11%, transparent); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-ink);
+  }
+  .btn-outline:hover { background: color-mix(in srgb, var(--color-ink) 5%, transparent); }
+
+  .field {
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line-strong);
+    border-radius: 14px;
+    padding: 0.8rem 1rem;
+    transition: border-color 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth);
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--color-leaf);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-leaf) 16%, transparent);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    padding: 0.45rem 0.9rem;
+    font-size: 0.875rem;
+    transition: all 0.3s var(--ease-spring);
+    cursor: pointer;
+  }
+
+  .chip[data-on="true"] {
+    background: var(--color-leaf);
+    border-color: var(--color-leaf);
+    color: #fff;
+  }
+  [data-theme="dark"] .chip[data-on="true"] { color: #06120d; }
+
+  .hairline { border-top: 1px solid var(--color-line); }
+
+  .measure { max-width: 40rem; }
+
+  /* Wide things — itinerary tables, calendars — scroll inside themselves rather
+     than making the page scroll sideways. */
+  .scroll-x {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+}

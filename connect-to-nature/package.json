@@ -1,0 +1,36 @@
+{
+  "name": "connect-to-nature",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Connect to Nature — a farm-stay marketplace joining shetkari of the Kokan and Nashik vibhags with travellers who want two days away. One Supabase backend, two portals, three languages.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:sql": "./scripts/check-sql.sh",
+    "seed:generate": "node scripts/generate-seed.mjs"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.6",
+    "@supabase/supabase-js": "^2.116.0",
+    "clsx": "^2.1.1",
+    "motion": "^13.2.0",
+    "next": "15.5.19",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.2"
+  }
+}

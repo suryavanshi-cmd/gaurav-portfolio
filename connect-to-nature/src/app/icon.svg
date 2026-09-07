@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The same mark the header carries: a hill, a field line, the sun over both. -->
+  <rect width="32" height="32" rx="7" fill="#0f1c17"/>
+  <path d="M4 23c4-7.5 7-10.5 9-10.5s3 2 5 5.2 3 5.3 6 5.3H4z" fill="#34c48c"/>
+  <circle cx="22" cy="10.5" r="3.8" fill="#e8a33d"/>
+  <path d="M4 26.5h24" stroke="#34c48c" stroke-width="1.6" stroke-linecap="round" opacity="0.5"/>
+</svg>
