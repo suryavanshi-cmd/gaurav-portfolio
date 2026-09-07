@@ -16,6 +16,11 @@
   --color-line: rgba(0, 0, 0, 0.09);
   --color-line-strong: rgba(0, 0, 0, 0.16);
 
+  /* The sky the field stands under. Two stops, no imagery: the movement in the
+     hero comes from the grass, and a busy sky would fight it. */
+  --sky-top: #e8f2f7;
+  --sky-bottom: #f4f7ea;
+
   --color-leaf: #157f5f;
   --color-leaf-soft: #e6f4ee;
   --color-grape: #6d4bb5;
@@ -36,6 +41,8 @@
 }
 
 [data-theme="dark"] {
+  --sky-top: #0d1620;
+  --sky-bottom: #101a16;
   --color-canvas: #08090b;
   --color-surface: #121316;
   --color-surface-2: #1b1c20;

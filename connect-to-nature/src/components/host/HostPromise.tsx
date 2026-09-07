@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Reveal } from '../ui/Reveal';
-import { Scene } from '../Scene';
+import { FieldBackdrop } from '../FieldBackdrop';
 import { revealDelay } from '@/lib/stagger';
 
 export function HostPromise() {
@@ -19,11 +19,13 @@ export function HostPromise() {
   return (
     <>
       <Reveal>
-        <section className="card relative overflow-hidden">
-          <div className="absolute inset-0 -z-10 opacity-60">
-            <Scene scene="orchard" seed="shetkari-hero" className="h-full w-full" />
+        {/* Layered explicitly rather than with a negative z-index: .card paints
+            its own background, and a child behind it is a child nobody sees. */}
+        <section className="relative overflow-hidden rounded-[28px] border border-[var(--color-line)] bg-[var(--color-surface)] shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)]">
+          <div className="absolute inset-x-0 bottom-0 z-0 h-3/5" aria-hidden="true">
+            <FieldBackdrop className="h-full w-full" density={0.65} />
           </div>
-          <div className="bg-[color-mix(in_srgb,var(--color-surface)_84%,transparent)] p-7 backdrop-blur-xl sm:p-10">
+          <div className="relative z-10 p-7 pb-40 sm:p-10 sm:pb-44">
             <h1 className="max-w-2xl text-[clamp(1.9rem,4.6vw,2.9rem)] font-semibold leading-tight tracking-[-0.03em]">
               {t('host.heroTitle')}
             </h1>
@@ -32,7 +34,7 @@ export function HostPromise() {
               <Link href="/shetkari/onboarding" className="btn btn-primary px-7 py-4 text-[17px]">
                 {t('host.start')}
               </Link>
-              <Link href="/shetkari/signin" className="btn btn-outline px-7 py-4 text-[17px]">
+              <Link href="/shetkari/signin" className="btn btn-outline bg-[color-mix(in_srgb,var(--color-surface)_75%,transparent)] px-7 py-4 text-[17px] backdrop-blur-md">
                 {t('host.signIn')}
               </Link>
             </div>
