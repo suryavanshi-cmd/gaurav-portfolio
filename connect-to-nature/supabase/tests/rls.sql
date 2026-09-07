@@ -125,4 +125,20 @@ end $$;
 
 reset role;
 
+-- The hardening migration revokes execute on the trigger functions. The four
+-- helpers that policies name must stay callable, or every policy that uses one
+-- fails closed and nobody can read their own rows.
+set role authenticated;
+do $$
+declare ok boolean;
+begin
+  select public.is_admin() into ok;
+  assert ok = false, 'is_admin() should be false for a traveller';
+  perform public.owns_listing('00000000-0000-0000-0000-000000000000'::uuid);
+  perform public.owns_host_profile('00000000-0000-0000-0000-000000000000'::uuid);
+  perform public.listing_is_available(
+    (select id from public.listings limit 1), current_date + 200, current_date + 202);
+end $$;
+reset role;
+
 do $$ begin raise notice 'row-level security assertions passed'; end $$;
