@@ -240,7 +240,17 @@ create policy host_leads_admin_read on public.host_leads
 -- anon and authenticated by default, so the state is reset here first: nothing
 -- is reachable until this file says it is. Two locks on the same door, and the
 -- outer one does not depend on a policy being written correctly.
-revoke all on all tables in schema public from anon, authenticated;
+-- Named tables, not "all tables in schema public": this migration may be
+-- applied to a project that already has tables of its own, and revoking their
+-- grants from under them would take a working application offline.
+revoke all on
+  public.profiles, public.regions, public.activities, public.host_profiles,
+  public.listings, public.listing_photos, public.listing_activities,
+  public.availability, public.trip_packages, public.custom_itineraries,
+  public.bookings, public.payouts, public.reviews, public.wishlists,
+  public.host_leads
+from anon, authenticated;
+
 grant usage on schema public to anon, authenticated;
 
 -- Public catalogue: the farm pages a traveller browses before signing in.

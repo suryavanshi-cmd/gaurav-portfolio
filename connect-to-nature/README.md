@@ -15,8 +15,15 @@ One Next.js deployment serves two portals against one Supabase database:
 
 ```
 npm install
-npm run dev        # http://localhost:3000 — no keys needed
+npm run dev        # http://localhost:3000
 ```
+
+**The database is live.** This repository is wired to a Supabase project in
+`ap-south-1` (Mumbai) that already has the schema, the row-level security and
+the twelve farms in it — `.env.production` carries the URL and the publishable
+key, both of which are public by design. `npm run dev` with no `.env.local` runs
+against the seeded rows in `src/lib/seed-content.ts` instead, so the repository
+is still clonable and runnable with nothing configured.
 
 With an empty `.env` the app boots in **demo mode**: the twelve seeded farms are
 served from memory, every page works, and nothing is written anywhere. Add the
@@ -149,7 +156,32 @@ npm run dev
 | `npm run check:sql` | migrations + seed + assertions + RLS against a real PostgreSQL |
 | `npm run seed:generate` | rewrite `supabase/seed.sql` from `src/lib/seed-content.ts` |
 
-### Connecting Supabase
+### The live project
+
+Already applied to `rzwzaytodauobtrmsfei` (Mumbai): all five migrations, the
+seed (2 vibhags, 37 activities, 12 farms, 4 packages, 8 reviews, 2,172 open
+dates), and the storage bucket. Verified against it as an anonymous visitor:
+farms and reviews readable, `bookings` / `profiles` / `host_leads` / `payouts`
+not readable at all, and a booking insert refused.
+
+Two things are deliberately still off, because their secrets do not belong in a
+repository — set them on the host to switch them on:
+
+| Environment variable | What it enables |
+| --- | --- |
+| `SUPABASE_SERVICE_ROLE_KEY` | admin approvals publishing a farm |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | real payments instead of `demo` bookings |
+
+Make yourself an admin once you have signed in:
+
+```sql
+update public.profiles set role = 'admin' where email = 'you@example.com';
+```
+
+Phone sign-in needs an SMS provider connected under **Auth → Providers**; email
+OTP works out of the box.
+
+### Connecting a different Supabase project
 
 1. Create a project at [supabase.com](https://supabase.com) and copy the URL and
    the anon key from **Settings → API** into `.env.local`.
@@ -174,10 +206,15 @@ says which mode you are in.
 
 ### Deploying
 
-**Vercel** — import the repository, set **Root Directory** to
-`connect-to-nature`, add the environment variables from `.env.example`. For the
-two portals, point both `www.<domain>` and `shetkari.<domain>` at the same
-project; the middleware does the rest.
+**Vercel** — import the repository and set **Root Directory** to
+`connect-to-nature`. No environment variables are needed for the first deploy:
+`.env.production` already points at the live database. Add
+`SUPABASE_SERVICE_ROLE_KEY` and the Razorpay pair when you want approvals and
+payments.
+
+For the two portals, point both `www.<domain>` and `shetkari.<domain>` at the
+same project; the middleware does the rest. On a `*.vercel.app` URL there is no
+subdomain to use, so the farmer portal lives at `/shetkari` there.
 
 **GitHub Actions** (`.github/workflows/connect-to-nature.yml`) typechecks and
 builds the app, applies every migration and the seed to a PostgreSQL service

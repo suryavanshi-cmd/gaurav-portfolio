@@ -134,19 +134,16 @@ export async function getReviews(listingId: string): Promise<Review[]> {
   if (!isSupabaseConfigured) return demoReviewsFor(listingId);
   const supabase = await createServerSupabase();
   if (!supabase) return demoReviewsFor(listingId);
+  // guest_name is denormalised onto the review by a trigger, because bookings
+  // are not readable by the visitor a review is public for.
   const { data, error } = await supabase
     .from('reviews')
-    .select('id, booking_id, listing_id, rating, comment, created_at, booking:bookings(guest_name)')
+    .select('id, booking_id, listing_id, rating, comment, created_at, guest_name')
     .eq('listing_id', listingId)
     .order('created_at', { ascending: false })
     .limit(20);
   if (error || !data) return demoReviewsFor(listingId);
-  // PostgREST returns an embedded one-to-one as an array in the generated type.
-  return (data as unknown as (Review & { booking?: { guest_name: string } | { guest_name: string }[] })[])
-    .map((row) => {
-      const booking = Array.isArray(row.booking) ? row.booking[0] : row.booking;
-      return { ...row, guest_name: booking?.guest_name };
-    });
+  return data as Review[];
 }
 
 export async function getMyBookings(): Promise<Booking[]> {
