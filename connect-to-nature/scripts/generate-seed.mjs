@@ -95,8 +95,8 @@ begin
     v_host, ${q(farm.slug)}, ${json(farm.title)}, ${json(farm.description)}, v_region,
     ${q(farm.district)}, ${json(farm.village)}, ${q(farm.stayType)}, ${q(farm.scene)},
     ${arr(farm.crops)}, ${farm.basePrice}, ${farm.maxGuests}, ${farm.bedrooms},
-    ${intArr(farm.bestMonths)}, ${farm.lat}, ${farm.lng}, 'published', ${farm.rating},
-    ${farm.reviewCount}, ${farm.featured}, now()
+    ${intArr(farm.bestMonths)}, ${farm.lat}, ${farm.lng}, 'published', 0,
+    0, ${farm.featured}, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -174,14 +174,9 @@ end $$;`);
   w();
 }
 
-w('-- ─── demo rating counts ─────────────────────────────────────────────────────');
-w('-- The trigger on reviews keeps rating and review_count true to the reviews in');
-w('-- the table. The seed carries a handful of reviews but the farms are written');
-w('-- as if they had been hosting for two years, so the counts are restored here.');
-w('-- Delete this block for a project that should only ever show real numbers.');
-for (const farm of FARMS) {
-  w(`update public.listings set rating = ${farm.rating}, review_count = ${farm.reviewCount} where slug = ${q(farm.slug)};`);
-}
+w('-- Ratings are left to the trigger on public.reviews: whatever the reviews');
+w('-- in this file average to is what a farm shows, and a farm with none shows');
+w('-- none.');
 w();
 
 writeFileSync(out, `${lines.join('\n')}\n`, 'utf8');

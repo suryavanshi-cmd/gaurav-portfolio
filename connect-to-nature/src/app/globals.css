@@ -115,10 +115,14 @@
 }
 
 @layer components {
+  /* Legibility comes from the opacity, not from the blur.
+     The blur is applied in the markup with Tailwind's own backdrop utilities:
+     writing `backdrop-filter` by hand here compiled down to the -webkit- alias
+     alone, which left the bar reading as plain transparency and let the cards
+     underneath show straight through it. 90% is opaque enough to read against
+     anything, and still lets the field move behind it. */
   .glass {
-    background: color-mix(in srgb, var(--color-canvas) 72%, transparent);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: color-mix(in srgb, var(--color-canvas) 90%, transparent);
   }
 
   .card {

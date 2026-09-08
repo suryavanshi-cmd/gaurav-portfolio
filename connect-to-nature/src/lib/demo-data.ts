@@ -74,6 +74,13 @@ export const demoHosts: HostProfile[] = FARMS.map((farm) => ({
 
 const hostBySlug = new Map(FARMS.map((farm, index) => [farm.slug, demoHosts[index]]));
 
+function ratingFor(listingSlug: string): { rating: number; review_count: number } {
+  const mine = REVIEWS.filter((review) => review.listingSlug === listingSlug);
+  if (mine.length === 0) return { rating: 0, review_count: 0 };
+  const total = mine.reduce((sum, review) => sum + review.rating, 0);
+  return { rating: Math.round((total / mine.length) * 100) / 100, review_count: mine.length };
+}
+
 export const demoListings: Listing[] = FARMS.map((farm) => ({
   id: stableId('listing', farm.slug),
   host_id: stableId('host', farm.slug),
@@ -93,8 +100,9 @@ export const demoListings: Listing[] = FARMS.map((farm) => ({
   lat: farm.lat,
   lng: farm.lng,
   status: 'published',
-  rating: farm.rating,
-  review_count: farm.reviewCount,
+  // Computed from the reviews below, exactly as the database trigger computes
+  // it, so demo mode and a seeded project show the same number.
+  ...ratingFor(farm.slug),
   is_featured: farm.featured,
   host: hostBySlug.get(farm.slug),
   region: regionBySlug.get(farm.regionSlug),

@@ -66,8 +66,6 @@ export interface FarmSeed {
   phone: string;
   lat: number;
   lng: number;
-  rating: number;
-  reviewCount: number;
   featured: boolean;
   activities: string[];
 }
@@ -375,6 +373,10 @@ export const ACTIVITIES: ActivitySeed[] = [
 ];
 
 /* ─── the farms already onboarded ───────────────────────────────────────── */
+/* No rating or review count here on purpose. A rating is what the reviews say,
+   maintained by the trigger in 20260907090100_functions.sql, and a number
+   written next to a farm that no one has reviewed is just a number someone made
+   up. Farms with no reviews yet say so on their page. */
 /* Month numbers are 1–12. `scene` selects the procedural artwork drawn for a
    listing that has not uploaded photographs yet — see components/Scene.tsx. */
 
@@ -402,7 +404,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['alphonso', 'kokum', 'coconut'], stayType: 'wadi_room', scene: 'orchard',
     basePrice: 2400, maxGuests: 8, bedrooms: 2, bestMonths: [11, 12, 1, 2, 3, 4, 5],
     languages: ['mr', 'hi'], hostingSince: 2023, landAcres: 6, phone: '+91 98230 11045',
-    lat: 16.9331, lng: 73.3255, rating: 4.9, reviewCount: 86, featured: true,
+    lat: 16.9331, lng: 73.3255, featured: true,
     activities: ['mango-grafting', 'kokum-syrup', 'kokan-thali', 'low-tide-walk', 'night-stars', 'bird-walk'],
   },
   {
@@ -428,7 +430,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['cashew', 'coconut', 'betelnut'], stayType: 'farm_cottage', scene: 'coast',
     basePrice: 2900, maxGuests: 10, bedrooms: 3, bestMonths: [10, 11, 12, 1, 2, 3, 4],
     languages: ['mr', 'hi', 'en'], hostingSince: 2022, landAcres: 9, phone: '+91 94220 33871',
-    lat: 16.1793, lng: 73.4402, rating: 4.8, reviewCount: 124, featured: true,
+    lat: 16.1793, lng: 73.4402, featured: true,
     activities: ['cashew-roast', 'backwater-kayak', 'fish-curry', 'beach-sunrise', 'low-tide-walk', 'night-stars'],
   },
   {
@@ -454,7 +456,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['rice', 'betelnut'], stayType: 'mud_house', scene: 'river',
     basePrice: 1900, maxGuests: 6, bedrooms: 2, bestMonths: [7, 8, 9, 10, 11, 12, 1],
     languages: ['mr', 'hi'], hostingSince: 2024, landAcres: 4, phone: '+91 90280 44219',
-    lat: 18.4386, lng: 73.1198, rating: 4.7, reviewCount: 58, featured: false,
+    lat: 18.4386, lng: 73.1198, featured: false,
     activities: ['paddy-work', 'river-swim', 'bhakri-making', 'waterfall-walk', 'bullock-cart', 'night-stars'],
   },
   {
@@ -480,7 +482,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['rice', 'nachni'], stayType: 'mud_house', scene: 'hills',
     basePrice: 1700, maxGuests: 8, bedrooms: 2, bestMonths: [8, 9, 10, 11, 12, 1, 2],
     languages: ['mr', 'hi'], hostingSince: 2023, landAcres: 3, phone: '+91 89999 20714',
-    lat: 19.9117, lng: 73.2270, rating: 4.9, reviewCount: 73, featured: true,
+    lat: 19.9117, lng: 73.2270, featured: true,
     activities: ['warli-painting', 'forest-walk', 'hilltop-sunset', 'bhakri-making', 'folk-music', 'night-stars'],
   },
   {
@@ -506,7 +508,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['betelnut', 'coconut', 'jackfruit'], stayType: 'orchard_tent', scene: 'coast',
     basePrice: 2200, maxGuests: 12, bedrooms: 4, bestMonths: [10, 11, 12, 1, 2, 3],
     languages: ['mr', 'hi', 'en'], hostingSince: 2024, landAcres: 5, phone: '+91 97650 88123',
-    lat: 17.4805, lng: 73.1935, rating: 4.6, reviewCount: 41, featured: false,
+    lat: 17.4805, lng: 73.1935, featured: false,
     activities: ['coconut-climb', 'jackfruit-harvest', 'beach-sunrise', 'temple-walk', 'kokan-thali', 'campfire'],
   },
   {
@@ -532,7 +534,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['kokum', 'alphonso', 'pepper'], stayType: 'farm_cottage', scene: 'orchard',
     basePrice: 2600, maxGuests: 6, bedrooms: 2, bestMonths: [11, 12, 1, 2, 3, 4, 5],
     languages: ['mr', 'hi', 'en'], hostingSince: 2022, landAcres: 7, phone: '+91 99230 65540',
-    lat: 16.0114, lng: 73.6885, rating: 4.8, reviewCount: 97, featured: false,
+    lat: 16.0114, lng: 73.6885, featured: false,
     activities: ['kokum-syrup', 'spice-trail', 'kokan-thali', 'bird-walk', 'mango-grafting', 'night-stars'],
   },
   {
@@ -558,7 +560,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['grapes', 'onion'], stayType: 'farm_cottage', scene: 'vineyard',
     basePrice: 2700, maxGuests: 10, bedrooms: 3, bestMonths: [11, 12, 1, 2, 3],
     languages: ['mr', 'hi', 'en'], hostingSince: 2022, landAcres: 14, phone: '+91 98600 41277',
-    lat: 20.0967, lng: 73.9280, rating: 4.9, reviewCount: 152, featured: true,
+    lat: 20.0967, lng: 73.9280, featured: true,
     activities: ['grape-pruning', 'raisin-making', 'vineyard-dinner', 'onion-market', 'bullock-cart', 'night-stars'],
   },
   {
@@ -584,7 +586,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['rice', 'strawberry'], stayType: 'orchard_tent', scene: 'hills',
     basePrice: 2300, maxGuests: 8, bedrooms: 3, bestMonths: [7, 8, 9, 12, 1, 2, 3],
     languages: ['mr', 'hi', 'en'], hostingSince: 2023, landAcres: 5, phone: '+91 90110 78432',
-    lat: 19.7118, lng: 73.6285, rating: 4.8, reviewCount: 88, featured: true,
+    lat: 19.7118, lng: 73.6285, featured: true,
     activities: ['kalsubai-climb', 'waterfall-walk', 'strawberry-pick', 'campfire', 'bhakri-making', 'night-stars'],
   },
   {
@@ -610,7 +612,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['pomegranate', 'sugarcane', 'wheat'], stayType: 'farm_cottage', scene: 'orchard',
     basePrice: 2100, maxGuests: 8, bedrooms: 2, bestMonths: [10, 11, 12, 1, 2, 3],
     languages: ['mr', 'hi'], hostingSince: 2023, landAcres: 11, phone: '+91 94040 21908',
-    lat: 19.3925, lng: 74.6480, rating: 4.7, reviewCount: 64, featured: false,
+    lat: 19.3925, lng: 74.6480, featured: false,
     activities: ['pomegranate-harvest', 'gur-making', 'bullock-cart', 'bhakri-making', 'night-stars', 'folk-music'],
   },
   {
@@ -636,7 +638,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['banana', 'cotton'], stayType: 'mud_house', scene: 'plateau',
     basePrice: 1800, maxGuests: 10, bedrooms: 3, bestMonths: [10, 11, 12, 1, 2],
     languages: ['mr', 'hi'], hostingSince: 2024, landAcres: 8, phone: '+91 88880 34617',
-    lat: 21.2470, lng: 76.0330, rating: 4.6, reviewCount: 39, featured: false,
+    lat: 21.2470, lng: 76.0330, featured: false,
     activities: ['banana-harvest', 'cotton-walk', 'khandeshi-kitchen', 'folk-music', 'bullock-cart', 'night-stars'],
   },
   {
@@ -662,7 +664,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['jowar', 'custardapple'], stayType: 'mud_house', scene: 'hills',
     basePrice: 1600, maxGuests: 6, bedrooms: 2, bestMonths: [8, 9, 10, 11, 12, 1, 2],
     languages: ['mr', 'hi'], hostingSince: 2024, landAcres: 4, phone: '+91 70570 19286',
-    lat: 21.8790, lng: 74.4640, rating: 4.8, reviewCount: 47, featured: false,
+    lat: 21.8790, lng: 74.4640, featured: false,
     activities: ['satpuda-walk', 'honey-gather', 'folk-music', 'forest-walk', 'campfire', 'night-stars'],
   },
   {
@@ -688,7 +690,7 @@ export const FARMS: FarmSeed[] = [
     crops: ['onion', 'tomato', 'wheat'], stayType: 'terrace_room', scene: 'plateau',
     basePrice: 1950, maxGuests: 12, bedrooms: 4, bestMonths: [10, 11, 12, 1, 2, 3],
     languages: ['mr', 'hi'], hostingSince: 2023, landAcres: 10, phone: '+91 93710 55204',
-    lat: 20.1447, lng: 74.2380, rating: 4.7, reviewCount: 71, featured: false,
+    lat: 20.1447, lng: 74.2380, featured: false,
     activities: ['onion-market', 'bhakri-making', 'bullock-cart', 'night-stars', 'bird-walk', 'gur-making'],
   },
 ];

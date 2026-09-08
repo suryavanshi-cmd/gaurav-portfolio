@@ -95,7 +95,7 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="glass mt-12 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 rounded-[22px] border border-[color-mix(in_srgb,var(--color-line)_60%,transparent)] px-6 py-5 sm:grid-cols-4"
+          className="glass mt-12 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 rounded-[22px] border border-[color-mix(in_srgb,var(--color-line)_60%,transparent)] px-6 py-5 backdrop-blur-xl backdrop-saturate-150 sm:grid-cols-4"
         >
           {stats.map((stat) => (
             <div key={stat.label}>

@@ -4,13 +4,21 @@ import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { BrandMark } from './BrandMark';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { FieldBackdrop } from './FieldBackdrop';
 
 export function SiteFooter({ demo }: { demo: boolean }) {
   const { t } = useIntl();
 
   return (
-    <footer className="mt-24 border-t border-[var(--color-line)] bg-[var(--color-surface-2)]">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
+    /* Sky at the top of a page, ground at the bottom of it. The footer is where
+       the page ends, so the field belongs here on every route — quieter than
+       the hero, and behind the links rather than under them. */
+    <footer className="relative mt-24 overflow-hidden border-t border-[var(--color-line)] bg-[var(--color-surface-2)]">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-2/3 opacity-70" aria-hidden="true">
+        <FieldBackdrop className="h-full w-full" density={0.5} />
+      </div>
+
+      <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2 font-semibold">
             <BrandMark />
@@ -43,7 +51,7 @@ export function SiteFooter({ demo }: { demo: boolean }) {
         </div>
       </div>
 
-      <div className="border-t border-[var(--color-line)]">
+      <div className="relative z-10 border-t border-[color-mix(in_srgb,var(--color-line)_70%,transparent)] bg-[color-mix(in_srgb,var(--color-surface-2)_70%,transparent)] backdrop-blur-md">
         <div className="mx-auto max-w-6xl px-4 py-6 text-xs leading-relaxed text-[var(--color-muted)] sm:px-6">
           {demo && <p className="mb-2">{t('footer.demo')}</p>}
           <p>© {new Date().getFullYear()} {t('common.brand')}. {t('footer.rights')} · {t('common.poweredBy')}</p>

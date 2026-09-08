@@ -32,7 +32,9 @@ export function SiteNav({ profile }: { profile: Profile | null }) {
     <header
       className={clsx(
         'sticky top-0 z-40 transition-all duration-500',
-        scrolled ? 'glass border-b border-[var(--color-line)]' : 'bg-transparent',
+        scrolled
+          ? 'glass border-b border-[var(--color-line)] backdrop-blur-xl backdrop-saturate-150'
+          : 'bg-transparent',
       )}
       style={{ transitionTimingFunction: 'var(--ease-spring)' }}
     >
@@ -104,7 +106,7 @@ export function SiteNav({ profile }: { profile: Profile | null }) {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="glass border-t border-[var(--color-line)] md:hidden"
+            className="glass border-t border-[var(--color-line)] backdrop-blur-xl backdrop-saturate-150 md:hidden"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
