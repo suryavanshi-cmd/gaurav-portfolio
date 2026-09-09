@@ -69,10 +69,5 @@ export function siteUrl(): string {
   return 'http://localhost:3000';
 }
 
-export const VIDEO_BUCKET = 'reel-videos';
-
-/** Free plan ceiling; the paywall that would raise it is a later phase. */
-export const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
-
-/** Jobs one user may create per hour, independent of credits. */
-export const RATE_LIMIT_PER_HOUR = 10;
+// Re-exported so server modules have one import for configuration.
+export { VIDEO_BUCKET, MAX_UPLOAD_BYTES, RATE_LIMIT_PER_HOUR } from './constants';
