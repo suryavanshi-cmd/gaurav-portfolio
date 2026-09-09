@@ -206,20 +206,31 @@ says which mode you are in.
 
 ### Deploying
 
-**Deployed at** <https://connect-to-nature-ob8pw1aue.vercel.app> — behind
-Vercel Authentication until someone turns it off (Project → Settings →
-Deployment Protection → Vercel Authentication → Disabled), which is the default
-for a new project.
+**Deployed at** <https://connect-to-nature.vercel.app> — public; the
+deployment-specific `*-<hash>.vercel.app` URLs are behind Vercel Authentication,
+which is the default for a new project and applies to them, not to the
+production domain.
 
-That deployment is a bootstrap: the Vercel Git integration was not authorised
-for this account when it was made, so the project could not be linked to the
-repository, and its install step fetches this directory from a pinned commit
-instead. It does not redeploy on push. **Connecting the repository supersedes
-it** — import the repository and set **Root Directory** to
-`connect-to-nature`. No environment variables are needed for the first deploy:
-`.env.production` already points at the live database. Add
-`SUPABASE_SERVICE_ROLE_KEY` and the Razorpay pair when you want approvals and
-payments.
+That deployment is a **bootstrap**: the Vercel Git integration could not be
+authorised for this account, so the project was created by uploading a manifest
+whose install step fetches this directory from a pinned commit. It is a real
+build of real code, but **it does not redeploy when the repository changes.**
+
+To replace it with a linked project — which is what you want:
+
+1. In Vercel, **Add New → Project**, pick `suryavanshi-cmd/gaurav-portfolio`,
+   and set **Root Directory** to `connect-to-nature`. No environment variables
+   are needed for the first deploy; `.env.production` already points at the
+   database. Add `SUPABASE_SERVICE_ROLE_KEY` and the Razorpay pair when you want
+   approvals and real payments.
+2. Delete the bootstrap `connect-to-nature` project (and the throwaway
+   `ctn-scope-check` one) once the linked project is deploying.
+
+`vercel.json` here sets `ignoreCommand`, because this is one directory of a
+repository that also holds the portfolio site and rakta-setu: without it, every
+commit to either of those would rebuild and redeploy this project. The command
+exits 0 — skip — when the last commit touched nothing in this directory, and
+Vercel builds if the command itself fails, which is the safe direction.
 
 For the two portals, point both `www.<domain>` and `shetkari.<domain>` at the
 same project; the middleware does the rest. On a `*.vercel.app` URL there is no
