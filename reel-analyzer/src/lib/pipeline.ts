@@ -6,7 +6,7 @@ import {
   TranscriptionError,
   type TranscriptSegment,
 } from '@/lib/providers/transcription';
-import { AnalysisError, analyseReel } from '@/lib/providers/analysis/claude';
+import { AnalysisError, analyseReel } from '@/lib/providers/analysis';
 import type { JobRow, JobStatus, ReelRow } from '@/lib/types/database';
 
 type Admin = ReturnType<typeof createAdminClient>;

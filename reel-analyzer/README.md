@@ -72,16 +72,29 @@ npm run worker
 No cloud instance is involved, so there is no compute left running by accident
 and no third provider to hold credentials for.
 
-## Analysis
+## Analysis: Claude or Gemini
 
-`src/lib/providers/analysis/` builds the request. The response is constrained by
-a JSON schema through `output_config.format` rather than parsed out of prose,
-then re-validated with zod before it reaches the database — the schema
-constrains the model, zod protects the write. A response that doesn't match
-fails the job instead of half-filling a report.
+`src/lib/providers/analysis/` holds both, behind one interface. Whichever runs,
+the response is schema-constrained on the way out and zod-validated on the way
+in, so the database sees the same shape or the job fails — a response that
+doesn't match never half-fills a report.
+
+| | `claude` | `gemini` |
+|---|---|---|
+| Key | `ANTHROPIC_API_KEY` | `GEMINI_API_KEY` |
+| Default model | `claude-opus-5` | `gemini-2.5-flash` |
+| Schema mechanism | `output_config.format` JSON Schema | `responseSchema` (OpenAPI subset) |
+
+The two schemas are not the same object: Gemini's dialect has no
+`additionalProperties`, and adds `propertyOrdering`, which is worth setting so
+field order doesn't drift between calls.
+
+`ANALYSIS_PROVIDER` pins one. Left unset, whichever key is present wins.
 
 The schema field descriptions are doing prompt work as much as validation work;
-they are the most reliable place to say what each field should contain.
+they are the most reliable place to say what each field should contain. The
+system prompt is shared by both providers — it is about how to read a reel, not
+about any one model's quirks.
 
 ## Schema
 
@@ -129,8 +142,11 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL` | yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | Browser-side key; RLS does the work |
 | `SUPABASE_SERVICE_ROLE_KEY` | yes | Server only. Bypasses RLS — never expose it |
-| `ANTHROPIC_API_KEY` | yes | The analysis step |
+| `ANTHROPIC_API_KEY` | one of these two | Analysis via Claude |
+| `GEMINI_API_KEY` | one of these two | Analysis via Gemini |
+| `ANALYSIS_PROVIDER` | no | `claude` or `gemini`; unset means whichever key is set |
 | `ANTHROPIC_MODEL` | no | Defaults to `claude-opus-5` |
+| `GEMINI_MODEL` | no | Defaults to `gemini-2.5-flash` |
 | `TRANSCRIPTION_PROVIDER` | no | `assemblyai` (default) or `local` |
 | `TRANSCRIPTION_API_KEY` | for `assemblyai` | AssemblyAI key |
 | `WORKER_SHARED_SECRET` | for `local` | Shared secret the worker presents |

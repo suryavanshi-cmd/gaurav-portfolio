@@ -51,8 +51,17 @@ export const extractionProvider = (process.env.EXTRACTION_PROVIDER ?? 'meta').to
 export const extractionApiKey = process.env.EXTRACTION_API_KEY;
 export const instagramAccountId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
+/**
+ * Which model writes the report: 'claude' or 'gemini'. Left unset, whichever
+ * key is present is used, so a deployment with only one of them just works.
+ */
+export const analysisProvider = (process.env.ANALYSIS_PROVIDER ?? '').toLowerCase();
+
 export const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
 export const analysisModel = process.env.ANTHROPIC_MODEL ?? 'claude-opus-5';
+
+export const geminiApiKey = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
+export const geminiModel = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
 
 /** Shared secret the local faster-whisper worker presents when claiming a job. */
 export const workerSharedSecret = process.env.WORKER_SHARED_SECRET;
