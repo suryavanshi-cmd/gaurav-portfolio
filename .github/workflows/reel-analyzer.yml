@@ -1,0 +1,73 @@
+name: Reel Analyzer
+
+# Typecheck, lint and build. The app talks to Supabase, AssemblyAI and the
+# Claude API entirely at runtime, so none of those need credentials here — a
+# fork can run this workflow green with no secrets at all.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reel-analyzer/**'
+      - '.github/workflows/reel-analyzer.yml'
+  push:
+    branches:
+      - main
+      - 'claude/**'
+      - 'agent/**'
+      - 'feature/**'
+    paths:
+      - 'reel-analyzer/**'
+      - '.github/workflows/reel-analyzer.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: reel-analyzer
+
+jobs:
+  app:
+    name: Typecheck, lint and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: reel-analyzer/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+
+      - run: npm run typecheck
+
+      - run: npm run lint
+
+      - run: npm run build
+
+  database:
+    name: Migrations apply to a real Postgres
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply every migration in order
+        run: ./scripts/check-sql.sh

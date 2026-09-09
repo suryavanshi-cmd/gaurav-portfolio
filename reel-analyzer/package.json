@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:push": "supabase db push",
-    "worker": "python3 scripts/local_whisper_worker.py"
+    "worker": "python3 scripts/local_whisper_worker.py",
+    "check:sql": "./scripts/check-sql.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
