@@ -82,7 +82,7 @@ doesn't match never half-fills a report.
 | | `claude` | `gemini` |
 |---|---|---|
 | Key | `ANTHROPIC_API_KEY` | `GEMINI_API_KEY` |
-| Default model | `claude-opus-5` | `gemini-2.5-flash` |
+| Default model | `claude-opus-5` | `gemini-3.8-flash` |
 | Schema mechanism | `output_config.format` JSON Schema | `responseSchema` (OpenAPI subset) |
 
 The two schemas are not the same object: Gemini's dialect has no
@@ -146,7 +146,7 @@ npm run dev
 | `GEMINI_API_KEY` | one of these two | Analysis via Gemini |
 | `ANALYSIS_PROVIDER` | no | `claude` or `gemini`; unset means whichever key is set |
 | `ANTHROPIC_MODEL` | no | Defaults to `claude-opus-5` |
-| `GEMINI_MODEL` | no | Defaults to `gemini-2.5-flash` |
+| `GEMINI_MODEL` | no | Defaults to `gemini-3.8-flash` |
 | `TRANSCRIPTION_PROVIDER` | no | `assemblyai` (default) or `local` |
 | `TRANSCRIPTION_API_KEY` | for `assemblyai` | AssemblyAI key |
 | `WORKER_SHARED_SECRET` | for `local` | Shared secret the worker presents |

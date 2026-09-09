@@ -61,7 +61,7 @@ export const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
 export const analysisModel = process.env.ANTHROPIC_MODEL ?? 'claude-opus-5';
 
 export const geminiApiKey = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
-export const geminiModel = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
+export const geminiModel = process.env.GEMINI_MODEL ?? 'gemini-3.8-flash';
 
 /** Shared secret the local faster-whisper worker presents when claiming a job. */
 export const workerSharedSecret = process.env.WORKER_SHARED_SECRET;
