@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AlertCircle, Check, Loader2 } from 'lucide-react';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -38,22 +39,40 @@ export function JobProgress({
 
   useEffect(() => {
     const supabase = createClient();
+    let channel: RealtimeChannel | undefined;
+    let cancelled = false;
 
-    const channel = supabase
-      .channel(`job:${jobId}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'jobs', filter: `id=eq.${jobId}` },
-        (payload) => {
-          const next = payload.new as { status: JobStatus; error_message: string | null };
-          setStatus(next.status);
-          setError(next.error_message);
-        },
-      )
-      .subscribe();
+    (async () => {
+      // Realtime enforces row-level security, so the socket has to carry the
+      // user's token *before* subscribing. The session is read from cookies
+      // asynchronously, and subscribing first connects as `anon` — the jobs
+      // policy then filters out every event and the page sits on its initial
+      // status forever, looking like the job has stalled.
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+
+      if (data.session) {
+        await supabase.realtime.setAuth(data.session.access_token);
+      }
+      if (cancelled) return;
+
+      channel = supabase
+        .channel(`job:${jobId}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'jobs', filter: `id=eq.${jobId}` },
+          (payload) => {
+            const next = payload.new as { status: JobStatus; error_message: string | null };
+            setStatus(next.status);
+            setError(next.error_message);
+          },
+        )
+        .subscribe();
+    })();
 
     return () => {
-      void supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) void supabase.removeChannel(channel);
     };
   }, [jobId]);
 

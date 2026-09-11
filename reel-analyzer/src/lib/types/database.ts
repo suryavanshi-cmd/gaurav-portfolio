@@ -46,6 +46,8 @@ export type JobRow = {
   error_message: string | null;
   started_at: string | null;
   finished_at: string | null;
+  /** Lease stamp for the local transcription worker; null when unclaimed. */
+  claimed_at: string | null;
 };
 
 export type TranscriptRow = {
@@ -90,6 +92,10 @@ export type Database = {
     Views: Record<never, never>;
     Functions: {
       consume_credit: { Args: { p_user_id: string }; Returns: number };
+      claim_transcription_job: {
+        Args: { p_lease_seconds?: number };
+        Returns: { job_id: string; reel_id: string }[];
+      };
     };
     Enums: { job_status: JobStatus };
     CompositeTypes: Record<never, never>;

@@ -41,7 +41,16 @@ done                       spend one credit, write the analysis
 Each stage writes its status before doing the work for it, so the status page —
 subscribed to the job row over Realtime — shows the step change as it happens.
 Row-level security applies to the Realtime stream too, so a subscriber only ever
-receives their own job.
+receives their own job. Because RLS is enforced on the socket, `JobProgress`
+waits for the session and calls `realtime.setAuth` *before* subscribing; a
+channel opened before the token lands connects as `anon` and the policy then
+silently filters out every event.
+
+The local worker's claim is leased rather than advisory (`claim_transcription_job`):
+a bare `select ... where status = 'transcribing'` hands the same row to every
+poll, so one worker re-claims a job it is already transcribing and two workers
+duplicate the whole download. The lease expires, so a worker that dies
+mid-transcription releases its job instead of stranding it.
 
 Failures set `status = 'failed'` with a message written for the person reading
 it, not for a log. Nothing is retried blindly.

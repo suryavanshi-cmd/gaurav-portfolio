@@ -25,14 +25,19 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
 
-  const { data: jobs } = await admin
-    .from('jobs')
-    .select('id, reel_id')
-    .eq('status', 'transcribing')
-    .order('started_at', { ascending: true })
-    .limit(1);
+  // Atomic claim with a lease. A plain select-and-return handed the same row to
+  // every poll, so one worker re-claimed a job it was already transcribing and
+  // two workers would duplicate the whole download-and-transcribe.
+  const { data: claimed, error } = await admin.rpc('claim_transcription_job', {
+    p_lease_seconds: 900,
+  });
 
-  const job = jobs?.[0];
+  if (error) {
+    console.error('[worker/claim]', error);
+    return NextResponse.json({ error: 'could not claim a job' }, { status: 500 });
+  }
+
+  const job = claimed?.[0];
   if (!job) return NextResponse.json({ job: null });
 
   const { data: reel } = await admin
@@ -45,11 +50,11 @@ export async function POST(request: Request) {
     await admin
       .from('jobs')
       .update({ status: 'failed', error_message: 'the video file is missing', finished_at: new Date().toISOString() })
-      .eq('id', job.id);
+      .eq('id', job.job_id);
     return NextResponse.json({ job: null });
   }
 
   return NextResponse.json({
-    job: { id: job.id, videoUrl: await createSignedUrl(admin, reel.video_storage_path) },
+    job: { id: job.job_id, videoUrl: await createSignedUrl(admin, reel.video_storage_path) },
   });
 }

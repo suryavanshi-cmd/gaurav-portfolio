@@ -18,7 +18,7 @@ async function setStatus(
   admin: Admin,
   jobId: string,
   status: JobStatus,
-  extra: Partial<Pick<JobRow, 'error_message' | 'started_at' | 'finished_at'>> = {},
+  extra: Partial<Pick<JobRow, 'error_message' | 'started_at' | 'finished_at' | 'claimed_at'>> = {},
 ) {
   await admin.from('jobs').update({ status, ...extra }).eq('id', jobId);
 }
@@ -55,7 +55,7 @@ export async function runJob(jobId: string): Promise<void> {
 
     const storagePath = reel.video_storage_path ?? (await fetchLinkReel(admin, reel));
 
-    await setStatus(admin, jobId, 'transcribing');
+    await setStatus(admin, jobId, 'transcribing', { claimed_at: null });
 
     const provider = getTranscriptionProvider();
     if (!provider) {
