@@ -1,0 +1,51 @@
+name: Agent Forge
+
+# The tests deliberately need no database and no API key: parsing, chunking and
+# the citation audit are pure functions, so the logic that decides what the
+# agent is allowed to say is checked on every push without any secret.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'agent-forge/**'
+      - '.github/workflows/agent-forge.yml'
+  push:
+    branches:
+      - main
+      - 'claude/**'
+      - 'agent/**'
+      - 'feature/**'
+    paths:
+      - 'agent-forge/**'
+      - '.github/workflows/agent-forge.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: agent-forge
+
+jobs:
+  test:
+    name: Parser, chunking and grounding
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: agent-forge/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Every module parses and resolves
+        run: |
+          node --check src/cli.js
+          node -e "import('./src/app.js')"
+
+      - run: npm test
