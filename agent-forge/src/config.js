@@ -48,7 +48,9 @@ export const config = {
     pool: Number(process.env.RETRIEVAL_POOL || 40),
     /* A correction has to be about *this* question to fire. 0.78 cosine on
        MiniLM is roughly "a paraphrase of the same question" -- below that,
-       corrections start leaking into neighbouring topics. */
+       corrections start leaking into neighbouring topics. This is question-to-
+       question, a symmetric comparison, so it sits far higher than the
+       question-to-passage gate in agents.min_similarity. */
     correctionThreshold: Number(process.env.CORRECTION_THRESHOLD || 0.78),
   },
 

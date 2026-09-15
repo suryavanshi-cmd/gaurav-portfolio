@@ -25,8 +25,16 @@ create table public.agents (
   -- allowed into the context. Below it the agent refuses before it ever calls
   -- a model: the cheapest and strongest anti-hallucination control there is,
   -- because no evidence means no LLM call, no invented answer, no token cost.
-  -- MiniLM puts related sentences at 0.4-0.7 and unrelated ones near 0.0-0.2.
-  min_similarity    real not null default 0.35,
+  -- Measured on the fixture corpus in test/pipeline.e2e.test.js: an off-topic
+  -- question's best match scores 0.044, a hard paraphrase sharing no content
+  -- word with its answer scores 0.274, a direct match 0.537. 0.20 sits in the
+  -- gap with room on both sides.
+  --
+  -- Not 0.35, which is the figure quoted for MiniLM *sentence similarity*.
+  -- That is a symmetric task; question-to-passage retrieval is asymmetric and
+  -- scores systematically lower, so the symmetric number silently refuses
+  -- correct answers. Raise this per agent if a corpus turns out to be noisy.
+  min_similarity    real not null default 0.20,
   max_context_chunks int not null default 8,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
@@ -276,3 +284,51 @@ alter table public.chunks        enable row level security;
 alter table public.learned_facts enable row level security;
 alter table public.interactions  enable row level security;
 alter table public.feedback      enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- Routing: which agent should answer this?
+--
+-- An agent's claim on a question is not a description someone wrote when they
+-- created it -- descriptions go stale the moment a new file is ingested. It is
+-- the best evidence the agent actually holds, scored at query time. Routing is
+-- therefore self-maintaining: teach an agent a new subject and it starts
+-- winning questions about it, with nothing to update.
+--
+-- The HAVING clause is what makes this a filter rather than a ranking: an agent
+-- with no chunk above its own gate is not returned at all, so a question no one
+-- holds data on produces an empty set and the team refuses.
+-- ---------------------------------------------------------------------------
+create or replace function public.route_agents(
+  p_query_embedding extensions.vector(384),
+  p_limit           int default 5
+)
+returns table (
+  agent_id        uuid,
+  slug            text,
+  name            text,
+  min_similarity  real,
+  best_similarity real,
+  supporting      int
+)
+language sql
+stable
+security invoker
+set search_path = public, extensions
+as $$
+  with scored as (
+    select c.agent_id,
+           (1 - (c.embedding <=> p_query_embedding))::real as similarity
+    from public.chunks c
+    where c.embedding is not null
+  )
+  select a.id, a.slug, a.name, a.min_similarity,
+         max(s.similarity)::real as best_similarity,
+         -- One lucky match is a weaker claim than a body of supporting material.
+         count(*) filter (where s.similarity >= a.min_similarity)::int as supporting
+  from scored s
+  join public.agents a on a.id = s.agent_id
+  group by a.id, a.slug, a.name, a.min_similarity
+  having max(s.similarity) >= a.min_similarity
+  order by best_similarity desc
+  limit p_limit;
+$$;

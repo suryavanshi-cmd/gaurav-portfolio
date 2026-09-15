@@ -6,6 +6,7 @@ import { ingestPath } from './ingest/pipeline.js';
 import { createAgent, getAgent, listAgents, agentStats } from './agent/registry.js';
 import { ask } from './agent/answer.js';
 import { recordFeedback, teach, knowledgeGaps } from './agent/learn.js';
+import { route, askTeam } from './agent/router.js';
 import { config } from './config.js';
 
 /* The CLI exists so the whole system is usable before any UI is deployed --
@@ -24,6 +25,9 @@ agent-forge -- a self-learning agent that answers only from your data
   npm run agent -- chat <slug>                 interactive session with feedback
   npm run agent -- teach <slug> "<q>" "<a>"    teach a fact directly
   npm run agent -- gaps <slug>                 what it has been asked and could not answer
+
+  npm run agent -- askall "<question>"         ask every agent; the router picks who answers
+  npm run agent -- who "<question>"            show which agents hold evidence, without answering
 `;
 
 /** Walk a directory, or just return the file. */
@@ -141,6 +145,25 @@ try {
     case 'chat':
       await chat(args[0]);
       break;
+    case 'askall': {
+      const result = await askTeam({ question: args.join(' ') });
+      console.log(`\n${result.answer}\n`);
+      for (const c of result.contributions) {
+        console.log(`  ${c.agent.name} (confidence ${c.confidence.toFixed(3)})`);
+        for (const cite of c.citations) console.log(`    [${cite.passage}] ${cite.where || 'document'}`);
+      }
+      if (result.consulted.length) console.log(`\n(consulted: ${result.consulted.join(', ')})`);
+      break;
+    }
+    case 'who': {
+      const candidates = await route({ question: args.join(' ') });
+      if (!candidates.length) { console.log('No agent holds data on that.'); break; }
+      console.log('Agents that could answer:\n');
+      for (const c of candidates) {
+        console.log(`  ${c.slug.padEnd(20)} best ${c.best_similarity.toFixed(3)}, ${c.supporting} supporting chunks`);
+      }
+      break;
+    }
     case 'teach': {
       const [slug, question, answer] = args;
       const agent = await getAgent(slug);

@@ -7,6 +7,7 @@ import { ingestBuffer, forgetDocument } from './ingest/pipeline.js';
 import { SUPPORTED } from './ingest/parse.js';
 import { createAgent, getAgent, listAgents, updateAgent, agentStats } from './agent/registry.js';
 import { ask } from './agent/answer.js';
+import { route, askTeam } from './agent/router.js';
 import { recordFeedback, teach, listLearned, unlearn, knowledgeGaps } from './agent/learn.js';
 import { db, unwrap } from './db.js';
 
@@ -24,7 +25,7 @@ const upload = multer({
 });
 
 /** Every handler is the same shape: do the work, or report why it failed. */
-const route = (handler) => async (req, res) => {
+const handle = (handler) => async (req, res) => {
   try {
     res.json(await handler(req));
   } catch (err) {
@@ -36,7 +37,7 @@ const route = (handler) => async (req, res) => {
   }
 };
 
-app.get('/api/health', route(async () => ({
+app.get('/api/health', handle(async () => ({
   ok: true,
   provider: config.llm.provider,
   embeddingModel: config.embeddings.model,
@@ -45,27 +46,27 @@ app.get('/api/health', route(async () => ({
 
 /* ------------------------------------------------------------------ agents */
 
-app.get('/api/agents', route(async () => ({ agents: await listAgents() })));
+app.get('/api/agents', handle(async () => ({ agents: await listAgents() })));
 
-app.post('/api/agents', route(async (req) => {
+app.post('/api/agents', handle(async (req) => {
   const { slug, name, description, persona } = req.body;
   if (!slug || !name) throw new Error('slug and name are required');
   return { agent: await createAgent({ slug, name, description, persona }) };
 }));
 
-app.get('/api/agents/:slug', route(async (req) => {
+app.get('/api/agents/:slug', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   return { agent, stats: await agentStats(agent.id) };
 }));
 
-app.patch('/api/agents/:slug', route(async (req) => {
+app.patch('/api/agents/:slug', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   return { agent: await updateAgent(agent.id, req.body) };
 }));
 
 /* --------------------------------------------------------------- knowledge */
 
-app.post('/api/agents/:slug/documents', upload.single('file'), route(async (req) => {
+app.post('/api/agents/:slug/documents', upload.single('file'), handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   if (!req.file) throw new Error('No file was uploaded.');
   return ingestBuffer({
@@ -75,7 +76,7 @@ app.post('/api/agents/:slug/documents', upload.single('file'), route(async (req)
   });
 }));
 
-app.get('/api/agents/:slug/documents', route(async (req) => {
+app.get('/api/agents/:slug/documents', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   const documents = unwrap(
     await db().from('documents')
@@ -86,7 +87,7 @@ app.get('/api/agents/:slug/documents', route(async (req) => {
   return { documents };
 }));
 
-app.delete('/api/agents/:slug/documents/:id', route(async (req) => {
+app.delete('/api/agents/:slug/documents/:id', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   await forgetDocument({ agentId: agent.id, documentId: req.params.id });
   return { forgotten: req.params.id };
@@ -94,41 +95,62 @@ app.delete('/api/agents/:slug/documents/:id', route(async (req) => {
 
 /* ---------------------------------------------------------------- asking */
 
-app.post('/api/agents/:slug/ask', route(async (req) => {
+app.post('/api/agents/:slug/ask', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   const question = String(req.body.question || '').trim();
   if (!question) throw new Error('A question is required.');
   return ask({ agent, question });
 }));
 
+/* ---------------------------------------------------------------- routing */
+
+/* Ask the organisation rather than a named agent. The router picks who holds
+   evidence; each agent still answers under its own grounding checks. */
+app.post('/api/ask', handle(async (req) => {
+  const question = String(req.body.question || '').trim();
+  if (!question) throw new Error('A question is required.');
+  return askTeam({
+    question,
+    maxAgents: Number(req.body.maxAgents) || 3,
+    spread: Number(req.body.spread) || 0.12,
+  });
+}));
+
+/* Who would answer, without paying to answer. */
+app.post('/api/route', handle(async (req) => {
+  const question = String(req.body.question || '').trim();
+  if (!question) throw new Error('A question is required.');
+  return { candidates: await route({ question }) };
+}));
+
 /* -------------------------------------------------------------- learning */
 
-app.post('/api/agents/:slug/feedback', route(async (req) => {
+app.post('/api/agents/:slug/feedback', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   const { interactionId, verdict, correction } = req.body;
   if (!['up', 'down'].includes(verdict)) throw new Error('verdict must be "up" or "down".');
   return recordFeedback({ agentId: agent.id, interactionId, verdict, correction });
 }));
 
-app.post('/api/agents/:slug/teach', route(async (req) => {
+app.post('/api/agents/:slug/teach', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   const { question, answer, kind } = req.body;
   if (!answer) throw new Error('answer is required.');
   return { id: await teach({ agentId: agent.id, question, answer, kind }) };
 }));
 
-app.get('/api/agents/:slug/learned', route(async (req) => {
+app.get('/api/agents/:slug/learned', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   return { learned: await listLearned(agent.id) };
 }));
 
-app.delete('/api/agents/:slug/learned/:id', route(async (req) => {
+app.delete('/api/agents/:slug/learned/:id', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   await unlearn({ agentId: agent.id, factId: Number(req.params.id) });
   return { unlearned: req.params.id };
 }));
 
-app.get('/api/agents/:slug/gaps', route(async (req) => {
+app.get('/api/agents/:slug/gaps', handle(async (req) => {
   const agent = await getAgent(req.params.slug);
   return { gaps: await knowledgeGaps(agent.id) };
 }));

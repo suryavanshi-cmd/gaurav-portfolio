@@ -9,14 +9,15 @@ there is no outcome where it answers from what a language model happens to have
 memorised.
 
 Multiple agents live in one database, isolated by `agent_id` on every row, so a
-second agent costs one `INSERT` rather than a second deployment.
+second agent costs one `INSERT` rather than a second deployment — and you can
+ask the whole organisation at once rather than picking an agent yourself.
 
 ## Why it cannot make things up
 
 Three independent checks, because any one of them alone leaks:
 
 1. **The retrieval gate.** A chunk enters the context by being semantically
-   close to the question (cosine ≥ `min_similarity`, default 0.35) *or* by
+   close to the question (cosine ≥ `min_similarity`, default 0.20) *or* by
    containing every term of it. If nothing qualifies, the agent refuses
    **before a model is called at all** — no tokens, no latency, no invention.
    This is the only check that holds even if the model misbehaves, because the
@@ -26,6 +27,22 @@ Three independent checks, because any one of them alone leaks:
    RRF scores by position in the pool, so the nearest of three irrelevant chunks
    still ranks first and scores as well as a real match. Absolute similarity is
    what decides admission.
+
+   The 0.20 default is measured, not guessed — `test/pipeline.e2e.test.js`
+   embeds a real workbook and records the separation:
+
+   | Query | Best match | Cosine |
+   |---|---|---|
+   | Off-topic ("capital of France") | wrong chunk | **0.044** |
+   | Paraphrase sharing no content word with its answer | correct | **0.274** |
+   | Direct match | correct | **0.537** |
+
+   Note it is *not* 0.35, the figure usually quoted for MiniLM. That number is
+   for sentence-to-sentence similarity, which is a symmetric task;
+   question-to-passage retrieval is asymmetric and scores systematically lower,
+   so the symmetric threshold silently refuses correct answers. The test asserts
+   the separation rather than the constant, so tuning the default cannot quietly
+   break the guarantee.
 
 2. **The prompt contract.** The model gets numbered passages and is told it may
    use nothing else. Necessary, and on its own not sufficient — a prompt is a
@@ -56,6 +73,29 @@ Every one of these is a row you can read, audit and delete. Weights inside a
 fine-tuned model are none of those things. That last row is the most useful
 output of the system: it tells you what to upload next, written by the people
 actually using the agent rather than guessed at in advance.
+
+## Many agents, one question
+
+```bash
+npm run agent -- who "how much leave do I get?"      # who could answer, without paying to answer
+npm run agent -- askall "how much leave do I get?"   # route and answer
+```
+
+An agent's claim on a question is **not** a description someone wrote when they
+created it — descriptions go stale the moment a new file is ingested. It is the
+best evidence the agent actually holds, scored at query time. Routing is
+therefore self-maintaining: teach an agent a new subject and it starts winning
+questions about it, with nothing to update. An agent holding nothing above its
+own gate is excluded outright, so a question nobody has data on is refused
+rather than answered badly by the least-bad agent.
+
+**The team answer is a composition, not a conversation.** Each agent answers its
+own question against its own data and passes its own three checks, keeping its
+own citations; several contributions are attributed by name. Agents deliberately
+cannot ask *each other* questions: if agent A quoted agent B's reply, B's answer
+would enter A's context as plain text with no passages behind it, and A could
+then build on it freely — the grounding guarantee would be laundered away in a
+single hop. Nothing is merged that was not separately proven.
 
 ## What it reads
 
