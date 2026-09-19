@@ -104,6 +104,13 @@
 
   input, select, textarea, button { font: inherit; color: inherit; }
 
+  /* Removes the ~300ms delay some mobile browsers hold a tap for while they
+     wait to see whether it was a double-tap-to-zoom. Every control here is
+     already big enough not to need zooming. */
+  a, button, [role="radio"], [role="button"], input, select, textarea, label {
+    touch-action: manipulation;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -228,6 +235,14 @@
   [data-theme="dark"] .chip[data-on="true"] { color: #06120d; }
 
   .hairline { border-top: 1px solid var(--color-line); }
+
+  /* The viewport is declared viewport-fit=cover so the field reaches the
+     bottom of a notched phone; these keep the controls out of the cutouts. */
+  .safe-x {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  .safe-b { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
 
   .measure { max-width: 40rem; }
 

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Scene } from './Scene';
 import { Stars } from './ui/Field';
+import { NavProgress } from './ui/NavProgress';
 import type { Listing } from '@/lib/types';
 import { DISTRICT_NAMES } from '@/lib/seed-content';
 
@@ -79,8 +80,9 @@ export function ListingCard({ listing, compact = false }: { listing: Listing; co
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="text-[17px] font-semibold">{money(listing.base_price)}</span>
             <span className="text-[12px] text-[var(--color-muted)]">{t('common.perPersonTwoDays')}</span>
-            <span className="ml-auto whitespace-nowrap text-[12px] text-[var(--color-muted)]">
+            <span className="ml-auto flex items-center whitespace-nowrap text-[12px] text-[var(--color-muted)]">
               {t('listing.capacity')} {listing.max_guests}
+              <NavProgress />
             </span>
           </div>
         </div>

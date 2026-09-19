@@ -9,6 +9,7 @@ import { useIntl } from '@/i18n/provider';
 import { BrandMark } from './BrandMark';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
+import { NavProgress } from './ui/NavProgress';
 import type { Profile } from '@/lib/types';
 
 export function SiteNav({ profile }: { profile: Profile | null }) {
@@ -78,6 +79,7 @@ export function SiteNav({ profile }: { profile: Profile | null }) {
           )}
           <Link href="/planner" className="btn btn-primary text-sm">
             {t('nav.cta')}
+            <NavProgress />
           </Link>
         </div>
 

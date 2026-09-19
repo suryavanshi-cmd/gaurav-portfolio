@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { revalidateRegions } from '@/lib/revalidate';
 import { createServerSupabase, createAdminSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/env';
 
@@ -54,5 +55,6 @@ export async function POST(request: Request) {
   });
 
   if (error) return NextResponse.json({ error: 'insert_failed', detail: error.message }, { status: 400 });
+  revalidateRegions();
   return NextResponse.json({ ok: true });
 }

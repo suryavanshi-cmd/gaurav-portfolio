@@ -242,6 +242,48 @@ container and runs the assertions, then — on `main`, and only if
 `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_ID` and `SUPABASE_DB_PASSWORD` are
 set — runs `supabase db push` against the project.
 
+## Latency
+
+The database is in Mumbai and so are the guests, so `vercel.json` pins the
+functions to `bom1`: a function in Washington pays roughly 250ms for every
+round trip it makes to Mumbai, and single-digit milliseconds in the same
+region. Everything below is about making the number of those round trips
+approach zero.
+
+- **The catalogue is cached** (`unstable_cache`, five minutes) behind tags, and
+  read through a cookie-free client — a cached function may not touch request
+  state, and what a visitor sees of the catalogue does not depend on who they
+  are. Bookings, host dashboards and the admin screen keep the cookie-bound
+  client and are never cached.
+- **Writes drop the cache by tag**, so an approved farm is public on the next
+  request rather than up to five minutes later.
+- **The farm page makes one query, not three.** Reviews arrive embedded with
+  the farm; similar farms come off the cached catalogue instead of a second
+  fetch of every listing.
+- **Every read has a deadline** over the whole operation, not per attempt:
+  supabase-js retries inside its own fetch, so a signal passed to fetch bounds
+  one attempt while the call runs on. Measured against an unreachable host, a
+  plain fetch failed in 99ms and the same query through the client took
+  7,063ms.
+- **Failures are not cached**, so recovery is immediate, and a breaker holds
+  for ten seconds after one so an outage is paid for once rather than once per
+  request.
+
+Measured locally, with the database deliberately unreachable — the worst case
+these paths are designed for:
+
+| | before | after |
+| --- | --- | --- |
+| `/` | 7,081ms | 2,736ms first request, then 25–39ms |
+| `/farm/[slug]` | 14,116ms | 20ms |
+| first contentful paint, `/` | 2,696ms | 184ms |
+
+And what a person feels, worst input-to-paint across each flow: explore's
+filters 64ms, the planner's four steps 24ms, switching language 96ms (152ms
+before `useDeferredValue` — the page re-renders at lower priority while the
+control moves under the finger immediately). Cumulative layout shift is 0 on
+both the home and explore pages.
+
 ## The seed content
 
 `src/lib/seed-content.ts` is the one place the twelve farms, thirty-seven

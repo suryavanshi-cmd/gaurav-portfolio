@@ -8,13 +8,15 @@ import { SegmentedControl } from './ui/SegmentedControl';
    no navigation, no reload, no lost form state. The cookie it writes is what
    makes the next server render start in the same language. */
 export function LanguageSwitcher({ size = 'sm' }: { size?: 'sm' | 'md' }) {
-  const { locale, setLocale, t } = useIntl();
+  // `selected`, not `locale`: the indicator moves on the tap, the page
+  // catches up in the transition behind it.
+  const { selected, setLocale, t } = useIntl();
 
   return (
     <SegmentedControl<Locale>
       ariaLabel={t('nav.language')}
       size={size}
-      value={locale}
+      value={selected}
       onChange={setLocale}
       segments={LOCALES.map((code) => ({ value: code, label: LOCALE_META[code].short }))}
     />
