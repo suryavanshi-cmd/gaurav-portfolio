@@ -387,5 +387,76 @@
     "intro": "Every photograph on this site is a real photograph of Maharashtra, reused from Wikimedia Commons under a licence that allows it. Most of those licences ask for the photographer's name and a link, which is what this page is for.",
     "placeNote": "The farms and the hosts on this build are written for the demo; the landscapes are not. A picture filed under a farm in Pawas may have been taken at Vengurla, so each credit names the place in the frame rather than the farm it illustrates.",
     "inReel": "Also one of the six frames in the front-page reel."
+  },
+  "story": {
+    "local": {
+      "highlights": "Highlights",
+      "closer": "The coast",
+      "day": "The day",
+      "regions": "Vibhags",
+      "farms": "Farms",
+      "trips": "2-day trips",
+      "label": "On this page"
+    },
+    "highlights": {
+      "title": "Get the highlights.",
+      "play": "Play highlights",
+      "pause": "Pause highlights",
+      "replay": "Replay highlights",
+      "goto": "Show {n} of {total}",
+      "mango": {
+        "lead": "Alphonso country.",
+        "body": "Wadis of mango on red laterite above the Ratnagiri coast, picked by hand from April."
+      },
+      "paddy": {
+        "lead": "Monsoon green.",
+        "body": "Terraced rice in the Kokan hills, planted in the rain and cut by October."
+      },
+      "cove": {
+        "lead": "The sea at the end of the lane.",
+        "body": "Coves like Aare Ware, where the road runs out and the water is warm."
+      },
+      "falls": {
+        "lead": "Waterfall weather.",
+        "body": "Jawhar in July, when every stream on the plateau finds an edge to fall off."
+      },
+      "vines": {
+        "lead": "Rows to walk at dusk.",
+        "body": "Nashik's vineyards on black soil, a short drive from the Sahyadri."
+      },
+      "lake": {
+        "lead": "Still water, big sky.",
+        "body": "The reservoirs around Igatpuri, quiet enough to hear the far bank."
+      }
+    },
+    "closer": {
+      "title": "The Kokan, before the day-trippers arrive.",
+      "sub": "Early light on the shore, the boats already back, and nowhere you need to be until lunch."
+    },
+    "statement": "No resort. No script. A family that grows mangoes, rice or grapes opens two ordinary days of its life to you — and 92% of what you pay reaches them.",
+    "day": {
+      "title": "Two days, hour by hour.",
+      "sub": "Nobody performs for you. This is roughly what a Kokan farm day already looks like.",
+      "t1": {
+        "time": "6 am",
+        "label": "Mist",
+        "body": "The hills are still inside the cloud. Tea on the verandah while the cows are milked."
+      },
+      "t2": {
+        "time": "10 am",
+        "label": "Orchard",
+        "body": "Into the wadi with whoever is working it — picking, grafting or carrying water, depending on the month."
+      },
+      "t3": {
+        "time": "6 pm",
+        "label": "Shore",
+        "body": "Down to the sea for the last hour of light, the way the village goes after work."
+      },
+      "t4": {
+        "time": "8 pm",
+        "label": "Dinner",
+        "body": "Back at the house for what the kitchen made of the day: fish, rice, kokum, and whatever was ripe."
+      }
+    }
   }
 }

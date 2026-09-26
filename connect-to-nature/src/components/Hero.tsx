@@ -2,11 +2,13 @@
 
 import type React from 'react';
 import Link from 'next/link';
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useReducedMotion } from '@/lib/useReducedMotion';
 import { useRef } from 'react';
 import { useIntl } from '@/i18n/provider';
 import { HeroReel } from './HeroReel';
 import type { Region } from '@/lib/types';
+import { ramp } from '@/lib/ramp';
 
 export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: number }) {
   const { t } = useIntl();
@@ -18,7 +20,7 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
      to notice, not enough to see the trick. */
   const skyY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '8%']);
   const textY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '-12%']);
-  const fade = useTransform(scrollYProgress, [0, 0.75], [1, reduced ? 1 : 0.1]);
+  const fade = useTransform(scrollYProgress, ramp(0, 0.75, 1, reduced ? 1 : 0.1));
 
   const districts = regions.reduce((total, region) => total + (region.districts?.length ?? 0), 0);
 
@@ -32,7 +34,11 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
   return (
     <section
       ref={ref}
-      className="relative -mt-16 flex min-h-[94svh] flex-col justify-end overflow-hidden pt-16"
+      data-tone="dark"
+      /* isolate keeps the video's negative z-index inside this section. Without
+         it the reel is painted behind the nearest ancestor with a background,
+         and the dark story band this now sits in has one. */
+      className="relative isolate -mt-16 flex min-h-[94svh] flex-col justify-end overflow-hidden pt-16"
     >
       {/* The coast, drifting, behind everything. It parallaxes a touch slower
           than the words so the section has depth without the video ever

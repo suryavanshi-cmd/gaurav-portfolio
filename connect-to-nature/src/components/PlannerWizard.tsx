@@ -8,7 +8,7 @@ import { SegmentedControl } from './ui/SegmentedControl';
 import { Field } from './ui/Field';
 import { Scene } from './Scene';
 import { Photo } from './ui/Photo';
-import { photosFor } from '@/lib/photo-credits';
+import { PHOTOS, photosFor } from '@/lib/photo-credits';
 import { Itinerary } from './Itinerary';
 import { BookingPanel } from './BookingPanel';
 import { Stars, Pill } from './ui/Field';
@@ -134,6 +134,8 @@ export function PlannerWizard({
               {[{ slug: null as string | null }, ...regions.map((region) => ({ slug: region.slug }))].map((option) => {
                 const region = regions.find((item) => item.slug === option.slug);
                 const selected = answers.regionSlug === option.slug;
+                /* "Either" gets the ghats, which both vibhags have. */
+                const cover = option.slug ? photosFor('regions', option.slug)[0] : PHOTOS['green-lush'];
                 return (
                   <button
                     key={option.slug ?? 'any'}
@@ -143,8 +145,8 @@ export function PlannerWizard({
                     style={selected ? { outline: '2px solid var(--color-leaf)', outlineOffset: '2px' } : undefined}
                   >
                     <div className="aspect-[16/9] overflow-hidden">
-                      {option.slug && photosFor('regions', option.slug)[0] ? (
-                        <Photo photo={photosFor('regions', option.slug)[0]} sizes="(min-width: 640px) 46vw, 92vw" className="h-full w-full" />
+                      {cover ? (
+                        <Photo photo={cover} sizes="(min-width: 640px) 46vw, 92vw" className="h-full w-full" />
                       ) : (
                         <Scene scene={region?.hero_scene ?? 'hills'} seed={option.slug ?? 'any-region'} className="h-full w-full" />
                       )}

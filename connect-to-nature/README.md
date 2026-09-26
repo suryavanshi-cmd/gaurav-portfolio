@@ -346,6 +346,31 @@ segmented control, a parallax hero, sheets that spring up from the bottom on a
 phone. Light and dark are both explicit, resolved before first paint so nothing
 flashes, and `prefers-reduced-motion` turns all of it off.
 
+### The front page
+
+It is laid out the way a product page is: a dark band about the place, then a
+light half about booking it (`src/components/story/`).
+
+- **A section bar** sticks under the site's bar, and takes its place when that
+  bar slides away on the way down. Both read the `data-tone` of the section
+  beneath them and switch between dark and light glass to match.
+- **Highlights** — six photographs that walk themselves along while on
+  screen. The active dot is the clock: it runs a CSS animation for the length
+  of a slide and the gallery advances on `animationend`, so pause is one
+  property. It stops at the end instead of looping.
+- **A statement** that lights up word by word as it is scrolled. One scroll
+  listener writes a single `--p`; each word computes its own opacity in CSS.
+- **The coast** arrives as a card and opens out to full screen, using only
+  transforms and a radius.
+- **Hour by hour** — four times of day behind one row of tabs, crossfaded.
+
+Two traps worth knowing about if you add more of this. motion compiles
+`useTransform(progress, [a, b], [0, 1])` on an opacity to a native
+`ViewTimeline`, which ignores the `offset` given to `useScroll` — use the
+`ramp()` helper in `src/lib/ramp.ts` instead. And motion's `useReducedMotion`
+disagrees with the server's HTML on first render; use the one in
+`src/lib/useReducedMotion.ts`.
+
 ## Not built
 
 Phase 3 of the brief, and stated plainly rather than half-done: in-app messaging

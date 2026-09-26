@@ -55,7 +55,12 @@ export function Photo({
         backgroundPosition: 'center',
       }}
     >
-      <picture>
+      {/* display: contents takes the <picture> out of layout, so the image's
+          h-full resolves against this box. Left inline, the percentage has
+          nothing definite to measure and the image falls back to its own
+          aspect ratio — a 16:9 photograph in a 16:10 frame then stops short
+          and leaves a band of placeholder along the bottom. */}
+      <picture className="contents">
         <source type="image/avif" srcSet={photo.avif} sizes={sizes} />
         <img
           ref={img}

@@ -6,9 +6,19 @@ import { PackageCard } from '@/components/PackageCard';
 import { HowItWorks } from '@/components/HowItWorks';
 import { HostCta } from '@/components/HostCta';
 import { Reveal } from '@/components/ui/Reveal';
+import { LocalNav } from '@/components/story/LocalNav';
+import { Highlights } from '@/components/story/Highlights';
+import { WordReveal } from '@/components/story/WordReveal';
+import { GrowPhoto } from '@/components/story/GrowPhoto';
+import { DayTabs } from '@/components/story/DayTabs';
 import { getListings, getPackages, getRegions } from '@/lib/queries';
 import { revealDelay } from '@/lib/stagger';
 
+/* The front page is told in two halves, the way a product page is: a dark
+   band that is about the place — the reel, the highlights, the coast opening
+   out, one day hour by hour — and then the light half that is about booking
+   it. Every section declares its tone so the sticky section bar can match
+   whatever it is floating over. */
 export default async function HomePage() {
   const [regions, listings, packages] = await Promise.all([
     getRegions(),
@@ -21,14 +31,25 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero regions={regions} farmCount={listings.length} />
+      <div id="top" className="theme-dark">
+        <Hero regions={regions} farmCount={listings.length} />
+      </div>
 
-      <section id="regions" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20 sm:px-6 sm:py-28">
+      <LocalNav />
+
+      <div className="theme-dark">
+        <Highlights />
+        <WordReveal textKey="story.statement" />
+        <GrowPhoto />
+        <DayTabs />
+      </div>
+
+      <section id="regions" data-tone="light" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-20 sm:px-6 sm:py-28">
         <SectionHeader titleKey="regions.title" subKey="regions.sub" />
         <RegionCards regions={regions} />
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <section id="farms" data-tone="light" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-8 sm:px-6">
         <SectionHeader
           titleKey="explore.title"
           subKey="explore.sub"
@@ -43,7 +64,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+      <section id="trips" data-tone="light" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-20 sm:px-6 sm:py-28">
         <SectionHeader
           titleKey="packages.title"
           subKey="packages.sub"
@@ -58,12 +79,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+      <section data-tone="light" className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
         <SectionHeader titleKey="how.title" />
         <HowItWorks />
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
+      <section data-tone="light" className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <HostCta />
       </section>
     </>

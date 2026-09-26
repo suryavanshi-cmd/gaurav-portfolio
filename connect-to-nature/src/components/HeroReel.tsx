@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useReducedMotion } from 'motion/react';
+import { useReducedMotion } from '@/lib/useReducedMotion';
 import { REEL_BLUR } from '@/lib/reel';
 
 /* The moving background on the front page.
