@@ -523,6 +523,36 @@
         "title": "92% reaches the family.",
         "body": "Pay by UPI, card or netbanking. The platform keeps 8%, and the rest goes to the family who hosted you."
       }
+    },
+    "film": {
+      "watch": "Watch the film",
+      "duration": "0:15",
+      "label": "Connect to Nature — a fifteen-second film",
+      "close": "Close film",
+      "play": "Play",
+      "pause": "Pause",
+      "replay": "Replay",
+      "seek": "Film timeline",
+      "eyebrow": "Kokan · Nashik",
+      "l1": "Two days.",
+      "l2": "One family.",
+      "l3": "Their fields.",
+      "mapTitle": "Two vibhags, a day's drive from Mumbai.",
+      "mumbai": "Mumbai",
+      "nashik": "Nashik",
+      "ratnagiri": "Ratnagiri",
+      "sindhudurg": "Sindhudurg",
+      "coast": "Kokan coast",
+      "p1": "Alphonso",
+      "p2": "Vines",
+      "p3": "The sea",
+      "farms": "farms",
+      "districts": "districts",
+      "langs": "languages",
+      "share": "reaches the family",
+      "endTitle": "Plan your two days.",
+      "endCta": "Start planning",
+      "scroll": "Scroll"
     }
   },
   "payments": {

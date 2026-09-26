@@ -396,6 +396,16 @@ light half about booking it (`src/components/story/`).
 - **The coast** arrives as a card and opens out to full screen, using only
   transforms and a radius.
 - **Hour by hour** — four times of day behind one row of tabs, crossfaded.
+- **The film** — "Watch the film · 0:15", in the hero and beside the
+  highlights. Fifteen seconds of motion design in six scenes: the mark draws
+  itself, the fields and three short lines, the route drawn down the coast
+  from real coordinates, three photographs opening upwards, the numbers
+  counting up, and an end card that leads to the planner. It is drawn by the
+  page, not a video file, so it is sharp at any size and in all three
+  languages. One motion value is the clock and every element reads from it,
+  which is what makes it pausable and seekable to the frame. It is a separate
+  chunk (`story/FilmOverlay.tsx`), fetched when the button is first hovered
+  or pressed, so none of it is on the front page's first load.
 
 Two traps worth knowing about if you add more of this. motion compiles
 `useTransform(progress, [a, b], [0, 1])` on an opacity to a native

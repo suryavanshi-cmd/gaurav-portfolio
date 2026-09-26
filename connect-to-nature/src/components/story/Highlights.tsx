@@ -7,6 +7,7 @@ import { useIntl } from '@/i18n/provider';
 import { PHOTOS } from '@/lib/photo-credits';
 import { Photo } from '../ui/Photo';
 import { Reveal } from '../ui/Reveal';
+import { openFilm } from './Film';
 
 /* "Get the highlights": a row of large photographs that walks itself along
  * while it is on screen, with one control underneath that is both the dots
@@ -124,10 +125,23 @@ export function Highlights() {
       aria-label={t('story.highlights.title')}
       className="scroll-mt-28 overflow-hidden pb-20 pt-24 sm:pb-28 sm:pt-32"
     >
-      <Reveal className="mx-auto max-w-6xl px-4 sm:px-6">
+      <Reveal className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4 px-4 sm:px-6">
         <h2 className="text-[clamp(2rem,5.2vw,3.5rem)] font-semibold leading-[1.06] tracking-[-0.03em]">
           {t('story.highlights.title')}
         </h2>
+        {/* Where a product page puts "Watch the film": beside the highlights,
+            which are the same story told in stills. */}
+        <button
+          type="button"
+          onClick={openFilm}
+          className="group mb-1 inline-flex items-center gap-2 text-[17px] font-medium text-[#34c48c] hover:underline hover:underline-offset-4"
+        >
+          {t('story.film.watch')}
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="transition-transform duration-300 group-hover:scale-110">
+            <circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M10 8.2v7.6l6-3.8z" fill="currentColor" />
+          </svg>
+        </button>
       </Reveal>
 
       <div

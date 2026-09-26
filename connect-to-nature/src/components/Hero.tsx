@@ -4,9 +4,11 @@ import type React from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useReducedMotion } from '@/lib/useReducedMotion';
-import { useRef } from 'react';
+import { Fragment, useRef } from 'react';
 import { useIntl } from '@/i18n/provider';
 import { HeroReel } from './HeroReel';
+import { FilmButton, FilmHost } from './story/Film';
+import { PLATFORM_FEE_RATE } from '@/lib/env';
 import type { Region } from '@/lib/types';
 import { ramp } from '@/lib/ramp';
 
@@ -73,14 +75,23 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
           {t('hero.eyebrow')}
         </motion.p>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-4 max-w-3xl text-[clamp(2.4rem,6.2vw,4.4rem)] font-semibold leading-[1.05] tracking-[-0.03em]"
-        >
-          {t('hero.title')}
-        </motion.h1>
+        {/* The headline arrives a word at a time, each coming into focus as
+            it rises — the first thing on the page to move, so it sets the
+            pace for everything after it. */}
+        <h1 className="mt-4 max-w-3xl text-[clamp(2.4rem,6.2vw,4.4rem)] font-semibold leading-[1.05] tracking-[-0.03em]">
+          {t('hero.title').split(/\s+/).map((word, i) => (
+            <Fragment key={`${i}-${word}`}>
+              <motion.span
+                className="inline-block"
+                initial={reduced ? false : { opacity: 0, y: '0.45em', filter: 'blur(12px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 0.8, delay: 0.1 + i * 0.055, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {word}
+              </motion.span>{' '}
+            </Fragment>
+          ))}
+        </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -103,6 +114,7 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
           <Link href="/explore" className="btn btn-outline border-white/40 bg-white/12 px-6 py-3.5 text-[15px] text-white backdrop-blur-md hover:bg-white/20">
             {t('hero.ctaSecondary')}
           </Link>
+          <FilmButton className="text-white hover:bg-white/12" />
         </motion.div>
 
         <motion.dl
@@ -120,6 +132,28 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
         </motion.dl>
       </div>
       </motion.div>
+
+      {/* A line with a bead running down it: there is more below. Desktop
+          only — on a phone the stat card already sits where it would go. */}
+      <motion.div
+        style={{ opacity: fade }}
+        aria-hidden="true"
+        className="absolute bottom-10 right-8 hidden flex-col items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/65 lg:flex"
+      >
+        <span className="[writing-mode:vertical-rl]">{t('story.film.scroll')}</span>
+        <span className="relative h-14 w-px overflow-hidden bg-white/25">
+          <span className="absolute left-0 top-0 h-4 w-px animate-[ctn-bead_2.2s_cubic-bezier(0.65,0,0.35,1)_infinite] bg-white" />
+        </span>
+      </motion.div>
+
+      <FilmHost
+        stats={{
+          farms: farmCount,
+          districts,
+          languages: 3,
+          share: Math.round((1 - PLATFORM_FEE_RATE) * 100),
+        }}
+      />
     </section>
   );
 }

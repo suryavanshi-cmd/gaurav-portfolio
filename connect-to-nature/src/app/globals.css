@@ -288,3 +288,9 @@
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
+
+/* The bead on the hero's scroll cue: drops down the line and out of it. */
+@keyframes ctn-bead {
+  0% { transform: translateY(-100%); }
+  70%, 100% { transform: translateY(360%); }
+}
