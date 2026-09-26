@@ -11,12 +11,13 @@ import { Highlights } from '@/components/story/Highlights';
 import { WordReveal } from '@/components/story/WordReveal';
 import { GrowPhoto } from '@/components/story/GrowPhoto';
 import { DayTabs } from '@/components/story/DayTabs';
+import { CloserLook } from '@/components/story/CloserLook';
 import { getListings, getPackages, getRegions } from '@/lib/queries';
 import { revealDelay } from '@/lib/stagger';
 
 /* The front page is told in two halves, the way a product page is: a dark
-   band that is about the place — the reel, the highlights, the coast opening
-   out, one day hour by hour — and then the light half that is about booking
+   band that is about the place — the reel, the highlights, a closer look at
+   what a stay is made of, the coast opening out, one day hour by hour — and then the light half that is about booking
    it. Every section declares its tone so the sticky section bar can match
    whatever it is floating over. */
 export default async function HomePage() {
@@ -40,6 +41,7 @@ export default async function HomePage() {
       <div className="theme-dark">
         <Highlights />
         <WordReveal textKey="story.statement" />
+        <CloserLook />
         <GrowPhoto />
         <DayTabs />
       </div>

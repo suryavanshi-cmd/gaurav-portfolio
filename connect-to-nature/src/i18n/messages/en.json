@@ -396,7 +396,8 @@
       "regions": "Vibhags",
       "farms": "Farms",
       "trips": "2-day trips",
-      "label": "On this page"
+      "label": "On this page",
+      "look": "Closer look"
     },
     "highlights": {
       "title": "Get the highlights.",
@@ -456,6 +457,51 @@
         "time": "8 pm",
         "label": "Dinner",
         "body": "Back at the house for what the kitchen made of the day: fish, rice, kokum, and whatever was ripe."
+      }
+    },
+    "look": {
+      "title": "Take a closer look.",
+      "close": "Close",
+      "prev": "Previous",
+      "next": "Next",
+      "label": "A closer look at a farm stay",
+      "showing": "Shown: {name}",
+      "vibhag": {
+        "label": "Vibhag",
+        "title": "Two vibhags.",
+        "body": "The Kokan is laterite, mango and the sea. Nashik is black soil, vines and the edge of the Sahyadri.",
+        "kokan": "Kokan",
+        "nashik": "Nashik"
+      },
+      "land": {
+        "label": "The land",
+        "title": "A working farm.",
+        "body": "Not a garden kept for guests. You go out with whoever is working that day — ploughing, planting or picking — and help if you want to."
+      },
+      "house": {
+        "label": "The house",
+        "title": "Where you sleep.",
+        "body": "A room in the family's own house or right beside it: thick laterite walls, a tiled roof and a verandah to sit out on."
+      },
+      "food": {
+        "label": "The food",
+        "title": "What was ripe.",
+        "body": "Meals come from what the farm and the village grew that week — cashew and kokum on the coast, grapes and onions inland."
+      },
+      "water": {
+        "label": "The water",
+        "title": "Never far from it.",
+        "body": "A cove, a reservoir, or a stream that turns into a waterfall in July. Both vibhags keep water within reach."
+      },
+      "checked": {
+        "label": "Checked hosts",
+        "title": "Seen before listed.",
+        "body": "Every host has finished onboarding: land papers seen, rooms photographed, and a page written in all three languages."
+      },
+      "pay": {
+        "label": "Fair pay",
+        "title": "92% reaches the family.",
+        "body": "Pay by UPI, card or netbanking. The platform keeps 8%, and the rest goes to the family who hosted you."
       }
     }
   }

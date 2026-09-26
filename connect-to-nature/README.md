@@ -360,6 +360,12 @@ light half about booking it (`src/components/story/`).
   property. It stops at the end instead of looping.
 - **A statement** that lights up word by word as it is scrolled. One scroll
   listener writes a single `--p`; each word computes its own opacity in CSS.
+- **Take a closer look** — the product viewer. A column of glass pills over
+  one large photograph; each pill grows into its own panel (shared layout,
+  not a second element) and the picture crossfades to match. The first pill
+  is the colour picker: two swatches that switch the view between Kokan and
+  Nashik. Only the photograph on screen is mounted, so the section fetches
+  one image, not nine.
 - **The coast** arrives as a card and opens out to full screen, using only
   transforms and a radius.
 - **Hour by hour** — four times of day behind one row of tabs, crossfaded.

@@ -21,6 +21,7 @@ import { toneAt } from '@/lib/tone';
 
 const LINKS = [
   { id: 'highlights', key: 'story.local.highlights' },
+  { id: 'look', key: 'story.local.look' },
   { id: 'day', key: 'story.local.day' },
   { id: 'regions', key: 'story.local.regions' },
   { id: 'farms', key: 'story.local.farms' },
@@ -68,14 +69,14 @@ export function LocalNav() {
           {t('common.brand')}
         </a>
 
-        <ul className="ml-auto hidden items-center gap-6 md:flex">
+        <ul className="ml-auto hidden items-center gap-6 lg:flex">
           {LINKS.map((link) => (
             <li key={link.id}>
               <a
                 href={`#${link.id}`}
                 aria-current={active === link.id ? 'location' : undefined}
                 className={clsx(
-                  'text-[12px] transition-opacity duration-300',
+                  'whitespace-nowrap text-[12px] transition-opacity duration-300',
                   active === link.id ? 'opacity-100' : 'opacity-70 hover:opacity-100',
                 )}
               >
@@ -85,7 +86,7 @@ export function LocalNav() {
           ))}
         </ul>
 
-        <Link href="/planner" className="btn btn-primary ml-auto px-3.5 py-1.5 text-[12px] md:ml-0">
+        <Link href="/planner" className="btn btn-primary ml-auto px-3.5 py-1.5 text-[12px] lg:ml-0">
           {t('nav.cta')}
         </Link>
       </nav>
