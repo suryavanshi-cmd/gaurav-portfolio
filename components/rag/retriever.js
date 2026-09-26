@@ -80,7 +80,7 @@ export function tokenize(text) {
     .map(stem);
 }
 
-function expand(tokens) {
+export function expand(tokens) {
   const out = new Set(tokens);
   for (const token of tokens) {
     for (const syn of SYNONYMS[token] || []) out.add(stem(syn));

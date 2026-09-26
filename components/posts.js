@@ -6,7 +6,7 @@
   code, quote, table.
 */
 
-import { engineeringPosts } from './engineeringPosts';
+import { engineeringPosts } from './engineeringPosts.js';
 
 const llmPosts = [
   {

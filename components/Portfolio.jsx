@@ -238,6 +238,12 @@ export default function Portfolio() {
      article's back control can return you to the exact spot you left instead of
      pushing a fresh /#interests entry. The article clears it on read, so a
      later deep link or refresh falls back to a plain link. */
+  /* The assistant owns its own open/closed state, one component over. Rather
+     than lifting that into the page so two call sites can toggle it, the page
+     asks for it by name and the assistant listens. Nothing else needs to know
+     the panel exists. */
+  const openAssistant = () => window.dispatchEvent(new CustomEvent('ask:open'));
+
   const rememberReturn = () => {
     try {
       window.sessionStorage.setItem('return-to-list', '1');
@@ -298,6 +304,10 @@ export default function Portfolio() {
           <a href="#interests">interests</a>
           <a href="#timeline">timeline</a>
           <a href={`mailto:${EMAIL}`}>contact</a>
+          <button type="button" className="head-ask" onClick={openAssistant}>
+            <span className="head-ask-dot" aria-hidden="true" />
+            ask ai
+          </button>
         </nav>
         <ThemeToggle />
         <span className="head-progress" aria-hidden="true"><i ref={progressRef} /></span>
@@ -310,6 +320,15 @@ export default function Portfolio() {
           doesn’t just look wrong, it reaches somebody’s claim.
         </p>
         <span className="avatar" aria-hidden="true" data-rise style={{ '--rise': 1 }}>GS</span>
+      </div>
+
+      <div className="intro-actions" data-rise style={{ '--rise': 2 }}>
+        <button type="button" className="cta is-primary" onClick={openAssistant}>
+          <span className="cta-dot" aria-hidden="true" />
+          Ask AI about Gaurav
+        </button>
+        <a className="cta" href="#projects">View work</a>
+        <a className="cta" href="/Gaurav-Suryavanshi-Resume.pdf" download>Résumé</a>
       </div>
 
       <Ticker />
