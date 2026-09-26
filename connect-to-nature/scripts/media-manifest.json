@@ -1,0 +1,72 @@
+{
+  "_comment": [
+    "Every photograph on this site is a real photograph of Maharashtra, taken from",
+    "Wikimedia Commons under a licence that allows reuse. `file` is the exact Commons",
+    "file name, which is how the credit, the licence and the photographer are looked",
+    "up at fetch time — nothing here is typed by hand, so a credit cannot drift away",
+    "from the picture it belongs to.",
+    "",
+    "`where` is the real place in the frame. The demo farms are invented; their",
+    "landscapes are not, and the credit line on each photo says where it was taken so",
+    "a visitor is never told that a picture of Vengurla is a picture of Pawas.",
+    "",
+    "Roles: `wide` gets encoded up to 1920px for full-bleed use, `card` up to 960px.",
+    "Run `npm run media:fetch` to rebuild public/photos and src/lib/photo-credits.ts."
+  ],
+  "images": [
+    { "id": "hedvi-sunset", "role": "wide", "file": "Konkan - Hedvi Village - Part 4 20151222 (23918313471).jpg", "where": { "en": "Hedvi, Ratnagiri", "hi": "हेदवी, रत्नागिरी", "mr": "हेदवी, रत्नागिरी" }, "alt": { "en": "The sun going down over the sea at Hedvi on the Konkan coast", "hi": "कोंकण तट पर हेदवी में समुद्र के ऊपर डूबता सूरज", "mr": "कोकण किनाऱ्यावर हेदवीत समुद्रावर मावळणारा सूर्य" } },
+    { "id": "aare-ware", "role": "wide", "file": "Aare Ware Beach.jpg", "where": { "en": "Aare Ware, Ratnagiri", "hi": "आरे वारे, रत्नागिरी", "mr": "आरे वारे, रत्नागिरी" }, "alt": { "en": "The turquoise cove at Aare Ware, palms coming down to the sand", "hi": "आरे वारे की फ़िरोज़ी खाड़ी, रेत तक उतरते नारियल", "mr": "आरे वारेची निळीशार खाडी, वाळूपर्यंत उतरलेली माडं" } },
+    { "id": "mhapan-coast", "role": "wide", "file": "Coast line of mhapan maharashtra.jpg", "where": { "en": "Mhapan, Sindhudurg", "hi": "म्हापण, सिंधुदुर्ग", "mr": "म्हापण, सिंधुदुर्ग" }, "alt": { "en": "Surf breaking over the rocks on the Sindhudurg shore", "hi": "सिंधुदुर्ग के किनारे चट्टानों पर टूटती लहरें", "mr": "सिंधुदुर्गच्या किनाऱ्यावर खडकांवर फुटणाऱ्या लाटा" } },
+    { "id": "rice-terraces", "role": "wide", "file": "Rice Plantation.jpg", "where": { "en": "Ratnagiri district", "hi": "रत्नागिरी ज़िला", "mr": "रत्नागिरी जिल्हा" }, "alt": { "en": "Terraced paddy below tiled roofs in a Ratnagiri village", "hi": "रत्नागिरी के गाँव में खपरैल छतों के नीचे सीढ़ीनुमा भात-शेत", "mr": "रत्नागिरीच्या गावात कौलारू छपरांखाली भातशेतीच्या पायऱ्या" } },
+    { "id": "pabhare-house", "role": "wide", "file": "Local house Pabhare.jpg", "where": { "en": "Pabhare, Ratnagiri", "hi": "पाभरे, रत्नागिरी", "mr": "पाभरे, रत्नागिरी" }, "alt": { "en": "A laterite house at the edge of its own paddy, coconut behind it", "hi": "अपनी ही भात-शेत के किनारे जांभा पत्थर का घर, पीछे नारियल", "mr": "स्वतःच्याच भातशेताच्या कडेला जांभ्या दगडाचं घर, मागे माडं" } },
+    { "id": "zarye-mist", "role": "wide", "file": "Atmosphere Zarye.jpg", "where": { "en": "Zarye, Ratnagiri", "hi": "ज़ार्ये, रत्नागिरी", "mr": "झर्ये, रत्नागिरी" }, "alt": { "en": "Cloud sitting on the forested hills above Zarye", "hi": "ज़ार्ये के ऊपर जंगली पहाड़ियों पर बैठा बादल", "mr": "झर्येवरच्या जंगली डोंगरांवर बसलेले ढग" } },
+
+    { "id": "mango-laterite", "role": "wide", "file": "Mango orchard in lateritic plateau.jpg", "where": { "en": "Ratnagiri district", "hi": "रत्नागिरी ज़िला", "mr": "रत्नागिरी जिल्हा" }, "alt": { "en": "Mango trees spaced across a laterite plateau after the rains", "hi": "बारिश के बाद जांभा पठार पर दूर-दूर लगे आम के पेड़", "mr": "पावसानंतर जांभ्या पठारावर अंतरा-अंतरावर उभी आंब्याची झाडं" } },
+    { "id": "mango-laterite-2", "role": "card", "file": "Mango orchard in lateritic plateau 2.jpg", "where": { "en": "Ratnagiri district", "hi": "रत्नागिरी ज़िला", "mr": "रत्नागिरी जिल्हा" }, "alt": { "en": "The edge of a mango wadi where the laterite breaks open", "hi": "आम की वाड़ी का छोर, जहाँ जांभा पत्थर खुल जाता है", "mr": "आंब्याच्या वाडीचा कडा, जिथे जांभा दगड उघडा पडतो" } },
+    { "id": "vengurla-cashew", "role": "card", "file": "Bunch of unripe Vengurla cashews.jpg", "where": { "en": "Vengurla, Sindhudurg", "hi": "वेंगुर्ला, सिंधुदुर्ग", "mr": "वेंगुर्ला, सिंधुदुर्ग" }, "alt": { "en": "Unripe Vengurla cashews still on the branch", "hi": "डाली पर लगे कच्चे वेंगुर्ला काजू", "mr": "फांदीवरचे कच्चे वेंगुर्ला काजू" } },
+    { "id": "vengurla-road", "role": "card", "file": "Vengurla - Shiroda Road ,Maharashtra, India.jpg", "where": { "en": "Vengurla–Shiroda, Sindhudurg", "hi": "वेंगुर्ला–शिरोडा, सिंधुदुर्ग", "mr": "वेंगुर्ला–शिरोडा, सिंधुदुर्ग" }, "alt": { "en": "The Vengurla–Shiroda road closing over into a tunnel of trees", "hi": "वेंगुर्ला–शिरोडा सड़क, पेड़ों की सुरंग बनती हुई", "mr": "वेंगुर्ला–शिरोडा रस्ता, झाडांची कमान होत जाणारा" } },
+    { "id": "konkan-coconut", "role": "card", "file": "Bent Coconut Tree in Konkan India.JPG", "where": { "en": "Konkan coast", "hi": "कोंकण तट", "mr": "कोकण किनारा" }, "alt": { "en": "Coconut palms leaning out over the sand on the Konkan shore", "hi": "कोंकण के किनारे रेत पर झुके नारियल के पेड़", "mr": "कोकणच्या किनाऱ्यावर वाळूवर झुकलेली माडं" } },
+    { "id": "palm-paddy", "role": "card", "file": "Nature green.jpg", "where": { "en": "Coastal Maharashtra", "hi": "तटीय महाराष्ट्र", "mr": "किनारपट्टीचा महाराष्ट्र" }, "alt": { "en": "Tall palms standing in a flooded green paddy", "hi": "भरी हुई हरी भात-शेत में खड़े ऊँचे ताड़", "mr": "भरलेल्या हिरव्या भातशेतात उभी उंच माडं" } },
+    { "id": "jawhar-falls", "role": "wide", "file": "Hiradpada Waterfall, Jawhar.jpg", "where": { "en": "Hiradpada, Jawhar, Palghar", "hi": "हिरडपाड़ा, जव्हार, पालघर", "mr": "हिरडपाडा, जव्हार, पालघर" }, "alt": { "en": "The Hiradpada fall dropping into green below Jawhar", "hi": "जव्हार के नीचे हरियाली में गिरता हिरडपाड़ा झरना", "mr": "जव्हारच्या खाली हिरवाईत कोसळणारा हिरडपाडा धबधबा" } },
+    { "id": "chandgad-hills", "role": "card", "file": "Chandgad Hill's 04.jpg", "where": { "en": "Chandgad, Western Ghats", "hi": "चंदगड, पश्चिमी घाट", "mr": "चंदगड, सह्याद्री" }, "alt": { "en": "Steep forested Sahyadri slopes with water coming down them", "hi": "खड़ी जंगली सह्याद्री ढलानें, उन पर उतरता पानी", "mr": "उभे जंगली सह्याद्री उतार, त्यावरून उतरणारे पाणी" } },
+    { "id": "green-lush", "role": "card", "file": "Green Lush.jpg", "where": { "en": "Western Ghats, Maharashtra", "hi": "पश्चिमी घाट, महाराष्ट्र", "mr": "सह्याद्री, महाराष्ट्र" }, "alt": { "en": "A fall, a lake and green hills folded in behind them", "hi": "झरना, झील, और पीछे मुड़ती हरी पहाड़ियाँ", "mr": "धबधबा, तलाव, आणि मागे दुमडलेले हिरवे डोंगर" } },
+    { "id": "sula-vineyard", "role": "wide", "file": "Sula Grape Vineyard.jpg", "where": { "en": "Nashik", "hi": "नासिक", "mr": "नाशिक" }, "alt": { "en": "Rows of vines running out towards the Nashik hills", "hi": "नासिक की पहाड़ियों की ओर जाती अंगूर की कतारें", "mr": "नाशिकच्या डोंगरांकडे जाणाऱ्या द्राक्षवेलींच्या रांगा" } },
+    { "id": "sula-estate", "role": "card", "file": "Sula Vineyards Updated View.jpg", "where": { "en": "Nashik", "hi": "नासिक", "mr": "नाशिक" }, "alt": { "en": "A Nashik vineyard estate seen from above the vines", "hi": "बेलों के ऊपर से दिखता नासिक का अंगूर-बाग़", "mr": "वेलींच्या वरून दिसणारा नाशिकचा द्राक्षमळा" } },
+    { "id": "bhavli-igatpuri", "role": "wide", "file": "Bhavli Reservoir in Igatpuri Hill sttation.jpg", "where": { "en": "Igatpuri, Nashik", "hi": "इगतपुरी, नासिक", "mr": "इगतपुरी, नाशिक" }, "alt": { "en": "The Bhavli water held between green hills at Igatpuri", "hi": "इगतपुरी में हरी पहाड़ियों के बीच भावली का पानी", "mr": "इगतपुरीत हिरव्या डोंगरांमध्ये अडवलेलं भावलीचं पाणी" } },
+    { "id": "koroli-valley", "role": "card", "file": "Koroli-Hill-Station-Scenic-View.jpg", "where": { "en": "Koroli, Nashik district", "hi": "कोरोली, नासिक ज़िला", "mr": "कोरोली, नाशिक जिल्हा" }, "alt": { "en": "A river turning through green fields under the Nashik hills", "hi": "नासिक की पहाड़ियों तले हरे खेतों से मुड़ती नदी", "mr": "नाशिकच्या डोंगरांखाली हिरव्या शेतांतून वळणारी नदी" } },
+    { "id": "satpura-lohara", "role": "card", "file": "Satpura range at Lohara.jpg", "where": { "en": "Lohara, Satpura range", "hi": "लोहारा, सतपुड़ा", "mr": "लोहारा, सातपुडा" }, "alt": { "en": "The dry shoulders of the Satpura range above the fields", "hi": "खेतों के ऊपर सतपुड़ा के सूखे कंधे", "mr": "शेतांच्या वर सातपुड्याचे कोरडे खांदे" } },
+    { "id": "onion-harvest", "role": "card", "file": "Onion farming.jpg", "where": { "en": "Maharashtra", "hi": "महाराष्ट्र", "mr": "महाराष्ट्र" }, "alt": { "en": "A long windrow of just-lifted red onions drying in the field", "hi": "खेत में सूखती अभी-अभी निकाली लाल प्याज़ की लंबी कतार", "mr": "शेतात वाळत घातलेल्या नुकत्याच काढलेल्या लाल कांद्याची लांब रांग" } },
+    { "id": "targaon-farmland", "role": "card", "file": "Farmland in the village of Targaon, Maharashtra 3.jpg", "where": { "en": "Targaon, Maharashtra", "hi": "तरगाँव, महाराष्ट्र", "mr": "तरगाव, महाराष्ट्र" }, "alt": { "en": "Worked red earth running out to the horizon at Targaon", "hi": "तरगाँव में क्षितिज तक जाती जुती लाल मिट्टी", "mr": "तरगावात क्षितिजापर्यंत गेलेली नांगरलेली लाल माती" } },
+    { "id": "sugarcane-village", "role": "card", "file": "Village life , Farmers on Sugar cane field - panoramio.jpg", "where": { "en": "Maharashtra", "hi": "महाराष्ट्र", "mr": "महाराष्ट्र" }, "alt": { "en": "Farmers working the edge of a cane field", "hi": "गन्ने के खेत के किनारे काम करते किसान", "mr": "उसाच्या शेताच्या कडेला काम करणारे शेतकरी" } },
+    { "id": "paddy-harvest", "role": "card", "file": "Harvesting Paddy 01.jpg", "where": { "en": "India", "hi": "भारत", "mr": "भारत" }, "alt": { "en": "Cut paddy lying in the field at harvest", "hi": "कटाई के समय खेत में पड़ा कटा हुआ धान", "mr": "कापणीच्या वेळी शेतात पडलेलं कापलेलं भात" } },
+    { "id": "banana-grove", "role": "card", "file": "BANANA PLANTATION.jpg", "where": { "en": "India", "hi": "भारत", "mr": "भारत" }, "alt": { "en": "A close stand of banana, leaf over leaf", "hi": "पास-पास खड़े केले, पत्ते पर पत्ता", "mr": "दाटीवाटीने उभी केळी, पानावर पान" } },
+    { "id": "banana-yard", "role": "card", "file": "A banana plantation.jpg", "where": { "en": "India", "hi": "भारत", "mr": "भारत" }, "alt": { "en": "Banana growing right up to the wall of the house", "hi": "घर की दीवार तक उगे केले", "mr": "घराच्या भिंतीपर्यंत वाढलेली केळी" } }
+  ],
+  "assign": {
+    "regions": {
+      "kokan": ["aare-ware", "mhapan-coast", "konkan-coconut"],
+      "nashik": ["sula-vineyard", "bhavli-igatpuri", "koroli-valley"]
+    },
+    "farms": {
+      "amrai-wadi-pawas": ["mango-laterite", "pabhare-house", "aare-ware"],
+      "kaju-mala-achara": ["mhapan-coast", "vengurla-cashew", "vengurla-road"],
+      "bhat-shet-roha": ["rice-terraces", "palm-paddy", "green-lush"],
+      "warli-angan-jawhar": ["jawhar-falls", "zarye-mist", "chandgad-hills"],
+      "supari-bagayat-guhagar": ["konkan-coconut", "palm-paddy", "hedvi-sunset"],
+      "kokam-aali-kudal": ["mango-laterite-2", "vengurla-road", "zarye-mist"],
+      "draksha-mala-ozar": ["sula-vineyard", "sula-estate", "koroli-valley"],
+      "igatpuri-dhara-ghoti": ["bhavli-igatpuri", "green-lush", "chandgad-hills"],
+      "dalimb-bagh-rahuri": ["targaon-farmland", "sugarcane-village", "koroli-valley"],
+      "kelibaug-raver": ["banana-grove", "banana-yard", "sugarcane-village"],
+      "satpuda-padar-toranmal": ["satpura-lohara", "koroli-valley", "targaon-farmland"],
+      "kanda-ghar-lasalgaon": ["onion-harvest", "targaon-farmland", "paddy-harvest"]
+    },
+    "packages": {
+      "kokan-mango-weekend": ["mango-laterite"],
+      "kokan-creek-and-cashew": ["mhapan-coast"],
+      "nashik-vineyard-two-days": ["sula-vineyard"],
+      "nashik-monsoon-climb": ["bhavli-igatpuri"]
+    },
+    "reel": ["hedvi-sunset", "aare-ware", "rice-terraces", "pabhare-house", "zarye-mist", "mhapan-coast"]
+  }
+}

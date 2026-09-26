@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useIntl } from '@/i18n/provider';
 import { Scene } from './Scene';
+import { Photo } from './ui/Photo';
+import { photosFor } from '@/lib/photo-credits';
 import { Pill, Field } from './ui/Field';
 import { SegmentedControl } from './ui/SegmentedControl';
 import type { Booking } from '@/lib/types';
@@ -51,11 +53,19 @@ export function TripsClient({ bookings, demo }: { bookings: Booking[]; demo: boo
             shown.map((booking) => (
               <article key={booking.id} className="card overflow-hidden sm:flex">
                 <div className="h-36 w-full shrink-0 sm:h-auto sm:w-56">
-                  <Scene
-                    scene={booking.listing?.scene ?? 'orchard'}
-                    seed={booking.listing?.slug ?? booking.code}
-                    className="h-full w-full"
-                  />
+                  {booking.listing && photosFor('farms', booking.listing.slug)[0] ? (
+                    <Photo
+                      photo={photosFor('farms', booking.listing.slug)[0]}
+                      sizes="(min-width: 640px) 224px, 92vw"
+                      className="h-full w-full"
+                    />
+                  ) : (
+                    <Scene
+                      scene={booking.listing?.scene ?? 'orchard'}
+                      seed={booking.listing?.slug ?? booking.code}
+                      className="h-full w-full"
+                    />
+                  )}
                 </div>
                 <div className="flex-1 p-5 sm:p-6">
                   <div className="flex flex-wrap items-center gap-2">

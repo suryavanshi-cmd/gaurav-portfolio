@@ -1,10 +1,11 @@
 'use client';
 
+import type React from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { useRef } from 'react';
 import { useIntl } from '@/i18n/provider';
-import { FieldBackdrop } from './FieldBackdrop';
+import { HeroReel } from './HeroReel';
 import type { Region } from '@/lib/types';
 
 export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: number }) {
@@ -13,10 +14,9 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
 
-  /* Three speeds: the sky barely moves, the field follows the scroll, the words
-     leave first. Enough depth to notice, not enough to see the trick. */
+  /* Two speeds: the picture barely moves, the words leave first. Enough depth
+     to notice, not enough to see the trick. */
   const skyY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '8%']);
-  const fieldY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '22%']);
   const textY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '-12%']);
   const fade = useTransform(scrollYProgress, [0, 0.75], [1, reduced ? 1 : 0.1]);
 
@@ -34,22 +34,30 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
       ref={ref}
       className="relative -mt-16 flex min-h-[94svh] flex-col justify-end overflow-hidden pt-16"
     >
+      {/* The coast, drifting, behind everything. It parallaxes a touch slower
+          than the words so the section has depth without the video ever
+          appearing to slide off its own frame. */}
+      <motion.div style={{ y: skyY, scale: reduced ? 1 : 1.08 }} className="absolute inset-0 -z-20">
+        <HeroReel className="h-full w-full" />
+      </motion.div>
+
+      {/* Everything from here down sits on a photograph, so the section carries
+          its own light-on-dark palette rather than the page's ink-on-paper
+          one. Setting the three text variables does it once for the whole
+          subtree, including the stat card and both buttons. */}
       <motion.div
-        style={{ y: skyY }}
-        className="absolute inset-0 -z-20"
-        aria-hidden="true"
+        style={{ y: textY, opacity: fade }}
+        className="mx-auto w-full max-w-6xl px-4 pb-28 sm:px-6 sm:pb-36"
       >
-        <div className="h-full w-full bg-[linear-gradient(to_bottom,var(--sky-top),var(--sky-bottom))]" />
-      </motion.div>
-
-      <motion.div style={{ y: fieldY }} className="absolute inset-x-0 bottom-0 -z-10 h-[52%]">
-        <FieldBackdrop className="h-full w-full" />
-        {/* The field is carried into the page background so the section ends
-            without a seam. */}
-        <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-b from-transparent to-[var(--color-canvas)]" />
-      </motion.div>
-
-      <motion.div style={{ y: textY, opacity: fade }} className="mx-auto w-full max-w-6xl px-4 pb-28 sm:px-6 sm:pb-36">
+      <div
+        style={{
+          '--color-ink': '#ffffff',
+          '--color-ink-2': 'rgba(255,255,255,0.9)',
+          '--color-muted': 'rgba(255,255,255,0.78)',
+          '--color-line': 'rgba(255,255,255,0.22)',
+        } as React.CSSProperties}
+        className="text-white [text-shadow:0_1px_18px_rgba(0,0,0,0.35)]"
+      >
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -86,7 +94,7 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
           <Link href="/planner" className="btn btn-primary px-6 py-3.5 text-[15px]">
             {t('hero.ctaPrimary')}
           </Link>
-          <Link href="/explore" className="btn btn-outline bg-[color-mix(in_srgb,var(--color-surface)_72%,transparent)] px-6 py-3.5 text-[15px] backdrop-blur-md">
+          <Link href="/explore" className="btn btn-outline border-white/40 bg-white/12 px-6 py-3.5 text-[15px] text-white backdrop-blur-md hover:bg-white/20">
             {t('hero.ctaSecondary')}
           </Link>
         </motion.div>
@@ -95,7 +103,7 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="glass mt-12 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 rounded-[22px] border border-[color-mix(in_srgb,var(--color-line)_60%,transparent)] px-6 py-5 backdrop-blur-xl backdrop-saturate-150 sm:grid-cols-4"
+          className="mt-12 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 rounded-[22px] border border-white/20 bg-black/22 px-6 py-5 backdrop-blur-xl backdrop-saturate-150 sm:grid-cols-4"
         >
           {stats.map((stat) => (
             <div key={stat.label}>
@@ -104,6 +112,7 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
             </div>
           ))}
         </motion.dl>
+      </div>
       </motion.div>
     </section>
   );

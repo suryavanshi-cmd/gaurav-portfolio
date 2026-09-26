@@ -20,6 +20,10 @@
      hero comes from the grass, and a busy sky would fight it. */
   --sky-top: #e8f2f7;
   --sky-bottom: #f4f7ea;
+  /* What the hero reel is darkened with so the headline stays readable over a
+     bright sky. Light mode fades the picture towards the page; dark mode has
+     to actually darken it. */
+  --reel-scrim: #f7f9f4;
 
   --color-leaf: #157f5f;
   --color-leaf-soft: #e6f4ee;
@@ -43,6 +47,7 @@
 [data-theme="dark"] {
   --sky-top: #0d1620;
   --sky-bottom: #101a16;
+  --reel-scrim: #05070a;
   --color-canvas: #08090b;
   --color-surface: #121316;
   --color-surface-2: #1b1c20;

@@ -37,6 +37,7 @@ export function SiteFooter({ demo }: { demo: boolean }) {
             <li><Link href="/packages" className="transition hover:text-[var(--color-ink)]">{t('nav.packages')}</Link></li>
             <li><Link href="/planner" className="transition hover:text-[var(--color-ink)]">{t('nav.planner')}</Link></li>
             <li><Link href="/trips" className="transition hover:text-[var(--color-ink)]">{t('nav.trips')}</Link></li>
+            <li><Link href="/credits" className="transition hover:text-[var(--color-ink)]">{t('footer.credits')}</Link></li>
           </ul>
         </div>
 

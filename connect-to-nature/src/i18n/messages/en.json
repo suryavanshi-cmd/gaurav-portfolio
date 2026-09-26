@@ -105,7 +105,8 @@
     "wishlisted": "Saved",
     "farmerKeeps": "92% of what you pay reaches the family.",
     "location": "Where it is",
-    "similar": "Other farms nearby"
+    "similar": "Other farms nearby",
+    "around": "Around the farm"
   },
   "packages": {
     "title": "Ready two-day trips",
@@ -363,7 +364,28 @@
     "demo": "Farms, hosts and reviews on this build are written for the demo. The database, the row-level security, the planner and the booking flow are real.",
     "customer": "Traveller portal",
     "host": "Shetkari portal",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "credits": "Photograph credits"
   },
-  "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
+  "credits": {
+    "eyebrow": "Photographs",
+    "title": "Where these pictures were actually taken",
+    "intro": "Every photograph on this site is a real photograph of Maharashtra, reused from Wikimedia Commons under a licence that allows it. Most of those licences ask for the photographer's name and a link, which is what this page is for.",
+    "placeNote": "The farms and the hosts on this build are written for the demo; the landscapes are not. A picture filed under a farm in Pawas may have been taken at Vengurla, so each credit names the place in the frame rather than the farm it illustrates.",
+    "inReel": "Also one of the six frames in the front-page reel."
+  }
 }

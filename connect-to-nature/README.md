@@ -293,12 +293,48 @@ activities, four packages and eight reviews are written. It is read twice: by
 configured — so the demo and a freshly reset database show exactly the same
 thing. CI fails if the generated SQL is out of date.
 
-Farms with no photographs get a drawing generated from their own slug and
-landscape (`src/components/Scene.tsx`) rather than a grey box or a stock photo
-of somebody else's farm. It is replaced the moment a host uploads a real one.
-
 **The farms, hosts and reviews are written for this build.** The database, the
 policies, the planner, the payment flow and the three languages are real.
+
+## Photographs, and the reel on the front page
+
+Every picture on the site is a real photograph of Maharashtra — the mango
+orchards on the laterite above Ratnagiri, the rice terraces at Pabhare, the
+surf at Mhapan, the vines at Nashik — reused from Wikimedia Commons under a
+licence that allows it.
+
+`scripts/media-manifest.json` names each Commons file and says where it was
+taken; `npm run media:fetch` pulls the photographer, licence and source page
+off Commons itself, encodes an AVIF ladder plus one JPEG into `public/photos`,
+and writes `src/lib/photo-credits.ts`. The credits are read off the file rather
+than typed beside it, so a credit cannot drift away from its picture. Output is
+committed: a page load is a static file, with no image optimiser to wake up.
+
+Two things the credit line has to say, and does. The photographers licensed
+their work and are owed their names. And **the farms are invented while the
+landscapes are not** — a picture filed under a farm in Pawas may have been
+taken at Vengurla — so each credit names the place in the frame, not the farm
+it illustrates. The whole list is at `/credits`.
+
+There is no openly-licensed film of this coast worth putting behind a headline,
+so `npm run media:reel` builds the motion instead: a slow drift across six of
+those photographs, dissolving one into the next, the last dissolving back into
+the first so the loop has no seam. 26 seconds, 943 KB of VP9 or 1.6 MB of
+H.264. It needs `ffmpeg` on the path (`FFMPEG=/path/to/ffmpeg npm run
+media:reel`); the output is committed, so building the site does not.
+
+The reel earns its place by costing nothing until it is free. The poster is an
+AVIF of the reel's own first frame and is what gets measured as the largest
+paint; the video is not requested until `load` has fired and the browser is
+idle, and never at all under `prefers-reduced-motion`, Save-Data, or a
+connection reporting 2g or 3g. It pauses when scrolled past or the tab goes to
+the background. Home still paints in 168 ms warm, with a cumulative layout
+shift of zero.
+
+A host who has just finished onboarding has neither a photograph of their own
+nor a curated landscape, so they still get a drawing generated from their slug
+(`src/components/Scene.tsx`) rather than a grey box. Their own photograph
+replaces it the moment they upload one.
 
 ## Design
 

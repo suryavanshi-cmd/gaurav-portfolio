@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'motion/react';
+import type React from 'react';
 import { useState } from 'react';
 import clsx from 'clsx';
 import { useIntl } from '@/i18n/provider';
@@ -23,6 +24,14 @@ export function SiteNav({ profile }: { profile: Profile | null }) {
   // top it should feel like part of the hero, not a chrome strip on top of it.
   useMotionValueEvent(scrollY, 'change', (value) => setScrolled(value > 12));
 
+  /* The front page opens on a photograph of the coast, which is dark enough
+     that ink-on-paper links disappear into it. Rather than restyle every item
+     in the bar, the three text colours it is built out of are swapped for
+     light ones while it is sitting over that picture — and swapped back the
+     moment the glass comes in. Deriving this from the route rather than from
+     an effect keeps the first server-rendered paint correct. */
+  const overHero = pathname === '/' && !scrolled;
+
   const links = [
     { href: '/explore', label: t('nav.explore') },
     { href: '/packages', label: t('nav.packages') },
@@ -37,7 +46,21 @@ export function SiteNav({ profile }: { profile: Profile | null }) {
           ? 'glass border-b border-[var(--color-line)] backdrop-blur-xl backdrop-saturate-150'
           : 'bg-transparent',
       )}
-      style={{ transitionTimingFunction: 'var(--ease-spring)' }}
+      style={{
+        transitionTimingFunction: 'var(--ease-spring)',
+        ...(overHero
+          ? ({
+              '--color-ink': '#ffffff',
+              '--color-ink-2': 'rgba(255,255,255,0.88)',
+              '--color-muted': 'rgba(255,255,255,0.74)',
+              /* The segmented controls fill their selected pill with
+                 --color-surface and write on it in --color-ink. Swapping the
+                 ink without the surface leaves white on white. */
+              '--color-surface': 'rgba(10,14,18,0.46)',
+              textShadow: '0 1px 12px rgba(0,0,0,0.32)',
+            } as React.CSSProperties)
+          : null),
+      }}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
