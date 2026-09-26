@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import { geminiApiKey, geminiModel } from '@/lib/env';
+import { describeGeminiFailure, withGeminiRetry } from '@/lib/providers/gemini-retry';
 import { analysisSchema } from './schema';
 import {
   AnalysisError,
@@ -115,7 +116,25 @@ export class GeminiAnalysisProvider implements AnalysisProvider {
 
     const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
-    const response = await this.generateWithRetry(ai, buildPrompt(input));
+    const response = await withGeminiRetry(
+      () =>
+        ai.models.generateContent({
+          model: geminiModel,
+          contents: buildPrompt(input),
+          config: {
+            systemInstruction: SYSTEM_PROMPT,
+            responseMimeType: 'application/json',
+            responseSchema: RESPONSE_SCHEMA,
+          },
+        }),
+      {
+        label: 'gemini:analyse',
+        onFatal: (message, cause) =>
+          new AnalysisError(`the Gemini request was rejected: ${message}`, cause),
+        onExhausted: (message, cause) =>
+          new AnalysisError(describeGeminiFailure(message, geminiModel), cause),
+      },
+    );
 
     const text = (response.text ?? '').trim();
     if (!text) {
@@ -145,62 +164,5 @@ export class GeminiAnalysisProvider implements AnalysisProvider {
       modelVersion: response.modelVersion ?? geminiModel,
       raw: parsed,
     };
-  }
-
-  /**
-   * A popular model answering 503 UNAVAILABLE ("high demand") is a queueing
-   * signal, not a verdict on the request — retrying the same call a moment
-   * later usually succeeds. Failing the whole job on the first one would throw
-   * away a completed transcript over a few seconds of congestion.
-   *
-   * Only transient classes are retried. A bad key or a malformed request fails
-   * immediately, because repeating those just wastes the user's time.
-   */
-  private async generateWithRetry(ai: GoogleGenAI, contents: string, attempts = 4) {
-    let lastError: unknown;
-
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      try {
-        return await ai.models.generateContent({
-          model: geminiModel,
-          contents,
-          config: {
-            systemInstruction: SYSTEM_PROMPT,
-            responseMimeType: 'application/json',
-            responseSchema: RESPONSE_SCHEMA,
-          },
-        });
-      } catch (error) {
-        lastError = error;
-        const message = error instanceof Error ? error.message : String(error);
-
-        if (/API key|API_KEY_INVALID|PERMISSION_DENIED|INVALID_ARGUMENT/i.test(message)) {
-          throw new AnalysisError('the Gemini API key was rejected or the request was malformed', error);
-        }
-
-        const transient = /UNAVAILABLE|RESOURCE_EXHAUSTED|INTERNAL|DEADLINE_EXCEEDED|\b(429|500|502|503|504)\b/i.test(
-          message,
-        );
-        if (!transient || attempt === attempts - 1) break;
-
-        // 2s, 4s, 8s — long enough for a demand spike to clear, short enough
-        // to stay inside the request's budget.
-        const wait = 2000 * 2 ** attempt;
-        console.warn(`[gemini] ${message.slice(0, 120)} — retrying in ${wait}ms`);
-        await new Promise((resolve) => setTimeout(resolve, wait));
-      }
-    }
-
-    const message = lastError instanceof Error ? lastError.message : String(lastError);
-    if (/UNAVAILABLE|high demand/i.test(message)) {
-      throw new AnalysisError(
-        `Gemini (${geminiModel}) is overloaded right now — this usually clears in a minute, try again`,
-        lastError,
-      );
-    }
-    if (/RESOURCE_EXHAUSTED|quota/i.test(message)) {
-      throw new AnalysisError('Gemini is rate limiting or out of quota — try again shortly', lastError);
-    }
-    throw new AnalysisError(`the analysis step failed: ${message}`, lastError);
   }
 }

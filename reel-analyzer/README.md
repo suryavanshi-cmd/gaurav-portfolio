@@ -57,14 +57,26 @@ it, not for a log. Nothing is retried blindly.
 
 ## Transcription: pick one
 
-Set by `TRANSCRIPTION_PROVIDER`.
+Set by `TRANSCRIPTION_PROVIDER`; unset, whichever key is configured wins, Gemini
+first.
 
-| | `assemblyai` | `local` |
-|---|---|---|
-| Runs | Inside the Vercel request | On your own machine |
-| Cost | Per minute of audio | ₹0 |
-| Needs | `TRANSCRIPTION_API_KEY` | `WORKER_SHARED_SECRET`, and the worker running |
-| ffmpeg | No — it fetches the URL itself | No — faster-whisper reads the .mp4 directly |
+| | `gemini` | `assemblyai` | `local` |
+|---|---|---|---|
+| Runs | Inside the request | Inside the request | On your own machine |
+| Works on Vercel | ✅ | ✅ | ❌ no worker there |
+| Cost | Free tier | Per minute | ₹0 |
+| Needs | `GEMINI_API_KEY` | `TRANSCRIPTION_API_KEY` | `WORKER_SHARED_SECRET` + the worker |
+| ffmpeg | No — video in, text out | No — it fetches the URL | No — faster-whisper reads the .mp4 |
+
+`gemini` uses a **general** model, not one of the `gemini-*-transcribe` ones:
+those take audio only and reject video outright, and extracting that audio is
+the ffmpeg dependency this whole design avoids. Files under 15MB go inline;
+larger ones go through the Files API, which has to finish processing before it
+can be referenced.
+
+Measured on the same 45-second clip: Gemini 24s end-to-end, local
+faster-whisper (base, int8, CPU) 47s — and Gemini got a phrase right that
+whisper garbled.
 
 The local path parks the job in `transcribing`. `scripts/local_whisper_worker.py`
 polls `/api/worker/claim`, transcribes with faster-whisper, and posts the result

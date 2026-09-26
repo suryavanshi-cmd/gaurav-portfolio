@@ -44,8 +44,20 @@ export function requireServiceRoleKey(): string {
   return key;
 }
 
-export const transcriptionProvider = (process.env.TRANSCRIPTION_PROVIDER ?? 'assemblyai').toLowerCase();
+/**
+ * Which transcription path runs: 'gemini' (in-request, works on Vercel),
+ * 'assemblyai' (in-request, needs its own key), or 'local' (faster-whisper on
+ * your own machine — free, but it cannot run on a serverless deployment).
+ *
+ * Unset, it picks whichever key is present, preferring Gemini since that key
+ * is already needed for the analysis step.
+ */
+export const transcriptionProvider = (process.env.TRANSCRIPTION_PROVIDER ?? '').toLowerCase();
 export const transcriptionApiKey = process.env.TRANSCRIPTION_API_KEY;
+
+/** Gemini reads video directly, so this is a general model, not a *-transcribe one. */
+export const geminiTranscriptionModel =
+  process.env.GEMINI_TRANSCRIPTION_MODEL ?? process.env.GEMINI_MODEL ?? 'gemini-3.8-flash';
 
 export const extractionProvider = (process.env.EXTRACTION_PROVIDER ?? 'meta').toLowerCase();
 export const extractionApiKey = process.env.EXTRACTION_API_KEY;
