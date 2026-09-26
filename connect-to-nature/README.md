@@ -139,6 +139,33 @@ The browser sends which farm, which dates and how many people. Never the price.
 `/api/bookings` looks the listing up, recomputes the total and the split, checks
 `listing_is_available()` in the database, and only then inserts.
 
+### Payments, before Razorpay
+
+Until Razorpay keys are added, checkout runs in **test mode**: after the
+booking, the guest picks UPI, card or netbanking, presses Pay, and gets a
+payment-successful screen with a payment reference. No money moves, and every
+screen says so — but everything else is real:
+
+- a row in `payments` (amount, method, status, reference), and
+- a line in `payment_events` for every step: booking created, checkout opened,
+  method chosen, payment started, payment succeeded, booking confirmed — and
+  checkout closed without paying, when that happens.
+
+Travellers see each trip's payment and its log under **My trips**; the admin
+page has a **Payments** section with totals, every payment with its log, and
+the latest hundred events across all bookings.
+
+Neither table can be written by the browser. The two writes go through
+`record_test_payment()` and `log_checkout_event()` in
+`supabase/migrations/20260926150000_payment_ledger.sql`, which check that the
+booking is the caller's and that the server marked it as a test booking, so a
+guest cannot use them to mark a real booking paid or write their own text into
+the log. `supabase/tests/payments.sql` asserts each of those refusals.
+
+When Razorpay keys are added, `/api/payments/test` refuses to run, checkout
+opens Razorpay instead, and the Razorpay route writes to the same two tables
+(with the service role) — so the history carries straight on.
+
 ## Running it
 
 ```bash

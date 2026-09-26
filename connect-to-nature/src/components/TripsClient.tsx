@@ -10,6 +10,7 @@ import { photosFor } from '@/lib/photo-credits';
 import { Pill, Field } from './ui/Field';
 import { SegmentedControl } from './ui/SegmentedControl';
 import type { Booking } from '@/lib/types';
+import { PaymentLog, PaymentStatusPill, usePaymentFormat } from './payments/PaymentLog';
 
 export function TripsClient({ bookings, demo }: { bookings: Booking[]; demo: boolean }) {
   const { t, tx, money, date } = useIntl();
@@ -72,9 +73,13 @@ export function TripsClient({ bookings, demo }: { bookings: Booking[]; demo: boo
                     <Pill tone={booking.status === 'confirmed' ? 'leaf' : 'neutral'}>
                       {t(`status.${booking.status}`)}
                     </Pill>
-                    <Pill tone={booking.payment_status === 'paid' ? 'leaf' : 'warn'}>
-                      {t(`status.${booking.payment_status}`)}
-                    </Pill>
+                    {booking.payments?.[0] ? (
+                      <PaymentStatusPill payment={booking.payments[0]} />
+                    ) : (
+                      <Pill tone={booking.payment_status === 'paid' ? 'leaf' : 'warn'}>
+                        {t(`status.${booking.payment_status}`)}
+                      </Pill>
+                    )}
                     <span className="text-[12px] tracking-wide text-[var(--color-muted)]">{booking.code}</span>
                   </div>
 
@@ -94,6 +99,8 @@ export function TripsClient({ bookings, demo }: { bookings: Booking[]; demo: boo
                     )}
                   </div>
 
+                  <TripPayment booking={booking} />
+
                   {booking.status === 'completed' && (
                     <ReviewForm booking={booking} demo={demo} />
                   )}
@@ -102,6 +109,68 @@ export function TripsClient({ bookings, demo }: { bookings: Booking[]; demo: boo
             ))
           )}
         </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* The payment behind a trip, and — one tap away — every step it took. */
+function TripPayment({ booking }: { booking: Booking }) {
+  const { t, money } = useIntl();
+  const { when, methodLabel } = usePaymentFormat();
+  const [open, setOpen] = useState(false);
+  const payment = booking.payments?.[0];
+  const events = booking.payment_events ?? [];
+  if (!payment && events.length === 0) return null;
+
+  return (
+    <div className="mt-5 rounded-2xl bg-[var(--color-surface-2)] p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--color-muted)]">
+            {t('payments.history')}
+          </p>
+          {payment ? (
+            <p className="mt-1 text-[14px]">
+              <span className="font-semibold tabular-nums">{money(payment.amount)}</span>
+              <span className="text-[var(--color-muted)]"> · {methodLabel(payment.method)} · {when(payment.created_at)}</span>
+            </p>
+          ) : (
+            <p className="mt-1 text-[14px] text-[var(--color-muted)]">{t('payments.none')}</p>
+          )}
+          {payment && (
+            <p className="mt-0.5 text-[12px] tracking-wide text-[var(--color-muted)]">
+              {t('payments.reference')} · <span className="font-medium text-[var(--color-ink-2)]">{payment.reference}</span>
+            </p>
+          )}
+        </div>
+        {events.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            className="btn btn-ghost px-3.5 py-1.5 text-[12px]"
+          >
+            {open ? t('payments.hideLog') : t('payments.showLog')}
+          </button>
+        )}
+      </div>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--color-muted)]">
+              {t('payments.log')}
+            </p>
+            <PaymentLog events={events} className="mt-3" />
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

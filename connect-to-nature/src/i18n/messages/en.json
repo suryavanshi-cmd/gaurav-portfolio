@@ -221,7 +221,27 @@
     "ref": "Reference",
     "viewTrips": "See it in my trips",
     "demoNote": "Razorpay keys are not configured, so this booking is marked as a demo. No money moved.",
-    "signInFirst": "Sign in to finish the booking — it takes one OTP."
+    "signInFirst": "Sign in to finish the booking — it takes one OTP.",
+    "continue": "Continue to payment",
+    "payTitle": "Payment",
+    "testMode": "Test mode — no money moves",
+    "payWith": "Pay with",
+    "upi": "UPI",
+    "card": "Card",
+    "netbanking": "Netbanking",
+    "upiSub": "Any UPI app",
+    "cardSub": "Debit or credit",
+    "netbankingSub": "All major banks",
+    "payAmount": "Pay {amount}",
+    "paying": "Processing payment…",
+    "paid": "Payment successful",
+    "paidBody": "{amount} paid by {method}. {host} will call you on {phone} within a day to confirm.",
+    "paymentRef": "Payment reference",
+    "bookingRef": "Booking reference",
+    "paidAt": "Paid at",
+    "history": "See payment history",
+    "notStored": "No database is connected, so this payment is shown here but not stored.",
+    "payFailed": "The payment did not go through, and nothing was charged. Try again."
   },
   "auth": {
     "title": "Sign in",
@@ -504,5 +524,45 @@
         "body": "Pay by UPI, card or netbanking. The platform keeps 8%, and the rest goes to the family who hosted you."
       }
     }
+  },
+  "payments": {
+    "title": "Payments",
+    "history": "Payment",
+    "log": "Payment log",
+    "showLog": "Show log",
+    "hideLog": "Hide log",
+    "none": "No payment yet.",
+    "test": "Test payment",
+    "status": {
+      "created": "Started",
+      "succeeded": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "events": {
+      "booking_created": "Booking created",
+      "checkout_opened": "Checkout opened",
+      "checkout_method_selected": "Payment method chosen",
+      "checkout_cancelled": "Checkout closed without paying",
+      "payment_order_created": "Payment order created",
+      "payment_initiated": "Payment started",
+      "payment_succeeded": "Payment succeeded",
+      "payment_signature_rejected": "Payment signature rejected",
+      "payment_failed": "Payment failed",
+      "booking_confirmed": "Booking confirmed"
+    },
+    "count": "Payments",
+    "collected": "Collected",
+    "today": "Today",
+    "feed": "Latest payment events",
+    "guest": "Guest",
+    "amount": "Amount",
+    "method": "Method",
+    "when": "When",
+    "reference": "Reference",
+    "booking": "Booking",
+    "noFeed": "No payment events yet.",
+    "demoNote": "Sample rows — no database is connected.",
+    "testNote": "Test mode: every payment is recorded in full, but no money has moved. Payments become real once Razorpay keys are added."
   }
 }

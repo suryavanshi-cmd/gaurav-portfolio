@@ -19,6 +19,7 @@ import {
   demoReviewsFor, findDemoListing, findDemoPackage,
 } from './demo-data';
 import { filterListings, type ListingFilters } from './filters';
+import { demoLedger } from './payments';
 import type { Activity, Booking, Listing, Region, Review, TripPackage } from './types';
 
 export type { ListingFilters } from './filters';
@@ -183,15 +184,28 @@ export async function getSimilarListings(regionId: string, excludeId: string, li
 /* ─── a traveller's own rows: never cached, always their session ─────────── */
 
 export async function getMyBookings(): Promise<Booking[]> {
-  if (!isSupabaseConfigured) return demoBookings;
+  if (!isSupabaseConfigured) return demoBookings.map((booking) => ({ ...booking, ...demoLedger(booking) }));
   const supabase = await createServerSupabase();
   if (!supabase) return demoBookings;
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return [];
-  const { data, error } = await supabase
-    .from('bookings')
-    .select(`*, listing:listings(${LISTING_COLUMNS}, host:host_profiles(${HOST_PUBLIC}), region:regions(*))`)
-    .eq('traveler_id', userData.user.id)
-    .order('start_date', { ascending: false });
-  return error || !data ? [] : (data as Booking[]);
+
+  const base = `*, listing:listings(${LISTING_COLUMNS}, host:host_profiles(${HOST_PUBLIC}), region:regions(*))`;
+  const query = (columns: string) =>
+    supabase
+      .from('bookings')
+      .select(columns)
+      .eq('traveler_id', userData.user.id)
+      .order('start_date', { ascending: false });
+
+  // Each booking with its payments and its payment log. If the ledger is not
+  // in this database yet — the code can be deployed before the migration is
+  // applied — the trips are still worth showing without it.
+  const withLedger = await query(`${base}, payments(*), payment_events(*)`)
+    .order('created_at', { referencedTable: 'payments', ascending: false })
+    .order('id', { referencedTable: 'payment_events', ascending: true });
+  if (!withLedger.error && withLedger.data) return withLedger.data as unknown as Booking[];
+
+  const { data, error } = await query(base);
+  return error || !data ? [] : (data as unknown as Booking[]);
 }
