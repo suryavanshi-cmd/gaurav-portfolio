@@ -28,5 +28,13 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      # What the assistant is allowed to say is decided by a handful of
+      # thresholds in components/rag/answer.js. Loosen them and it starts
+      # answering questions the site has no answer to; tighten them and the
+      # questions it offers on its own empty state refuse. Neither shows up in
+      # a build, so the suite runs before it.
+      - name: Grounding and refusal
+        run: npm test
+
       - name: Build Next.js application
         run: npm run build
