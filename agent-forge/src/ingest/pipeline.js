@@ -17,10 +17,15 @@ const INSERT_BATCH = 200;
  * more than it sounds: two identical copies of a chunk split the retrieval
  * score between them and can push the real answer off the end of the list.
  *
+ * `client` and `embedder` default to the real ones and are only ever passed in
+ * by the tests, which drive this function against a recording fake so that the
+ * INSERT payloads and the rollback below are exercised without a database.
+ *
  * @returns {Promise<{documentId: string, chunks: number, skipped?: boolean, kind: string}>}
  */
-export async function ingestBuffer({ agentId, buffer, filename, sourceRef = null }) {
-  const supabase = db();
+export async function ingestBuffer({
+  agentId, buffer, filename, sourceRef = null, client: supabase = db(), embedder = embed,
+}) {
   const contentHash = crypto.createHash('sha256').update(buffer).digest('hex');
 
   const existing = unwrap(
@@ -51,7 +56,7 @@ export async function ingestBuffer({ agentId, buffer, filename, sourceRef = null
   );
 
   try {
-    const vectors = await embed(chunks.map((c) => c.text));
+    const vectors = await embedder(chunks.map((c) => c.text));
     for (let i = 0; i < chunks.length; i += INSERT_BATCH) {
       const slice = chunks.slice(i, i + INSERT_BATCH);
       unwrap(
@@ -85,8 +90,7 @@ export async function ingestPath({ agentId, filePath }) {
 }
 
 /** Forget one document: its chunks go with it via the foreign key cascade. */
-export async function forgetDocument({ agentId, documentId }) {
-  const supabase = db();
+export async function forgetDocument({ agentId, documentId, client: supabase = db() }) {
   unwrap(
     await supabase.from('documents').delete().eq('agent_id', agentId).eq('id', documentId),
     'deleting the document',

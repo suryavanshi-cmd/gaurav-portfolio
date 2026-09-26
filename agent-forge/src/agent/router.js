@@ -34,12 +34,38 @@ export async function route({ question, limit = 5 }) {
 }
 
 /**
- * Ask whichever agents can actually answer.
+ * Which of the routed agents are worth asking.
  *
  * `spread` is how far below the leader a second agent may sit and still be
  * consulted. Without it, every question with one clear owner would still pay
  * for a full fan-out; with it too wide, a question about claims also gets a
- * confident-sounding paragraph from the HR agent.
+ * confident-sounding paragraph from the HR agent. Pulled out as a pure function
+ * because it is the part most likely to be tuned, and a wrong bound here is
+ * invisible -- a question simply stops reaching an agent that could answer it.
+ *
+ * @param {Array<{best_similarity: number}>} routed ranked, best first
+ * @returns {Array} the same objects, still ranked
+ */
+export function selectContributors(routed, { maxAgents = 3, spread = 0.12 } = {}) {
+  if (!routed.length) return [];
+  const leader = routed[0].best_similarity;
+  return routed.filter((r) => r.best_similarity >= leader - spread).slice(0, maxAgents);
+}
+
+/**
+ * How several grounded answers read as one.
+ *
+ * One contributor reads as a plain answer; several are attributed, because a
+ * reader needs to know which body of data each half came from.
+ */
+export function composeTeamAnswer(contributions) {
+  return contributions.length === 1
+    ? contributions[0].answer
+    : contributions.map((c) => `**${c.agent.name}**\n${c.answer}`).join('\n\n');
+}
+
+/**
+ * Ask whichever agents can actually answer.
  *
  * @returns {Promise<{answer, grounded, contributions, consulted, routed}>}
  */
@@ -53,10 +79,7 @@ export async function askTeam({ question, maxAgents = 3, spread = 0.12 }) {
     };
   }
 
-  const leader = routed[0].best_similarity;
-  const chosen = routed
-    .filter((r) => r.best_similarity >= leader - spread)
-    .slice(0, maxAgents);
+  const chosen = selectContributors(routed, { maxAgents, spread });
 
   const supabase = db();
   const contributions = [];
@@ -90,11 +113,7 @@ export async function askTeam({ question, maxAgents = 3, spread = 0.12 }) {
     };
   }
 
-  /* One contributor reads as a plain answer; several are attributed, because a
-     reader needs to know which body of data each half came from. */
-  const answer = contributions.length === 1
-    ? contributions[0].answer
-    : contributions.map((c) => `**${c.agent.name}**\n${c.answer}`).join('\n\n');
+  const answer = composeTeamAnswer(contributions);
 
   return {
     answer,

@@ -1,8 +1,10 @@
 name: Agent Forge
 
 # The tests deliberately need no database and no API key: parsing, chunking and
-# the citation audit are pure functions, so the logic that decides what the
-# agent is allowed to say is checked on every push without any secret.
+# the citation audit are pure functions, and the write path is driven against a
+# fake client -- so the logic that decides what the agent is allowed to say, and
+# the rollback that keeps a failed upload retryable, are both checked on every
+# push without any secret.
 
 on:
   pull_request:
@@ -29,7 +31,7 @@ defaults:
 
 jobs:
   test:
-    name: Parser, chunking and grounding
+    name: Parser, chunking, grounding and the write path
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

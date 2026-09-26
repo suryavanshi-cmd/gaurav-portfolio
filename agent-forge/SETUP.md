@@ -34,7 +34,7 @@ adding any cost.
 
 ```bash
 npm install
-npm test          # 29 tests, no credentials needed
+npm test          # 48 tests, no credentials needed
 ```
 
 The first command that touches embeddings downloads the model (~23 MB, once,

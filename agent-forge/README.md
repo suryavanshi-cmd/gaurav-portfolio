@@ -207,7 +207,7 @@ src/
   app.js / server.js   HTTP API, split so it deploys either way
   cli.js               create / learn / ask / chat / teach / gaps
 supabase/migrations/   schema, hybrid_search, reinforce_chunks
-test/                  parser, chunking and grounding tests
+test/                  parsing, chunking, grounding, routing and the write path
 ```
 
 ## Tests
@@ -216,6 +216,17 @@ test/                  parser, chunking and grounding tests
 npm test
 ```
 
-23 tests, no credentials required — parsing, chunking and the citation audit are
+48 tests, no credentials required — parsing, chunking and the citation audit are
 pure functions by design, so the logic that decides what the agent may say is
 testable without a database.
+
+The write path is covered too, by driving `ingestBuffer` against a fake client
+that speaks the same chained dialect as supabase-js. That reaches the branches a
+happy path never does: the batching arithmetic, the pairing of each chunk to its
+own embedding across a batch boundary, and the rollback that deletes the
+document row when embedding or insertion fails. Without that rollback a failed
+ingest leaves a row holding the content hash, and every retry of the same file
+is then skipped as a duplicate — the file becomes permanently unlearnable.
+
+What no fake can confirm is that the real schema accepts these rows. That needs
+the service role key and one real run; `SETUP.md` covers it.
