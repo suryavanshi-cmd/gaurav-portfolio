@@ -256,6 +256,95 @@
   30% { transform: translateY(-6px); }
 }
 
+/* Flaky suite: worker lanes filling left to right, a red run in each. */
+.demo-art-lanes { display: grid; align-content: center; gap: 8px; padding: 14px 16px; }
+.demo-art-lanes span { display: flex; gap: 3px; height: 12px; }
+
+.demo-art-lanes b {
+  flex: 1;
+  border-radius: 3px;
+  background: var(--ok);
+  opacity: 0.75;
+  transform-origin: left;
+  animation: art-lane 3s var(--expo) infinite;
+}
+
+.demo-art-lanes b.is-bad { background: var(--bad); }
+.demo-art-lanes b:nth-child(2) { animation-delay: 0.2s; }
+.demo-art-lanes b:nth-child(3) { animation-delay: 0.4s; }
+.demo-art-lanes b:nth-child(4) { animation-delay: 0.6s; }
+.demo-art-lanes span:nth-child(2) b { animation-delay: 0.3s; }
+
+@keyframes art-lane {
+  0% { transform: scaleX(0); opacity: 0; }
+  25%, 85% { transform: scaleX(1); opacity: 0.75; }
+  100% { opacity: 0; }
+}
+
+/* LLM gate: three checks tick in, then the verdict. */
+.demo-art-gate {
+  display: grid;
+  grid-template-columns: repeat(3, auto) 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.demo-art-gate span { animation: art-check 3.2s var(--ease) infinite; }
+.demo-art-gate span:nth-child(2) { animation-delay: 0.3s; }
+.demo-art-gate span:nth-child(3) { animation-delay: 0.6s; }
+.demo-art-gate b { color: var(--ok); }
+.demo-art-gate b.is-bad { color: var(--bad); }
+
+.demo-art-gate em {
+  justify-self: end;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bad-bg);
+  color: var(--bad);
+  font-style: normal;
+  font-weight: 700;
+  animation: art-check 3.2s var(--ease) infinite 0.9s;
+}
+
+@keyframes art-check {
+  0%, 8% { opacity: 0; transform: translateY(4px); }
+  20%, 88% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+
+/* Circuit breaker: requests flow, then stop at the open switch. */
+.demo-art-breaker i { top: 44px; animation: art-breaker 2.4s linear infinite; }
+.demo-art-breaker i:nth-child(2) { animation-delay: 0.48s; }
+.demo-art-breaker i:nth-child(3) { animation-delay: 0.96s; }
+.demo-art-breaker i:nth-child(4) { animation-delay: 1.44s; }
+.demo-art-breaker i:nth-child(5) { animation-delay: 1.92s; }
+
+.demo-art-breaker u {
+  position: absolute;
+  left: 58%;
+  top: 36px;
+  width: 26px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--fg);
+  transform-origin: left center;
+  animation: art-switch 2.4s var(--ease) infinite alternate;
+}
+
+@keyframes art-breaker {
+  from { left: -10px; opacity: 0; }
+  10% { opacity: 1; }
+  55% { left: 55%; opacity: 1; background: var(--accent); }
+  62% { left: 55%; opacity: 0; background: var(--fg-3); }
+  to { left: 55%; opacity: 0; }
+}
+
+@keyframes art-switch { from { transform: rotate(0deg); } to { transform: rotate(-35deg); } }
+
 .demo-art-chat { display: grid; align-content: center; gap: 6px; padding: 14px 16px; }
 
 .demo-art-chat b {
@@ -722,3 +811,129 @@ html[data-motion] .timeline[data-rise].is-in::before { transform: scaleY(1); }
   .demo-art i, .demo-art b, .demo-art span, .demo-art::before, .demo-art::after,
   .rotator-word { animation: none !important; }
 }
+
+/* ----- Post reading aids --------------------------------------------------- */
+
+.post-h2 { position: relative; scroll-margin-top: 96px; }
+
+.post-anchor {
+  margin-left: 8px;
+  color: var(--fg-3);
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 200ms var(--ease), color 200ms var(--ease);
+}
+
+.post-h2:hover .post-anchor,
+.post-anchor:focus-visible { opacity: 1; }
+.post-anchor:hover { color: var(--accent); }
+
+@media (hover: none) { .post-anchor { opacity: 0.45; } }
+
+.post-code-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 8px 0 14px;
+}
+
+.post-code-copy {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--fg-3);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 180ms var(--ease), color 180ms var(--ease);
+}
+
+.post-code-copy:hover { background: var(--bg-sunk); color: var(--fg); }
+.post-code-copy.is-done { color: var(--ok); }
+.post-code .post-code-bar + pre { padding-top: 8px; }
+
+/* The section pill: slides down under the nav once reading starts. */
+.outline {
+  position: fixed;
+  top: calc(var(--nav-h) + 12px);
+  left: 50%;
+  z-index: 48;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  opacity: 0;
+  transform: translate(-50%, -10px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 300ms var(--ease), transform 420ms var(--spring);
+}
+
+.outline.is-on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+
+.outline-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-elev) 82%, transparent);
+  box-shadow: 0 0 0 1px var(--line), 0 8px 28px rgb(0 0 0 / 10%);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.outline-count { color: var(--accent); font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; }
+
+.outline-name {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  animation: outline-name 360ms var(--expo);
+}
+
+@keyframes outline-name { from { opacity: 0; transform: translateY(6px); } }
+
+.outline-chev { color: var(--fg-3); transition: transform 300ms var(--spring); }
+.outline.is-open .outline-chev { transform: rotate(180deg); }
+
+.outline-list {
+  display: grid;
+  gap: 2px;
+  margin-top: 8px;
+  padding: 6px;
+  list-style: none;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  box-shadow: 0 0 0 1px var(--line), 0 18px 40px rgb(0 0 0 / 14%);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  animation: outline-open 280ms var(--expo);
+}
+
+.outline-list[hidden] { display: none; }
+
+@keyframes outline-open { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+
+.outline-list button {
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.outline-list button:hover { background: var(--bg-soft); color: var(--fg); }
+.outline-list button.is-on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }

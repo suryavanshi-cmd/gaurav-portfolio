@@ -32,6 +32,25 @@ export function DemoArt({ art }) {
           <span>AI</span><span>will</span><span>change</span><span>the</span>
         </div>
       );
+    case 'lanes':
+      return (
+        <div className="demo-art demo-art-lanes" aria-hidden="true">
+          <span><b /><b /><b className="is-bad" /><b /></span>
+          <span><b /><b /><b /></span>
+          <span><b /><b className="is-bad" /><b /><b /></span>
+        </div>
+      );
+    case 'gate':
+      return (
+        <div className="demo-art demo-art-gate" aria-hidden="true">
+          <span>structure <b>✓</b></span>
+          <span>facts <b>✓</b></span>
+          <span>meaning <b className="is-bad">✗</b></span>
+          <em>Blocked</em>
+        </div>
+      );
+    case 'breaker':
+      return <div className="demo-art demo-art-breaker" aria-hidden="true"><i /><i /><i /><i /><i /><u /></div>;
     case 'chat':
       return <div className="demo-art demo-art-chat" aria-hidden="true"><b /><b /><b /></div>;
     default:

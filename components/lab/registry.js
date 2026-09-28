@@ -3,7 +3,7 @@
 
   The lab index, each /lab/[slug] page, the footer, the sitemap and the home
   page all read this, so adding a demo is one entry here plus its component in
-  components/lab/tools.jsx.
+  components/lab/LabTool.jsx.
 
   `art` picks the small CSS-only preview drawn on the demo's card.
   `post` links the demo to the article that explains the idea behind it.
@@ -22,6 +22,62 @@ export const LAB = [
     ],
     tags: ['System design', 'APIs'],
     art: 'flow',
+    post: 'api-design-for-100k-rps',
+  },
+  {
+    slug: 'flaky-suite',
+    title: 'Flaky test suite',
+    short: 'Flaky test suite',
+    note: 'Run a CI suite 20 times. Fix sleeps and shared data, add workers and retries — and see when a retry hides a real bug.',
+    about: [
+      'Twelve tests sleep for 3 seconds, eight share data, and one finds a real bug in a quarter of runs. The rest just pass.',
+      'Waiting for the condition makes the suite faster and removes the timing failures. Giving each test its own data removes the failures that only appear in parallel.',
+      'Retries turn builds green — including the one run where the bug showed up. Retry at most once, and count every retry.',
+    ],
+    tags: ['Test automation', 'CI/CD'],
+    art: 'lanes',
+    post: 'slow-and-flaky-test-suites',
+  },
+  {
+    slug: 'eval-gate',
+    title: 'LLM test gate',
+    short: 'LLM test gate',
+    note: 'Test an LLM feature the way the post says: structure, facts, then meaning. Compare two prompts and see which one the gate lets ship.',
+    about: [
+      'Exact match fails even correct answers, because the wording changes every run.',
+      'Structure and facts are plain code checks — edit any answer and they re-run as you type.',
+      'Meaning uses a judge model’s label. This page has no model, so those labels are written with the cases, and an edited answer is marked “not re-judged”.',
+      'The build passes on a percentage, but structure checks and critical cases must always pass.',
+    ],
+    tags: ['LLM testing', 'CI/CD'],
+    art: 'gate',
+    post: 'testing-llm-features-in-ci',
+  },
+  {
+    slug: 'guardrail',
+    title: 'Guardrail game',
+    short: 'Guardrail game',
+    note: 'Catch prompt-injection attacks and let safe prompts pass. An arcade round, then a slower round scored on precision and recall.',
+    about: [
+      'An AI guardrail can fail two ways: it lets an attack through, or it blocks a normal question.',
+      'Blocking normal questions is the failure that gets guardrails switched off, so both are scored.',
+    ],
+    tags: ['LLM testing', 'Security'],
+    art: 'game',
+    post: 'false-positives-kill-guardrails',
+  },
+  {
+    slug: 'circuit-breaker',
+    title: 'Circuit breaker',
+    short: 'Circuit breaker',
+    note: 'Make a service your API depends on fail or hang. Watch threads pile up — and how a circuit breaker keeps the rest of the API alive.',
+    about: [
+      'Every call to another service holds a thread until it answers. If that service hangs, threads run out and the whole API stops — even endpoints that never call it.',
+      'A circuit breaker counts recent failures. Past a threshold it opens, and calls fail at once instead of waiting.',
+      'After a pause it lets a few trial calls through. If they work, it closes again.',
+    ],
+    tags: ['System design', 'Resilience'],
+    art: 'breaker',
     post: 'api-design-for-100k-rps',
   },
   {
@@ -65,19 +121,6 @@ export const LAB = [
     tags: ['Test automation', 'APIs'],
     art: 'json',
     post: 'api-automation-that-survives-change',
-  },
-  {
-    slug: 'guardrail',
-    title: 'Guardrail game',
-    short: 'Guardrail game',
-    note: 'Catch prompt-injection attacks and let safe prompts pass. An arcade round, then a slower round scored on precision and recall.',
-    about: [
-      'An AI guardrail can fail two ways: it lets an attack through, or it blocks a normal question.',
-      'Blocking normal questions is the failure that gets guardrails switched off, so both are scored.',
-    ],
-    tags: ['LLM testing', 'Security'],
-    art: 'game',
-    post: 'false-positives-kill-guardrails',
   },
   {
     slug: 'llm-notes',

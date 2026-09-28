@@ -11,6 +11,9 @@ const RateLimiter = dynamic(() => import('./RateLimiter'), { ssr: false, loading
 const CacheStampede = dynamic(() => import('./CacheStampede'), { ssr: false, loading });
 const CapacityPlanner = dynamic(() => import('./CapacityPlanner'), { loading });
 const ChainBuilder = dynamic(() => import('./ChainBuilder'), { loading });
+const FlakySuite = dynamic(() => import('./FlakySuite'), { loading });
+const EvalGate = dynamic(() => import('./EvalGate'), { loading });
+const CircuitBreaker = dynamic(() => import('./CircuitBreaker'), { ssr: false, loading });
 const GuardrailGame = dynamic(() => import('../GuardrailGame'), { ssr: false, loading });
 const RedTeamArena = dynamic(() => import('../RedTeamArena'), { loading });
 const LLMWhiteboard = dynamic(() => import('../LLMWhiteboard'), { ssr: false });
@@ -83,6 +86,9 @@ export default function LabTool({ slug }) {
     case 'cache-stampede': return <CacheStampede />;
     case 'capacity': return <CapacityPlanner />;
     case 'json-journey': return <ChainBuilder />;
+    case 'flaky-suite': return <FlakySuite />;
+    case 'eval-gate': return <EvalGate />;
+    case 'circuit-breaker': return <CircuitBreaker />;
     case 'llm-notes': return <NotesLauncher />;
     case 'assistant': return <AssistantLauncher />;
     case 'guardrail':

@@ -145,9 +145,6 @@
 }
 
 .post-code-lang {
-  position: absolute;
-  top: 9px;
-  right: 12px;
   color: var(--gray-400);
   font-family: var(--font-jetbrains, ui-monospace), ui-monospace, monospace;
   font-size: 10px;

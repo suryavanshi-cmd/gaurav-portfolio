@@ -28,7 +28,17 @@ home page and the sitemap all read from it. Each tool is loaded with
 - **Capacity planner** — Little's Law: traffic × latency → servers, pools, DB
 - **API chain builder** — JSONPath from one response into the next request;
   a missing value stops the chain by name (`jsonpath.js` is a small subset engine)
+- **Flaky test suite** — 20 seeded CI builds as worker lanes: sleeps vs.
+  waiting for the condition, shared data in parallel, and retries hiding a
+  real bug
+- **LLM test gate** — structure, facts and meaning checks over hand-written
+  sample cases (`evalCases.js`); edit an answer and the code checks re-run.
+  There is no model, so an edited answer is marked "not re-judged"
+- **Circuit breaker** — a thread pool calling a failing or hanging service,
+  with closed / open / half-open states
 - **Guardrail game** and **red-team arena**, **LLM notes**, and the **assistant**
+
+A post lists every demo whose `post` field names it, under "Try it live".
 
 ## Structure
 
@@ -38,7 +48,7 @@ app/
   template.jsx      per-route enter animation
   css/              tokens · layout · pages · lab · ported (older component styles)
   sitemap.js robots.js manifest.js opengraph-image.jsx   SEO
-  blog/[slug]/opengraph-image.jsx                        one preview card per post
+  */[slug]/opengraph-image.jsx   one preview card per post, demo and project
   api/contact/      Supabase-backed contact endpoint (see note below)
 components/
   site.js           site-wide facts from the résumé (PERSON, SKILLS, TIMELINE…)
@@ -66,7 +76,16 @@ request does not land. The build makes no network requests.
   Transitions API where the browser has it.
 - **Nav**: a pill that slides to the current section.
 
+- **Posts**: a reading bar, a section pill under the nav that names the
+  section you are in and opens into a jump list, heading links, and a copy
+  button on code blocks.
+
 All of it is turned off by `prefers-reduced-motion`.
+
+The page-enter animation uses `animation-fill-mode: backwards`, not `both`.
+A fill that outlives the animation leaves a transform on the page wrapper, and
+a transformed ancestor traps every `position: fixed` child inside the page
+instead of the screen.
 
 ## SEO
 
