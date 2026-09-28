@@ -1,37 +1,35 @@
 # Vendored fonts
 
 Latin-subset `woff2` files, pulled once from Google Fonts and committed so the
-build never depends on `fonts.gstatic.com`.
+build never depends on `fonts.gstatic.com`. `next/font/google` fetches at
+**build** time and one failed request fails the whole build; `app/layout.jsx`
+uses `next/font/local` against these files instead, so the build runs with no
+network at all.
 
-`next/font/google` fetches every declared family at **build** time, and one
-failed request fails the whole build. With six families across three versions
-that turned into a regular CI failure, so `app/layout.jsx` uses
-`next/font/local` against these files instead. The build is now hermetic — it
-runs with no network at all.
+| File | Family | Declared weights | Used for |
+| --- | --- | --- | --- |
+| `inter-var.woff2` | Inter (variable) | 400–700 | All text |
+| `jetbrains-mono-var.woff2` | JetBrains Mono (variable) | 400–800 | Code, keys, numbers |
 
-| Family | Weights | Used by |
-| --- | --- | --- |
-| Inter | 400, 500, 600, 700 | V2, V3 |
-| Manrope | 500, 600, 700, 800 | V2 |
-| Anton | 400 | V1 (display) |
-| Chakra Petch | 500, 600, 700 | V1 (headings) |
-| JetBrains Mono | 400, 600, 800 | V1 (mono), V3 (dated lists) |
-| Space Grotesk | 400, 500, 600, 700 | V1 (body) |
+Each is a **variable** font: one file carries every weight. The folder used to
+hold the same Inter file four times under `inter-400` … `inter-700` (identical
+bytes, and the build already resolved them all to one URL), plus families for
+two retired designs. Declaring one file with a weight range is what the browser
+was effectively doing anyway.
 
-All six are licensed under the [SIL Open Font License 1.1](https://openfontlicense.org),
+Both are licensed under the [SIL Open Font License 1.1](https://openfontlicense.org),
 which permits redistribution as part of a larger work.
 
-## Refreshing or adding a weight
+## Refreshing
 
-Request the family from the Google Fonts CSS API with a browser user agent (the
-API serves `woff2` only to agents it believes support it), take the URL from the
-`latin` block, and save it as `<family-slug>-<weight>.woff2`:
+Request the family with a weight *range* from the Google Fonts CSS API, using a
+browser user agent (it only serves `woff2` to agents it believes support it),
+and take the URL from the `latin` block:
 
 ```bash
 curl -sSL -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36" \
-  "https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap"
+  "https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap"
 ```
 
-Then add the file to the matching `src` array in `app/layout.jsx`. Those arrays
-have to stay written out longhand — `next/font` rejects any option value that
-is not an explicitly written literal, so no helper may build them.
+`next/font` rejects any option that is not a written-out literal, so the
+`localFont` calls in `app/layout.jsx` stay longhand.

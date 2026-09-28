@@ -21,6 +21,7 @@ import { useAsk } from './chat/useAsk.js';
 export default function Chat() {
   const [open, setOpen] = useState(false);
   const ask = useAsk();
+  const askQuestion = ask.ask;
   const launcher = useRef(null);
   const panel = useRef(null);
 
@@ -47,14 +48,19 @@ export default function Chat() {
     return () => document.removeEventListener('keydown', onKey);
   }, [open, close]);
 
-  /* The header and the hero both offer to open the assistant. They ask for it
-     by event rather than through a prop, so the panel's state stays here
-     instead of being lifted into the page for two buttons. */
+  /* The rest of the site (the nav's "Ask about me", a demo's suggested
+     questions) opens the panel by event rather than by importing this
+     component, so the panel's state stays here and the two stay independent.
+     An optional `detail.question` is asked as soon as the panel is open. */
   useEffect(() => {
-    const onRequest = () => setOpen(true);
-    window.addEventListener('ask:open', onRequest);
-    return () => window.removeEventListener('ask:open', onRequest);
-  }, []);
+    const onRequest = (event) => {
+      setOpen(true);
+      const question = event.detail?.question;
+      if (question) askQuestion(question);
+    };
+    window.addEventListener('assistant:open', onRequest);
+    return () => window.removeEventListener('assistant:open', onRequest);
+  }, [askQuestion]);
 
   /* While the panel owns the screen on a phone, the page behind it must not
      scroll: a drag that starts on the conversation and runs past its end

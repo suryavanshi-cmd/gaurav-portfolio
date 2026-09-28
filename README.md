@@ -1,38 +1,81 @@
 # Gaurav Suryavanshi — Portfolio
 
-A single-page personal site for an SDET who also builds API tooling and LLM
-applications. One narrow column of prose: the résumé is written as sentences,
-and the facts inside them are inline chips you can hover for the detail, rather
-than being lifted out into cards.
+A multi-page personal site for an SDET who also builds backend services, full
+apps and LLM tools. Plain words, an Apple-style light/dark theme, and a set of
+live demos that run entirely in the browser.
 
-## What's on it
+## Pages
 
-- A short intro, then a bulleted **Summary** where each fact is an inline chip
-  with a small mark and a hover tooltip
-- Live Pune time, and the current temperature from Open-Meteo (no API key). If
-  the request is slow or fails, the temperature is simply omitted
-- **Projects** and **Timeline** as plain dated lists
-- An interactive **"How an LLM actually works"** lab, opened from the icon row
-- Light by default, with a `prefers-color-scheme` dark variant
-- Full `prefers-reduced-motion` support
+| Route | What it is |
+| --- | --- |
+| `/` | Hero, stats, what I do, live demos, featured projects, latest writing, contact |
+| `/projects` | Every project, filterable: **Work** (at a job), **Built** (my own, shipped), **Designs** (write-ups, not shipped) |
+| `/projects/[slug]` | Problem, flow, what I did, what was hard, result, stack |
+| `/lab` | Live demos — all client-side, no sign-up, no server |
+| `/lab/[slug]` | One demo, how it works, and the post it goes with |
+| `/writing` | All posts, by topic, with search |
+| `/blog/[slug]` | One post: "In short" points first, then the detail |
+| `/about` | Bio, live Pune time and weather, timeline, skills, certificates |
+
+### Live demos (`components/lab/`)
+
+`registry.js` is the one list of demos — the lab index, each demo page, the
+home page and the sitemap all read from it. Each tool is loaded with
+`next/dynamic` in `LabTool.jsx`, so one demo's code never ships with another's.
+
+- **Rate limiter** — a token bucket with Poisson traffic, drawn on canvas
+- **Cache stampede** — 400 keys expiring together vs. jitter and single-flight
+- **Capacity planner** — Little's Law: traffic × latency → servers, pools, DB
+- **API chain builder** — JSONPath from one response into the next request;
+  a missing value stops the chain by name (`jsonpath.js` is a small subset engine)
+- **Guardrail game** and **red-team arena**, **LLM notes**, and the **assistant**
 
 ## Structure
 
 ```
 app/
-  layout.jsx    fonts + metadata; imports no stylesheet
-  page.jsx      the page
-  site.css      the whole design system
-  api/contact/  Supabase-backed contact endpoint (see note below)
+  layout.jsx        fonts, metadata, JSON-LD, theme boot script, shell
+  template.jsx      per-route enter animation
+  css/              tokens · layout · pages · lab · ported (older component styles)
+  sitemap.js robots.js manifest.js opengraph-image.jsx   SEO
+  blog/[slug]/opengraph-image.jsx                        one preview card per post
+  api/contact/      Supabase-backed contact endpoint (see note below)
 components/
-  Portfolio.jsx      the page content
-  LLMWhiteboard.jsx  the LLM lab
-assets/fonts/   self-hosted woff2 — see that folder's README
+  site.js           site-wide facts from the résumé (PERSON, SKILLS, TIMELINE…)
+  projects.js posts.js engineeringPosts.js   the content
+  SiteNav.jsx SiteFooter.jsx PhysicsField.jsx ui.jsx cards.jsx
+  lab/              the live demos
+  rag/              the assistant's corpus and retriever
+assets/fonts/       self-hosted variable woff2 — see that folder's README
 ```
 
 Fonts are self-hosted via `next/font/local` rather than `next/font/google`,
 which fetches from `fonts.gstatic.com` at build time and fails the build if a
 request does not land. The build makes no network requests.
+
+## Motion
+
+- **Background** (`PhysicsField.jsx`): a grid of dots on damped springs. The
+  pointer pushes them, a click sends a shockwave, a slow wind keeps them alive.
+  It is strongest on the home page, fades as you scroll, pauses when the tab is
+  hidden, and is a still grid under `prefers-reduced-motion`.
+- **Page changes**: `template.jsx` fades each route in; elements with
+  `data-rise` rise into view as they scroll in (`useReveal`), re-armed on every
+  route by `RevealOnRoute`.
+- **Theme change**: a circular reveal from the click point, using the View
+  Transitions API where the browser has it.
+- **Nav**: a pill that slides to the current section.
+
+All of it is turned off by `prefers-reduced-motion`.
+
+## SEO
+
+Every page sets its own title, description and canonical URL. The layout adds
+`Person` and `WebSite` JSON-LD; list pages add `ItemList`, posts add
+`BlogPosting` and `BreadcrumbList`, demos add `WebApplication`. `sitemap.xml`,
+`robots.txt`, the web manifest and the Open Graph images are generated from the
+same content lists at build time. Set `NEXT_PUBLIC_SITE_URL` if the site moves
+to a custom domain.
 
 ## Light and dark
 
@@ -72,22 +115,17 @@ degrades to exactly the OS-following behaviour.
 
 Posts live in `components/posts.js` (LLM topics) and
 `components/engineeringPosts.js`. Bodies are block arrays, rendered by
-`app/blog/[slug]/page.jsx`, which prerenders every post at build time.
-
-On the homepage a post title does not navigate. It opens a summary panel
-underneath — the summary, the tags, and a "Read more" link — so a reader can
-see what a post is about before committing to it. The panel animates
-`grid-template-rows` from `0fr` to `1fr`, which eases open at the content's own
-height without measuring anything in JS, and is `inert` while closed so it stays
-out of the tab order.
+`app/blog/[slug]/page.jsx`, which prerenders every post at build time. Each post
+has `points` — the "In short" list shown first — and a reading time computed
+from its word count. Keep them short and plain: one idea per sentence.
 
 Getting back is handled by `components/BackToList.jsx`. A plain
-`<Link href="/#interests">` pushes a *new* history entry and lands on the
+`<Link href="/writing">` pushes a *new* history entry and lands on the
 section heading, so the reader ends up somewhere other than where they left.
-When they actually came from the list, the control calls `router.back()`
+When they actually came from `/writing`, the control calls `router.back()`
 instead, which unwinds that entry and lets the router restore the scroll
 position exactly. "Came from the list" is a single-use `sessionStorage` token
-set by "Read more" and consumed on mount, so a deep link, a refresh, or an
+set when a post is opened from the list and consumed on mount, so a deep link, a refresh, or an
 arrival from search finds nothing and gets the ordinary link — which is also
 what renders on the server, keeping hydration stable.
 
@@ -135,30 +173,28 @@ model for phrasing only — the facts should still come from the corpus.
 
 Roles, dates, tooling and project details on the page are taken from
 `public/Gaurav-Suryavanshi-Resume.pdf`, which is the source of truth. When the
-résumé changes, update `timeline` and the summary bullets in
-`components/Portfolio.jsx` and the `stack` entries in `components/projects.js`
-to match — the page should never claim something the PDF does not.
+résumé changes, update `components/site.js` (timeline, skills, certificates,
+ticker) and the `stack` entries in `components/projects.js` to match — the site
+should never claim something the PDF does not. Design write-ups are labelled
+"Design — not shipped" and must stay that way until they are built.
 
 The PDF embeds subset fonts, so `pdftotext` (poppler) or `pdfjs-dist` reads it
 properly; a naive stream decode returns mojibake.
 
 ## Adding a profile photo
 
-The intro currently shows a `GS` monogram. To use a real photo, drop it in
-`public/` and swap the `<span className="avatar">` in `components/Portfolio.jsx`
-for an image of the same size:
+The about page shows a `GS` monogram. To use a real photo, drop it in
+`public/` and swap the `<div className="monogram">` in `app/about/page.jsx` for
+an image with the same class:
 
 ```jsx
-<img className="avatar" src="/gaurav.jpg" alt="Gaurav Suryavanshi" width={104} height={104} />
+<img className="monogram" src="/gaurav.jpg" alt="Gaurav Suryavanshi" style={{ objectFit: 'cover', width: '100%' }} />
 ```
-
-The `.avatar` rule already sets `object-fit: cover`, so any aspect ratio crops
-cleanly.
 
 ## Contact endpoint
 
 `app/api/contact/route.js` still works but nothing on the page posts to it — the
-contact form was dropped when the page was simplified down to an email link. It
+contact section is an email link (with copy-to-clipboard), GitHub and the résumé. It
 is kept so a form can be re-added without rebuilding the backend. Delete it if
 you would rather not carry it.
 

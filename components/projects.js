@@ -1,296 +1,384 @@
 /*
-  Project catalogue.
+  Projects, in three kinds:
 
-  Each entry renders twice: as a one-line row in the Projects list, and as the
-  full case study inside the dialog. `game` marks the one entry that opens a
-  playable round instead of a static case study.
+    work    Done at a job. Every claim comes from the résumé
+            (public/Gaurav-Suryavanshi-Resume.pdf) and nothing more.
+    built   Things I built on my own: the résumé's project section, the two
+            products in this repository, and what runs live on this site.
+    design  Systems I have worked out on paper — the problem, the design and
+            the trade-offs. Not shipped, and every page says so.
 
-  Keys double as the mono label in the list, so they stay short and lowercase.
+  Each one gets a page at /projects/[slug]. The assistant (components/rag)
+  indexes this file, so it can answer questions about any project.
 */
 
+const REPO = 'https://github.com/suryavanshi-cmd/gaurav-portfolio/tree/main';
+
+export { KINDS } from './format';
+
 export const projects = [
+  /* ----- Work ------------------------------------------------------------ */
   {
-    key: 'llm-flow',
-    title: 'Agentic Claims Triage Pipeline',
-    note: 'A planner–executor–critic loop that reads an incoming claim, decides which checks apply, calls the policy and member APIs itself, and refuses to answer when evidence is thin.',
+    slug: 'claims-api-test-framework',
+    kind: 'work',
+    category: 'Test automation',
+    where: 'Vidal Health TPA · 2024 — now',
+    title: 'Claims API test framework',
+    note: 'The Java 17 + TestNG + Rest-Assured framework that tests health-insurance claim, enrolment and partner APIs.',
     problem:
-      'Claims arrive as free text plus attachments, and the first hour is spent deciding which of thirty checks actually apply. Hard-coding that decision tree meant a change request for every new product.',
-    flow: ['Intake', 'Plan', 'Tool calls', 'Critic', 'Route'],
-    stack: ['Next.js', 'Tool calling', 'JSON Schema', 'Oracle SQL', 'Rest-Assured'],
+      'Insurance claims pass through many APIs and partner systems. A bug here can reach someone’s claim, so every release needs a regression run that is fast and can be trusted.',
+    flow: ['Build request', 'Call the API', 'Check the schema', 'Check the database', 'Report'],
+    stack: ['Java 17', 'TestNG', 'Rest-Assured', 'Oracle SQL', 'CI/CD'],
     challenges: [
-      'Stopping the planner from inventing tools that do not exist — the registry is a hard allowlist, not a suggestion in the prompt',
-      'Bounding cost and blast radius: a per-run token budget and a maximum tool-call depth, both enforced outside the model',
-      'Making the critic independent enough to actually reject its own pipeline’s output rather than rubber-stamping it',
+      'A partner-integration regression suite of 190+ test cases across many REST APIs.',
+      'Every response checked against its schema, and the result checked again in the database with Oracle SQL.',
+      'TestNG tuned to run in parallel, so regression finishes sooner and CI stays steady.',
+      'Test coverage for database migrations, blue-green deploys and real-time (SSE) claim updates.',
     ],
     outcome:
-      'Triage decisions carry a written trace — which checks fired, which APIs answered, and why the critic passed or escalated — so a reviewer audits the reasoning instead of re-doing it.',
-    next: ['Per-product policy packs', 'Replay of production runs against a new planner', 'Human feedback folded into the critic'],
+      'Faster regression runs and steadier CI feedback across releases. Backend bugs get reproduced, triaged and closed together with the developers.',
+    featured: true,
   },
   {
-    key: 'llm-flow',
-    title: 'Document Intelligence Extraction Flow',
-    note: 'OCR to structured JSON for discharge summaries and bills, with schema validation and a review queue for everything the model was not confident about.',
+    slug: 'log-to-test-service',
+    kind: 'work',
+    category: 'Backend + testing',
+    where: 'Bajaj Finserv Health · 2024',
+    title: 'Log-to-test microservice',
+    note: 'Took real HTTPS traffic from ELK logs, turned it into curl commands, and ran them as API tests.',
     problem:
-      'Hospital paperwork is scanned, rotated, stamped, and inconsistent between providers. Regex-and-template extraction broke on every new hospital format.',
-    flow: ['OCR', 'Extract', 'Validate', 'Confidence gate', 'Review queue'],
-    stack: ['OCR', 'Structured output', 'JSON Schema', 'Supabase', 'Human-in-the-loop'],
+      'Writing API tests by hand is slow. Real traffic already shows how the APIs are used — it is sitting in the logs.',
+    flow: ['Read ELK logs', 'Generate curl', 'Run as tests'],
+    stack: ['Node.js', 'NestJS', 'ELK', 'curl'],
     challenges: [
-      'A confident wrong number is worse than a blank field, so every extracted value carries a confidence and low ones route to a human rather than downstream',
-      'Schema validation runs as code after generation — the model is asked for JSON, never trusted to have produced valid JSON',
-      'Keeping the reviewer’s corrections as labelled data instead of losing them into a ticket',
+      'Generated curl commands straight from logged HTTPS responses, instead of writing each test by hand.',
+      'Moved the service from Node.js to NestJS for better speed and scale.',
     ],
-    outcome:
-      'The queue only shows fields that failed validation or scored low, so review time tracks document quality rather than document volume.',
-    next: ['Per-provider layout hints', 'Active learning from reviewer corrections', 'Table extraction for itemised bills'],
+    outcome: 'API tests that come from how the system is really used.',
   },
   {
-    key: 'llm-flow',
-    title: 'LLM Gateway — Routing, Fallback & Cost Control',
-    note: 'One internal endpoint in front of several models: routes by task, falls back when a provider degrades, caches repeats, and enforces a token budget per team.',
-    problem:
-      'Every prototype called a provider SDK directly with its own key, its own retry logic, and no idea what it was spending. Nobody could answer what a feature cost per month.',
-    flow: ['Request', 'Route', 'Cache', 'Call + fallback', 'Meter'],
-    stack: ['Next.js', 'Streaming', 'Redis-style cache', 'Circuit breaker', 'OpenTelemetry'],
+    slug: 'realtime-chat-backend',
+    kind: 'work',
+    category: 'Backend',
+    where: 'Esenceweb IT Solutions · 2024',
+    title: 'Real-time backend with a chatbot',
+    note: 'Node.js and Express services with MongoDB, JWT login, live messaging over Socket.io and a Dialogflow chatbot.',
+    problem: 'The app needed a backend for accounts, live messages, and automatic replies.',
+    flow: ['Log in (JWT)', 'Store (MongoDB)', 'Live messages (Socket.io)', 'Auto-reply (Dialogflow)'],
+    stack: ['Node.js', 'Express', 'MongoDB', 'JWT', 'Socket.io', 'Dialogflow'],
     challenges: [
-      'Failing over mid-stream without replaying tokens the client already rendered',
-      'Cache keys that include the prompt version — a prompt edit has to miss the cache, or the rollout is invisible',
-      'Budgets that degrade to a cheaper model rather than returning an error, so a spend cap never becomes an outage',
+      'Backend services in Node.js and Express, with data in MongoDB.',
+      'JWT authentication for logins.',
+      'Real-time messaging with Socket.io.',
+      'A Dialogflow chatbot wired in for automatic answers.',
     ],
-    outcome:
-      'Per-team, per-feature spend and latency are answerable from one place, and a provider incident degrades quality instead of taking features down.',
-    next: ['Semantic caching', 'Latency-aware routing', 'Per-tenant rate shaping'],
-  },
-  {
-    key: 'llm-flow',
-    title: 'Prompt Registry & Release Pipeline',
-    note: 'Prompts treated as deployable artefacts — versioned, diffed in review, rolled out to a percentage of traffic, and reverted in one step.',
-    problem:
-      'Prompts lived in string literals. A one-word edit shipped with no review, no record of what changed, and no way back other than remembering the old wording.',
-    flow: ['Author', 'Diff', 'Eval gate', 'Staged rollout', 'Rollback'],
-    stack: ['Versioning', 'Golden datasets', 'CI/CD', 'Feature flags', 'Observability'],
-    challenges: [
-      'A prompt change cannot merge until the evaluation suite runs against it — the gate lives in CI, not in a reviewer’s judgement',
-      'Rendering a useful diff when whitespace and ordering in a prompt genuinely change behaviour',
-      'Pinning production traffic to an exact prompt version so a rollout is measurable rather than anecdotal',
-    ],
-    outcome:
-      'Every answer in production is traceable to the exact prompt version that produced it, and reverting is a deploy rather than an archaeology exercise.',
-    next: ['Side-by-side variant scoring', 'Automatic rollback on eval regression', 'Shared prompt fragments'],
-  },
-  {
-    key: 'llm-flow',
-    title: 'Support Ticket Auto-Resolution Flow',
-    note: 'Classifies an incoming ticket, retrieves the matching runbook, drafts a reply, and escalates to a human whenever confidence or policy says it should not send.',
-    problem:
-      'Most tickets are the same dozen questions, but the long tail is exactly where an automated reply does damage. The interesting part is knowing when to stop.',
-    flow: ['Classify', 'Retrieve', 'Draft', 'Policy gate', 'Send or escalate'],
-    stack: ['RAG', 'Embeddings', 'Classification', 'Policy rules', 'Audit trail'],
-    challenges: [
-      'Calibrating the escalation threshold against real outcomes rather than a number that felt about right',
-      'Keeping the draft anchored to the retrieved runbook so it cannot invent a policy that does not exist',
-      'Making every auto-sent reply reversible and attributable in an audit trail',
-    ],
-    outcome:
-      'The repeatable tickets close themselves with a citation attached; anything ambiguous reaches a human with the retrieval already done.',
-    next: ['Per-category thresholds', 'Deflection measurement against reopen rate', 'Multilingual routing'],
+    outcome: 'A working backend for accounts, live chat and bot replies.',
   },
 
+  /* ----- Built ----------------------------------------------------------- */
   {
-    key: 'llm-eval',
-    title: 'LLM Red-Team Arena',
-    note: 'An actual game about guardrails — catch the injection attacks falling down the context window without catching the legitimate traffic. Plus a slower triage round scored on precision and recall.',
-    game: 'guardrail',
+    slug: 'connect-to-nature',
+    kind: 'built',
+    category: 'Full-stack product',
+    title: 'Connect to Nature',
+    note: 'A farm-stay marketplace for the Kokan and Nashik regions — one app, two portals, in English, Hindi and Marathi.',
     problem:
-      'Guardrail work is usually described rather than demonstrated. The judgement it takes — spotting an injection without blocking the legitimate question that merely looks like one — is easier to show than to write about.',
-    flow: ['Corpus', 'Classify', 'Score', 'Precision/recall', 'Verdict'],
-    stack: ['Prompt injection', 'Jailbreak patterns', 'Guardrails', 'Red teaming', 'Scoring'],
+      'A farming family with a spare room has no easy way to reach city travellers who would pay to spend two days on a farm. Travellers have no trusted place to find them.',
+    flow: ['Farmer lists', 'Admin approves', 'Traveller plans', 'Pay (Razorpay)', 'Stay + review'],
+    stack: ['Next.js 15', 'Supabase', 'PostgreSQL', 'Row-level security', 'Razorpay', 'i18n (EN / HI / MR)'],
     challenges: [
-      'False positives are the expensive failure — a filter that blocks real questions gets switched off within a week',
-      'Indirect injection hides in retrieved content, so the attack never appears in what the user typed',
-      'Attack phrasing drifts constantly, which makes a fixed keyword blocklist obsolete almost immediately',
+      'Two portals — traveller and farmer (shetkari) — from one app and one database. Middleware reads the domain and serves the right one.',
+      'A trip planner that builds a two-day plan from what that farm actually runs, and shows the farmer’s share of the price.',
+      'The farmer portal is Marathi by default, with larger text and bigger buttons.',
+      'Security in the database itself: row-level security policies, tested in CI against a real Postgres.',
     ],
-    outcome:
-      'Scoring both directions — attacks caught and safe prompts wrongly blocked — is the only way to tell a working guardrail from an aggressive one.',
-    next: ['Larger attack corpus', 'Model-versus-human scoreboard', 'Automated regeneration of attack variants'],
+    outcome: 'A complete marketplace with a live database. It also runs with no setup at all, in a demo mode that serves seeded farms from memory.',
+    source: `${REPO}/connect-to-nature`,
+    featured: true,
   },
   {
-    key: 'llm-eval',
-    title: 'Prompt Regression Harness',
-    note: 'Golden datasets and semantic assertions that run in CI, so a prompt or model change cannot silently break an answer that used to be right.',
+    slug: 'rakta-setu',
+    kind: 'built',
+    category: 'Automation + health',
+    title: 'Rakta-Setu',
+    note: 'Sends blood reports to patients on WhatsApp in Marathi, with a voice web page that explains every result.',
     problem:
-      'Model and prompt updates are invisible to ordinary tests. Output changes wording every run, so string equality is useless and nobody notices a regression until a user does.',
-    flow: ['Golden set', 'Run', 'Assert', 'Diff', 'Gate'],
-    stack: ['TestNG', 'Golden datasets', 'Semantic assertions', 'CI/CD', 'Reporting'],
+      'A blood analyzer drops a report file on the lab PC and nothing else happens. Someone has to find the patient and send it — and the patient gets a PDF full of English terms they cannot read.',
+    flow: ['Watch folder', 'Parse report', 'Explain in Marathi', 'Send on WhatsApp', 'Secure web page'],
+    stack: ['Node.js', 'Express', 'SQLite / Supabase', 'WhatsApp Cloud API', 'Web Speech API'],
     challenges: [
-      'Assertions that survive rewording but still catch a wrong fact — structure and claims are checked, not prose',
-      'Keeping the golden set honest as the product changes, so it does not calcify into testing last year’s behaviour',
-      'Flake budgets: a non-deterministic system needs a pass threshold, not a single green tick',
+      '33 blood tests explained in plain Marathi, with separate normal ranges for men and women.',
+      'Dangerous values show a clear “see a doctor today” banner instead of hiding in a list.',
+      'Patients can ask questions out loud in Marathi and hear the answers.',
+      'Scanned PDFs are refused on purpose — sending a mis-read result is worse than sending nothing.',
     ],
-    outcome:
-      'A prompt edit that degrades accuracy fails the build with the specific cases it broke, in the same place any other regression would show up.',
-    next: ['Per-case cost and latency trends', 'Auto-generated cases from production misses', 'Cross-model comparison runs'],
+    outcome: 'The report reaches the patient automatically, in their language, behind a secure expiring link and PIN.',
+    source: `${REPO}/rakta-setu`,
+    featured: true,
   },
   {
-    key: 'llm-eval',
-    title: 'RAG Retrieval Quality Suite',
-    note: 'Measures the retrieval half separately — recall@k, citation coverage, and chunking experiments — because most bad answers are retrieval failures wearing a generation costume.',
-    problem:
-      'When a grounded assistant answers badly, the instinct is to blame the model. Usually the right document never made it into the context at all.',
-    flow: ['Query set', 'Retrieve', 'Recall@k', 'Faithfulness', 'Report'],
-    stack: ['Vector search', 'Hybrid retrieval', 'Reranking', 'Evaluation', 'Supabase'],
-    challenges: [
-      'Building a labelled query set from real questions without simply encoding what the current retriever already returns',
-      'Separating faithfulness from correctness — an answer can be perfectly grounded in a document that is out of date',
-      'Making chunking a measured decision rather than a default that nobody revisits',
-    ],
-    outcome:
-      'Retrieval and generation are scored independently, so tuning effort goes to whichever half is actually losing the points.',
-    next: ['Freshness scoring', 'Per-collection dashboards', 'Reranker A/B harness'],
-  },
-  {
-    key: 'llm-eval',
-    title: 'Hallucination & Grounding Scanner',
-    note: 'Splits an answer into individual claims, checks each one against the retrieved evidence, and scores what is unsupported by how much it would matter.',
-    problem:
-      '"Did it hallucinate?" is not a measurable question at the level of a whole paragraph. One sentence can be perfectly sourced while the next quietly invents a clause number.',
-    flow: ['Extract claims', 'Match evidence', 'Classify', 'Severity', 'Flag'],
-    stack: ['Claim extraction', 'Entailment', 'Evidence matching', 'Severity model', 'Guardrails'],
-    challenges: [
-      'Deciding what counts as supported when the evidence implies a fact without stating it',
-      'Weighting severity — an invented policy clause and a slightly wrong date are not the same failure',
-      'Running the check cheaply enough to sit in the request path rather than in a nightly batch',
-    ],
-    outcome:
-      'Unsupported claims are surfaced individually with the evidence that should have backed them, which makes the fix obvious.',
-    next: ['Numeric and date-specific checks', 'Inline citation rendering', 'Feedback loop into retrieval'],
-  },
-  {
-    key: 'llm-eval',
-    title: 'LLM Load & Cost Profiler',
-    note: 'Load-tests an LLM feature the way any other service gets tested — latency percentiles, tokens per journey, and the concurrency where quality starts sliding.',
-    problem:
-      'LLM features get functionally tested and then shipped without anyone knowing the p95 under real concurrency, or what a thousand users a day actually costs.',
-    flow: ['Scenario', 'Ramp', 'Measure', 'Cost model', 'Threshold'],
-    stack: ['Load testing', 'Token accounting', 'Percentiles', 'OpenTelemetry', 'CI/CD'],
-    challenges: [
-      'Streaming makes "response time" ambiguous — time-to-first-token and total completion are separate numbers with separate budgets',
-      'Provider rate limits mean the test harness has to distinguish a real regression from being throttled',
-      'Attributing cost to a user journey rather than to a raw API call',
-    ],
-    outcome:
-      'A feature ships with a known cost per journey and a concurrency ceiling, both checked on every release rather than discovered from a bill.',
-    next: ['Cost regression alerts', 'Cache hit-rate modelling', 'Per-tenant projections'],
-  },
-
-  {
-    key: 'automation',
+    slug: 'dynamic-journey-builder',
+    kind: 'built',
+    category: 'Test automation',
     title: 'Generic Dynamic Journey Builder',
-    note: 'Parses Chrome DevTools HAR exports and replays them as repeatable REST journeys, with variable extraction and dependency chaining.',
-    problem:
-      'Onboarding automation for an application with thin API documentation meant reverse-engineering request order by hand, one endpoint at a time.',
-    flow: ['Import HAR', 'Redact', 'Detect producers', 'Template', 'Replay'],
-    stack: ['Node.js', 'HAR', 'Playwright', 'Dependency graph', 'Rest-Assured'],
+    note: 'Turns a Chrome DevTools HAR export into a repeatable API test — it pulls out values, chains the requests and checks the results.',
+    problem: 'Recording a user journey in the browser is easy. Turning it into an automated API test by hand is slow.',
+    flow: ['Import HAR', 'Find values', 'Chain requests', 'Replay', 'Assert'],
+    stack: ['Java', 'Node.js', 'HAR parsing'],
     challenges: [
-      'The same ID appears in several places meaning different things, so mappings are confidence-ranked and overridable',
-      'Secrets and tokens have to be stripped before a HAR is ever stored',
-      'Auth refresh partway through a replay without restarting the journey',
+      'The same ID can appear in many places, so each extracted value has to be mapped to the right later request.',
+      'HAR files can hold passwords and tokens, which must be stripped before anything is saved.',
+      'Values from one response feed the next request, so the chain order matters.',
     ],
-    outcome:
-      'A recorded session becomes a runnable, parameterised journey in minutes rather than a day of reading network tabs.',
-    next: ['Visual graph editing', 'Shared team mappings', 'Distributed runners'],
+    outcome: 'A recorded browser session becomes a repeatable, automated API test.',
+    live: 'json-journey',
+    featured: true,
   },
   {
-    key: 'automation',
+    slug: 'api-sequencing-engine',
+    kind: 'built',
+    category: 'Test automation',
     title: 'JSON-Driven API Sequencing Engine',
-    note: 'Config-driven orchestration of chained API calls, with retry and polling, SSE streaming, and a visual builder for composing runs.',
-    problem:
-      'Every new integration meant another bespoke test class that differed from the last one only in URLs and field names.',
-    flow: ['Define', 'Resolve vars', 'Execute', 'Assert', 'Report'],
-    stack: ['Java 17', 'TestNG', 'Rest-Assured', 'JSONPath', 'SSE'],
+    note: 'Chains API calls from a JSON config, with retry, polling, live SSE output and a visual builder.',
+    problem: 'Many API tests have the same shape: call, wait, pass a value on. Writing each one as code repeats the same work.',
+    flow: ['JSON config', 'Fill in values', 'Call + retry', 'Stream results (SSE)', 'Report'],
+    stack: ['Node.js', 'Express', 'SSE'],
     challenges: [
-      'A scoped variable store so parallel journeys cannot read each other’s extracted values',
-      'Polling semantics for endpoints that answer 202 and finish asynchronously',
-      'Keeping the config readable enough that a non-author can edit a journey',
+      'Some endpoints answer “accepted” and finish later, so steps poll until done or time out.',
+      'Results stream to the builder over SSE while each step runs.',
+      'The config has to stay easy for someone else to read and edit.',
     ],
-    outcome:
-      'New journeys are written as configuration and reviewed as data, which moved suite authorship beyond the people who wrote the framework.',
-    next: ['Parallel journey execution', 'Contract-drift alerts', 'Shared assertion library'],
+    outcome: 'New test sequences are written as config and run from a visual builder, not coded by hand.',
+    live: 'json-journey',
   },
   {
-    key: 'release',
-    title: 'API Contract Drift Detector',
-    note: 'Diffs OpenAPI specs between environments, classifies every change as breaking or safe, and gates the deploy on the verdict.',
-    problem:
-      'A field quietly changing type between UAT and production is invisible until a consumer deserialises it and fails in the middle of a claim.',
-    flow: ['Fetch specs', 'Normalise', 'Diff', 'Classify', 'Gate'],
-    stack: ['OpenAPI', 'Semantic diff', 'GitHub Actions', 'Node.js', 'Reporting'],
-    challenges: [
-      'Distinguishing a genuinely breaking change from cosmetic spec churn, or the gate gets ignored',
-      'Normalising specs generated by different tooling versions before comparing them',
-      'Reporting a diff in terms of consumer impact rather than JSON paths',
-    ],
-    outcome:
-      'Breaking changes are caught at the pipeline instead of by whichever consumer deserialises them first.',
-    next: ['Consumer-driven contract checks', 'Deprecation windows', 'Per-consumer impact reports'],
-  },
-  {
-    key: 'llm-flow',
-    title: 'Grounded Knowledge Assistant',
-    note: 'Retrieval-backed assistant over runbooks and API specs that keeps every answer attached to its source.',
-    problem:
-      'Operational knowledge was spread across runbooks, incident notes, and specs. Finding the relevant paragraph took longer than acting on it.',
-    flow: ['Ingest', 'Chunk + index', 'Retrieve', 'Answer', 'Cite'],
-    stack: ['RAG', 'Embeddings', 'Vector search', 'Supabase', 'Evaluation'],
-    challenges: [
-      'Enterprise documents are noisy — headers, tables, and stale duplicates all pollute retrieval',
-      'Separating what the evidence says from what the model inferred',
-      'Keeping answers useful when the best source is only partially relevant',
-    ],
-    outcome:
-      'Answers arrive with the paragraph they came from, so the reader can disagree with the source rather than with the model.',
-    next: ['Role-based collections', 'Feedback-driven reranking', 'Automated freshness checks'],
-  },
-  {
-    key: 'llm-flow',
-    title: 'Portfolio RAG Assistant — running on this page',
-    note: 'The "Ask about Gaurav" button, bottom right. A retrieval pipeline over this site\u2019s own content: chunk, index, retrieve, answer with the source attached. No API key, no request leaves the browser.',
-    problem:
-      'A portfolio answers the questions its author anticipated, in the order they chose. A reader with a specific question — does he know Oracle, has he shipped a service, what is the CGPA — has to skim for it. The obvious fix is a chatbot wired to a hosted model, which costs money per visitor, needs a key that a static site cannot hold safely, and is free to invent a job he never had.',
-    flow: ['Chunk', 'Index', 'Retrieve', 'Rank', 'Answer with source'],
-    stack: ['BM25', 'Chunking', 'Synonym expansion', 'Grounded answers', 'Zero-dependency'],
-    challenges: [
-      'Chunking per idea, not per document — a whole article matches many questions weakly and answers none of them precisely, so paragraphs and single r\u00e9sum\u00e9 facts are indexed separately',
-      'Lexical retrieval misses the vocabulary gap: a visitor asks for "tech", the corpus says "Java 17, TestNG". A domain synonym map closes it where an embedding model would have, without shipping one',
-      'BM25 rather than raw TF-IDF, because the corpus mixes one-line facts with long article passages and without length normalisation the long passages win on term count alone',
-      'Refusing rather than guessing: with no generation step it cannot fabricate, and a query that retrieves nothing says so instead of returning the least-bad passage',
-    ],
-    outcome:
-      'Every answer is a passage Gaurav actually published, shown with a link to where it came from, so a reader can check it rather than trust it. It costs nothing to run and works with the network off.',
-    next: ['Embeddings for the vocabulary gap the synonym map does not cover', 'An optional generation step over the retrieved passages, for phrasing rather than facts', 'Logging which questions retrieve nothing, as a list of what the site fails to answer'],
-  },
-  {
-    key: 'ml',
+    slug: 'wildlife-conservation',
+    kind: 'built',
+    category: 'Machine learning',
+    where: 'Honours project · PCCOER',
     title: 'Wildlife Conservation Analysis',
-    note: 'Counts wildlife populations from images and video and classifies species against IUCN Red List criteria — YOLOv5 and Inception V3, and the work behind my copyright registration.',
-    problem:
-      'Survey imagery was being classified by hand, which does not scale and is inconsistent between people doing the classifying.',
-    flow: ['Collect', 'Preprocess', 'Train', 'Evaluate', 'Publish'],
-    stack: ['Python', 'YOLOv5', 'Inception V3', 'IUCN Red List', 'Copyright-registered'],
+    note: 'Counts animals in images and video and classifies species against the IUCN Red List. Copyright-registered.',
+    problem: 'Counting and naming animals in survey photos by hand is slow, and different people count differently.',
+    flow: ['Images / video', 'Detect (YOLOv5)', 'Classify (Inception V3)', 'Count', 'Red List status'],
+    stack: ['Python', 'YOLOv5', 'Inception V3'],
     challenges: [
-      'Heavy class imbalance — rare species are exactly the ones that matter and the ones with the fewest samples',
-      'Field imagery quality varies enormously with light and distance',
-      'Reporting accuracy honestly per class rather than as one flattering average',
+      'The rare species matter most — and have the fewest photos to learn from.',
+      'Light and distance change a lot between field photos.',
+      'Accuracy has to be checked species by species, not as one average.',
     ],
-    outcome:
-      'Registered as a copyright: Wildlife Conservation and Analysis Using Machine Learning.',
-    next: ['Larger labelled set', 'Edge deployment for field use'],
+    outcome: 'A working pipeline, registered as a copyright: “Wildlife Conservation and Analysis Using Machine Learning”.',
+  },
+  {
+    slug: 'ask-me-assistant',
+    kind: 'built',
+    category: 'Search + LLM',
+    where: 'Live on this site',
+    title: 'Ask-me assistant',
+    note: 'A search assistant over this whole site. No AI model — every answer is something I wrote, shown with its source.',
+    problem:
+      'A reader with one question — does he know Oracle? what is the CGPA? — has to skim the whole site. A chatbot on a hosted model costs money per visitor and can make things up.',
+    flow: ['Split into passages', 'Index (BM25)', 'Search', 'Rank', 'Answer with source'],
+    stack: ['BM25', 'JavaScript', 'No server'],
+    challenges: [
+      'Short résumé facts and long articles are indexed separately, so one question finds the one passage that answers it.',
+      'A synonym map links words people ask with (“tech”) to words the site uses (“Java 17, TestNG”).',
+      'If nothing matches well, it says so instead of guessing.',
+    ],
+    outcome: 'Every answer is a real passage with a link to where it came from. It costs nothing to run and works offline.',
+    live: 'assistant',
+    source: 'https://github.com/suryavanshi-cmd/gaurav-portfolio/tree/main/components/rag',
+  },
+  {
+    slug: 'guardrail-game',
+    kind: 'built',
+    category: 'LLM testing',
+    where: 'Live on this site',
+    title: 'Guardrail game',
+    note: 'Catch prompt-injection attacks and let safe prompts through — an arcade round, then a slower round scored on precision and recall.',
+    problem: 'Guardrail work is usually described, not shown. The hard part — catching an attack without blocking a normal question — is easier to play than to explain.',
+    flow: ['Prompts fall', 'Catch or let pass', 'Score', 'Precision + recall'],
+    stack: ['Canvas', 'JavaScript', 'Prompt injection'],
+    challenges: [
+      'Blocking a normal question is the costly mistake, so it loses points.',
+      'Some attacks hide inside retrieved documents, not in what the user typed.',
+      'The slower round scores both kinds of mistake, the way a real guardrail should be judged.',
+    ],
+    outcome: 'A game that teaches the real trade-off in AI safety filters.',
+    live: 'guardrail',
+  },
+
+  /* ----- Designs --------------------------------------------------------- */
+  {
+    slug: 'agentic-claims-triage',
+    kind: 'design',
+    category: 'LLM flows',
+    title: 'Agentic claims triage',
+    note: 'A plan → tools → check loop that reads a claim, picks which checks apply, and asks a human when evidence is thin.',
+    problem: 'Claims arrive as free text plus files. Deciding which of many checks apply takes time, and a fixed decision tree needs a code change for every new product.',
+    flow: ['Intake', 'Plan', 'Call tools', 'Check', 'Route'],
+    stack: ['Tool calling', 'JSON Schema', 'REST APIs'],
+    challenges: [
+      'The model may only call tools on a fixed allow-list — never tools it invents.',
+      'A token budget and a max number of tool calls, enforced outside the model.',
+      'A separate checker that can reject the plan, not just approve it.',
+    ],
+    outcome: 'Each decision keeps a written trace, so a reviewer checks the reasoning instead of redoing it.',
+  },
+  {
+    slug: 'document-extraction-flow',
+    kind: 'design',
+    category: 'LLM flows',
+    title: 'Document extraction flow',
+    note: 'Scanned bills to structured JSON, with schema checks and a review queue for anything uncertain.',
+    problem: 'Hospital bills are scanned, rotated and formatted differently by every hospital. Fixed templates break on each new layout.',
+    flow: ['OCR', 'Extract', 'Validate', 'Confidence check', 'Review queue'],
+    stack: ['OCR', 'Structured output', 'JSON Schema'],
+    challenges: [
+      'A confident wrong number is worse than a blank, so low-confidence fields go to a person.',
+      'The JSON is validated by code after the model answers — never trusted as-is.',
+      'Reviewer fixes are kept as labelled data, not lost.',
+    ],
+    outcome: 'People only review the fields that need it, not every document.',
+  },
+  {
+    slug: 'llm-gateway',
+    kind: 'design',
+    category: 'LLM flows',
+    title: 'LLM gateway',
+    note: 'One endpoint in front of several models: routing, fallback, caching and a spend limit per team.',
+    problem: 'Every prototype called a model provider directly, with its own key and retry logic. Nobody knew what a feature cost.',
+    flow: ['Request', 'Route', 'Cache', 'Call + fallback', 'Meter cost'],
+    stack: ['Streaming', 'Cache', 'Circuit breaker'],
+    challenges: [
+      'Switching providers mid-stream without repeating text the user already saw.',
+      'Cache keys include the prompt version, so a prompt change is not hidden by old answers.',
+      'Hitting the budget moves to a cheaper model instead of failing.',
+    ],
+    outcome: 'Cost and speed per feature in one place, and an outage at one provider slows things down instead of breaking them.',
+  },
+  {
+    slug: 'prompt-release-pipeline',
+    kind: 'design',
+    category: 'LLM flows',
+    title: 'Prompt release pipeline',
+    note: 'Prompts treated like code: versioned, reviewed, rolled out slowly, and rolled back in one step.',
+    problem: 'Prompts lived in string literals. A one-word edit shipped with no review and no way back.',
+    flow: ['Write', 'Review diff', 'Run evals', 'Staged rollout', 'Rollback'],
+    stack: ['Versioning', 'Evals in CI', 'Feature flags'],
+    challenges: [
+      'A prompt change cannot merge until the eval suite passes.',
+      'Every answer in production records the exact prompt version that made it.',
+    ],
+    outcome: 'Rolling back a bad prompt becomes a normal deploy.',
+  },
+  {
+    slug: 'ticket-auto-resolution',
+    kind: 'design',
+    category: 'LLM flows',
+    title: 'Support ticket auto-reply',
+    note: 'Sorts a ticket, finds the right runbook, drafts a reply, and hands it to a person when unsure.',
+    problem: 'Most tickets are the same few questions — but the rare ones are exactly where an automatic reply does damage.',
+    flow: ['Classify', 'Retrieve', 'Draft', 'Policy check', 'Send or escalate'],
+    stack: ['RAG', 'Classification', 'Audit log'],
+    challenges: [
+      'Setting the “hand to a human” threshold from real outcomes, not a guess.',
+      'Keeping the draft tied to the runbook so it cannot invent a policy.',
+    ],
+    outcome: 'Common tickets close with a source attached; unclear ones reach a person with the research done.',
+  },
+  {
+    slug: 'prompt-regression-tests',
+    kind: 'design',
+    category: 'LLM testing',
+    title: 'Prompt regression tests',
+    note: 'Golden test cases that run in CI, so a prompt or model change cannot quietly break a right answer.',
+    problem: 'LLM output changes wording every run, so normal “equals” tests fail — and teams end up with no tests at all.',
+    flow: ['Golden set', 'Run', 'Check', 'Compare', 'Gate'],
+    stack: ['TestNG', 'Golden datasets', 'CI/CD'],
+    challenges: [
+      'Check facts and structure, not exact wording.',
+      'Pass on a percentage of cases, with some cases that must always pass.',
+      'Expected answers written by a person, never copied from a run.',
+    ],
+    outcome: 'A prompt change that hurts accuracy fails the build, with the exact cases it broke.',
+  },
+  {
+    slug: 'rag-retrieval-tests',
+    kind: 'design',
+    category: 'LLM testing',
+    title: 'RAG retrieval tests',
+    note: 'Tests the “find the right document” half of RAG on its own, because most bad answers start there.',
+    problem: 'When a RAG assistant answers badly, people blame the model. Usually the right document was never found.',
+    flow: ['Question set', 'Retrieve', 'Recall@k', 'Faithfulness', 'Report'],
+    stack: ['Vector search', 'Keyword search', 'Reranking'],
+    challenges: [
+      'Building test questions from real ones, not from what the search already returns.',
+      'An answer can match its source perfectly and still be wrong if the source is old.',
+    ],
+    outcome: 'Search and answer quality are scored separately, so effort goes to the half that is failing.',
+  },
+  {
+    slug: 'hallucination-checker',
+    kind: 'design',
+    category: 'LLM testing',
+    title: 'Hallucination checker',
+    note: 'Splits an answer into single claims and checks each one against the source.',
+    problem: '“Did it make something up?” cannot be measured for a whole paragraph. One sentence can be right and the next invented.',
+    flow: ['Split claims', 'Find evidence', 'Supported?', 'How serious?', 'Flag'],
+    stack: ['Claim extraction', 'Evidence matching'],
+    challenges: [
+      'Deciding what counts as “supported” when the source only implies it.',
+      'A made-up policy clause is worse than a wrong date — severity matters.',
+    ],
+    outcome: 'Each unsupported claim is shown next to the evidence that should have backed it.',
+  },
+  {
+    slug: 'llm-load-test',
+    kind: 'design',
+    category: 'LLM testing',
+    title: 'LLM load and cost test',
+    note: 'Load-tests an LLM feature like any other service: response times, tokens per user flow, and the breaking point.',
+    problem: 'LLM features get tested for correctness, then shipped without anyone knowing how they behave under real traffic or what they cost.',
+    flow: ['Scenario', 'Ramp up', 'Measure', 'Cost model', 'Threshold'],
+    stack: ['Load testing', 'Token counts', 'Percentiles'],
+    challenges: [
+      'Time to first token and total time are different numbers with different budgets.',
+      'Telling a real slowdown apart from provider rate limits.',
+    ],
+    outcome: 'A known cost per user flow and a known concurrency limit, checked every release.',
+  },
+  {
+    slug: 'api-contract-drift',
+    kind: 'design',
+    category: 'Release engineering',
+    title: 'API contract drift check',
+    note: 'Compares OpenAPI specs between environments and blocks the deploy on a breaking change.',
+    problem: 'A field quietly changes type between UAT and production, and nobody notices until a client crashes on it.',
+    flow: ['Fetch specs', 'Normalise', 'Diff', 'Breaking?', 'Gate'],
+    stack: ['OpenAPI', 'CI/CD', 'Node.js'],
+    challenges: [
+      'Telling a real breaking change apart from harmless spec noise.',
+      'Reporting who is affected, not just which JSON path changed.',
+    ],
+    outcome: 'Breaking changes are caught in the pipeline, before a client finds them.',
+  },
+  {
+    slug: 'grounded-knowledge-assistant',
+    kind: 'design',
+    category: 'LLM flows',
+    title: 'Grounded knowledge assistant',
+    note: 'An assistant over runbooks and API specs that keeps every answer attached to its source.',
+    problem: 'Knowledge is spread across runbooks, incident notes and specs. Finding the right paragraph takes longer than acting on it.',
+    flow: ['Ingest', 'Chunk + index', 'Retrieve', 'Answer', 'Cite'],
+    stack: ['RAG', 'Embeddings', 'Vector search'],
+    challenges: [
+      'Real documents are messy — headers, tables and old copies all hurt search.',
+      'Keeping what the source says separate from what the model guessed.',
+    ],
+    outcome: 'Answers come with the paragraph they came from, so people can check the source.',
   },
 ];
 
-export const projectCategories = {
-  'llm-flow': 'LLM automation flows',
-  'llm-eval': 'LLM testing & evaluation',
-  automation: 'API automation',
-  release: 'Release engineering',
-  ml: 'Machine learning',
-};
+export const projectsBySlug = Object.fromEntries(projects.map((project) => [project.slug, project]));
+
+export const projectHref = (project) => `/projects/${project.slug}`;

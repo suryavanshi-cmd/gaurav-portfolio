@@ -1,5 +1,4 @@
 import AskPage from '../../components/chat/AskPage.jsx';
-import '../site.css';
 
 export const metadata = {
   title: 'Ask Gaurav AI',

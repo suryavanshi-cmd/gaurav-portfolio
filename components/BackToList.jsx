@@ -14,12 +14,12 @@ import { useRouter } from 'next/navigation';
   the list we call router.back() instead, which unwinds that entry and lets the
   router restore the scroll position.
 
-  Whether they came from the list is a single-use token set when "Read more" was
-  clicked. It is consumed on mount, so a deep link, a refresh, or an arrival
+  Whether they came from the list is a single-use token set when a post in the
+  writing list was clicked. It is consumed on mount, so a deep link, a refresh, or an arrival
   from search finds nothing and gets the ordinary link — which is also what
   renders on the server, keeping hydration stable.
 */
-export default function BackToList({ href, children }) {
+export default function BackToList({ href, children, className = 'post-back' }) {
   const router = useRouter();
   const [canReturn, setCanReturn] = useState(false);
 
@@ -35,11 +35,11 @@ export default function BackToList({ href, children }) {
   }, []);
 
   if (!canReturn) {
-    return <Link href={href} className="post-back">{children}</Link>;
+    return <Link href={href} className={className}>{children}</Link>;
   }
 
   return (
-    <button type="button" className="post-back" onClick={() => router.back()}>
+    <button type="button" className={className} onClick={() => router.back()}>
       {children}
     </button>
   );

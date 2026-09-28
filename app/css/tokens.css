@@ -1,0 +1,250 @@
+/* ==========================================================================
+   Tokens and base.
+
+   An Apple-like palette: off-white paper, near-black ink, one blue accent, and
+   greys that step down in contrast rather than in hue. Every page and component
+   reads these custom properties, so a theme change is one attribute flip.
+
+   Theme contract (see ThemeToggle.jsx and the boot script in layout.jsx):
+     <html> with no data-theme   follow the OS, via the media query below
+     data-theme="light"          force light
+     data-theme="dark"           force dark
+   The dark palette is therefore declared twice — once under the media query,
+   guarded so an explicit light choice still wins on a dark OS, and once under
+   the attribute.
+   ========================================================================== */
+
+:root {
+  --bg: #fbfbfd;
+  --bg-elev: #ffffff;
+  --bg-soft: #f5f5f7;
+  --bg-sunk: #ececf0;
+  --fg: #1d1d1f;
+  --fg-2: #424245;
+  --fg-3: #6e6e73;           /* 4.9:1 on --bg: the floor for small text */
+  --line: rgb(0 0 0 / 8%);
+  --line-2: rgb(0 0 0 / 14%);
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-ink: #ffffff;
+  --accent-soft: rgb(0 113 227 / 10%);
+  --glass: rgb(251 251 253 / 72%);
+  --ok: #1d8a4e;
+  --bad: #d6302f;
+  --warn: #b25e00;
+  --ok-bg: #eefaf2;
+  --bad-bg: #fdf0f0;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 4%), 0 4px 16px rgb(0 0 0 / 4%);
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 4%), 0 18px 48px rgb(0 0 0 / 9%);
+  --field-ink: 29 29 31;     /* rgb triplet for the physics field */
+  --field-accent: 0 113 227;
+
+  /* Aliases for components styled before this palette existed (the theme
+     toggle, the assistant, the game, the article body). Mapping them here lets
+     that CSS move across unchanged. */
+  --gray-50: #f9f9fb;
+  --gray-100: var(--bg-soft);
+  --gray-200: #e3e3e8;
+  --gray-300: #d2d2d7;
+  --gray-400: var(--fg-3);
+  --gray-500: #6e6e73;
+  --gray-600: #515154;
+  --gray-700: var(--fg-2);
+
+  --font-sans: var(--font-inter, Inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains, ui-monospace), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Two curves for the whole site. --ease is Apple's standard; --expo leaves
+     fast and settles long, for anything that should feel physical. */
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --expo: cubic-bezier(0.23, 1, 0.32, 1);
+  --spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+
+  --wrap: 1120px;
+  --prose: 44rem;
+  --nav-h: 56px;
+  --radius: 22px;
+  --radius-sm: 14px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #000000;
+    --bg-elev: #161617;
+    --bg-soft: #1c1c1e;
+    --bg-sunk: #0c0c0d;
+    --fg: #f5f5f7;
+    --fg-2: #d2d2d7;
+    --fg-3: #a1a1a6;
+    --line: rgb(255 255 255 / 10%);
+    --line-2: rgb(255 255 255 / 18%);
+    --accent: #2997ff;
+    --accent-hover: #47a6ff;
+    --accent-ink: #000000;
+    --accent-soft: rgb(41 151 255 / 14%);
+    --glass: rgb(0 0 0 / 62%);
+    --ok: #30d158;
+    --bad: #ff6961;
+    --warn: #ffb340;
+    --ok-bg: #0e1f14;
+    --bad-bg: #241315;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 40%), 0 4px 16px rgb(0 0 0 / 30%);
+    --shadow-2: 0 2px 6px rgb(0 0 0 / 40%), 0 18px 48px rgb(0 0 0 / 50%);
+    --field-ink: 245 245 247;
+    --field-accent: 41 151 255;
+    --gray-50: #121214;
+    --gray-200: #2c2c2e;
+    --gray-300: #3a3a3c;
+    --gray-500: #a1a1a6;
+    --gray-600: #c7c7cc;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #000000;
+  --bg-elev: #161617;
+  --bg-soft: #1c1c1e;
+  --bg-sunk: #0c0c0d;
+  --fg: #f5f5f7;
+  --fg-2: #d2d2d7;
+  --fg-3: #a1a1a6;
+  --line: rgb(255 255 255 / 10%);
+  --line-2: rgb(255 255 255 / 18%);
+  --accent: #2997ff;
+  --accent-hover: #47a6ff;
+  --accent-ink: #000000;
+  --accent-soft: rgb(41 151 255 / 14%);
+  --glass: rgb(0 0 0 / 62%);
+  --ok: #30d158;
+  --bad: #ff6961;
+  --warn: #ffb340;
+  --ok-bg: #0e1f14;
+  --bad-bg: #241315;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 40%), 0 4px 16px rgb(0 0 0 / 30%);
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 40%), 0 18px 48px rgb(0 0 0 / 50%);
+  --field-ink: 245 245 247;
+  --field-accent: 41 151 255;
+  --gray-50: #121214;
+  --gray-200: #2c2c2e;
+  --gray-300: #3a3a3c;
+  --gray-500: #a1a1a6;
+  --gray-600: #c7c7cc;
+  color-scheme: dark;
+}
+
+/* ----- Base --------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 20px);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.55;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color 300ms var(--ease), color 300ms var(--ease);
+}
+
+a { color: inherit; text-decoration: none; }
+img, svg, canvas { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.028em; line-height: 1.08; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
+
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 200;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  transform: translateY(-150%);
+  transition: transform 200ms var(--ease);
+}
+
+.skip:focus { transform: none; }
+
+/* ----- Scroll reveal ------------------------------------------------------ */
+
+/* Hidden only once the boot script has set html[data-motion], which it does
+   when motion is allowed. A blocked script or reduced motion therefore leaves
+   every element visible — decoration never costs content. */
+html[data-motion] [data-rise] {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition: opacity 800ms var(--expo), transform 800ms var(--expo);
+  transition-delay: calc(var(--rise, 0) * 80ms);
+}
+
+html[data-motion] [data-rise].is-in { opacity: 1; transform: none; }
+
+html[data-motion] [data-rise].stagger { opacity: 1; transform: none; }
+
+html[data-motion] [data-rise].stagger > * {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition: opacity 700ms var(--expo), transform 700ms var(--expo);
+}
+
+html[data-motion] [data-rise].stagger.is-in > * { opacity: 1; transform: none; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(2) { transition-delay: 60ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(3) { transition-delay: 120ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(4) { transition-delay: 180ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(5) { transition-delay: 240ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(6) { transition-delay: 300ms; }
+html[data-motion] [data-rise].stagger.is-in > *:nth-child(n + 7) { transition-delay: 340ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-rise], [data-rise].stagger > * { opacity: 1 !important; transform: none !important; }
+}

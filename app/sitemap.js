@@ -1,17 +1,30 @@
-import { posts } from '../components/posts.js';
+import { SITE_URL } from '../components/site';
+import { projects } from '../components/projects';
+import { posts } from '../components/posts';
+import { LAB } from '../components/lab/registry';
 
-/* The assistant's own page is new and is the thing worth landing on, so it
-   needs to be discoverable rather than reachable only from the home page. */
+/* Every public page, generated from the same lists the pages are built from,
+   so a new project, post or demo is in the sitemap the moment it exists. */
 export default function sitemap() {
-  const base = 'https://gaurav-portfolio-topaz.vercel.app';
+  const latest = posts[0]?.date ? new Date(posts[0].date) : new Date();
+  const page = (path, priority, changeFrequency = 'monthly', lastModified = latest) => ({
+    url: `${SITE_URL}${path}`,
+    lastModified,
+    changeFrequency,
+    priority,
+  });
+
   return [
-    { url: base, changeFrequency: 'monthly', priority: 1 },
-    { url: `${base}/ask`, changeFrequency: 'monthly', priority: 0.9 },
-    ...posts.map((post) => ({
-      url: `${base}/blog/${post.slug}`,
-      lastModified: post.date,
-      changeFrequency: 'yearly',
-      priority: 0.6,
-    })),
+    page('/', 1, 'weekly'),
+    page('/projects', 0.9, 'weekly'),
+    page('/lab', 0.9, 'weekly'),
+    /* The assistant has its own page rather than only a panel, so it is a
+       thing to land on and a link to send — which only holds if it is listed. */
+    page('/ask', 0.9, 'weekly'),
+    page('/writing', 0.8, 'weekly'),
+    page('/about', 0.7),
+    ...LAB.map((tool) => page(`/lab/${tool.slug}`, 0.8)),
+    ...projects.map((p) => page(`/projects/${p.slug}`, p.kind === 'design' ? 0.5 : 0.7)),
+    ...posts.map((post) => page(`/blog/${post.slug}`, 0.7, 'yearly', new Date(post.date))),
   ];
 }
