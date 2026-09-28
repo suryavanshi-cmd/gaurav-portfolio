@@ -140,6 +140,20 @@ export default function Chat() {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
+  /* Other parts of the site (the nav's "Ask about me", the live-demos page) open
+     the panel by event rather than importing this component. An optional
+     `detail.question` is queued and asked once `ask` is ready, below. */
+  const [queued, setQueued] = useState(null);
+  useEffect(() => {
+    const onOpen = (event) => {
+      setOpen(true);
+      const question = event.detail?.question;
+      if (question) setQueued(question);
+    };
+    window.addEventListener('assistant:open', onOpen);
+    return () => window.removeEventListener('assistant:open', onOpen);
+  }, []);
+
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
 
   useEffect(() => {
@@ -179,6 +193,12 @@ export default function Chat() {
       timers.current.push(window.setTimeout(step, TYPE_MS));
     }, 300));
   }, [index, pending]);
+
+  useEffect(() => {
+    if (!queued || pending) return;
+    ask(queued);
+    setQueued(null);
+  }, [queued, pending, ask]);
 
   const copy = (text, i) => {
     navigator.clipboard?.writeText(text).then(() => {

@@ -1,157 +1,88 @@
 import localFont from 'next/font/local';
+import './css/tokens.css';
+import './css/layout.css';
+import './css/pages.css';
+import './css/lab.css';
+import './css/ported.css';
+import SiteNav from '../components/SiteNav';
+import SiteFooter from '../components/SiteFooter';
+import PhysicsField from '../components/PhysicsField';
+import Chat from '../components/Chat';
+import JsonLd from '../components/JsonLd';
+import { RevealOnRoute } from '../components/ui';
+import { PERSON, SITE, SITE_URL } from '../components/site';
 
 /*
-  Fonts are self-hosted from assets/fonts (latin woff2, pulled once from Google
-  Fonts) rather than fetched through `next/font/google`.
-
-  next/font/google downloads every declared family from fonts.gstatic.com at
-  BUILD time, and a single failed fetch fails the whole build — which is exactly
-  what happened in CI once this layout grew from two families to six to cover
-  all three versions. Local files make the build hermetic: no network, no
-  third-party uptime in the critical path, and identical output every run.
-
-  Everything below is written out longhand because next/font rejects anything
-  that is not an explicitly written literal — no shared fallback constants, no
-  helper that builds the `src` array.
-
-  The root layout imports no stylesheet — each route brings its own — so these
-  font variables are declared here on <html>, where every page's CSS reads them
-  as :root custom properties.
+  Fonts are self-hosted (see assets/fonts/README.md) so the build makes no
+  network requests. Each file is a variable font, declared with the weight
+  range it covers. next/font only accepts written-out literals here.
 */
-
-/* Used by V2 and V3 — V3 is served at `/`, so these two preload. */
 const inter = localFont({
-  src: [
-    { path: '../assets/fonts/inter-400.woff2', weight: '400', style: 'normal' },
-    { path: '../assets/fonts/inter-500.woff2', weight: '500', style: 'normal' },
-    { path: '../assets/fonts/inter-600.woff2', weight: '600', style: 'normal' },
-    { path: '../assets/fonts/inter-700.woff2', weight: '700', style: 'normal' },
-  ],
+  src: [{ path: '../assets/fonts/inter-var.woff2', weight: '400 700', style: 'normal' }],
   variable: '--font-inter',
   display: 'swap',
-  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-});
-
-const manrope = localFont({
-  src: [
-    { path: '../assets/fonts/manrope-500.woff2', weight: '500', style: 'normal' },
-    { path: '../assets/fonts/manrope-600.woff2', weight: '600', style: 'normal' },
-    { path: '../assets/fonts/manrope-700.woff2', weight: '700', style: 'normal' },
-    { path: '../assets/fonts/manrope-800.woff2', weight: '800', style: 'normal' },
-  ],
-  variable: '--font-manrope',
-  display: 'swap',
-  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-});
-
-/* V1's display set. `preload: false` keeps the @font-face rules on every page
-   while leaving the files unfetched until a route actually renders them. */
-const anton = localFont({
-  src: [{ path: '../assets/fonts/anton-400.woff2', weight: '400', style: 'normal' }],
-  variable: '--font-anton',
-  display: 'swap',
-  preload: false,
-  fallback: ['Impact', 'Haettenschweiler', 'sans-serif'],
-});
-
-const chakra = localFont({
-  src: [
-    { path: '../assets/fonts/chakra-petch-500.woff2', weight: '500', style: 'normal' },
-    { path: '../assets/fonts/chakra-petch-600.woff2', weight: '600', style: 'normal' },
-    { path: '../assets/fonts/chakra-petch-700.woff2', weight: '700', style: 'normal' },
-  ],
-  variable: '--font-chakra',
-  display: 'swap',
-  preload: false,
-  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
+  fallback: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 });
 
 const jetbrains = localFont({
-  src: [
-    { path: '../assets/fonts/jetbrains-mono-400.woff2', weight: '400', style: 'normal' },
-    { path: '../assets/fonts/jetbrains-mono-600.woff2', weight: '600', style: 'normal' },
-    { path: '../assets/fonts/jetbrains-mono-800.woff2', weight: '800', style: 'normal' },
-  ],
+  src: [{ path: '../assets/fonts/jetbrains-mono-var.woff2', weight: '400 800', style: 'normal' }],
   variable: '--font-jetbrains',
   display: 'swap',
   preload: false,
   fallback: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
 });
 
-const grotesk = localFont({
-  src: [
-    { path: '../assets/fonts/space-grotesk-400.woff2', weight: '400', style: 'normal' },
-    { path: '../assets/fonts/space-grotesk-500.woff2', weight: '500', style: 'normal' },
-    { path: '../assets/fonts/space-grotesk-600.woff2', weight: '600', style: 'normal' },
-    { path: '../assets/fonts/space-grotesk-700.woff2', weight: '700', style: 'normal' },
-  ],
-  variable: '--font-grotesk',
-  display: 'swap',
-  preload: false,
-  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
-});
-
-const fontVariables = [inter, manrope, anton, chakra, jetbrains, grotesk].map((font) => font.variable).join(' ');
-
 export const metadata = {
-  metadataBase: new URL('https://gaurav-portfolio-topaz.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Gaurav Suryavanshi | LLM Automation & AI Testing Engineer',
-    template: '%s | Gaurav Suryavanshi',
+    default: SITE.title,
+    template: '%s — Gaurav Suryavanshi',
   },
-  description:
-    'Portfolio of Gaurav Suryavanshi — building LLM automation flows (agentic pipelines, document extraction, model gateways) and the AI testing that keeps them honest: evaluation in CI, grounding checks, and red-teaming. Also SDET and API automation with Java 17, TestNG, and Rest-Assured.',
-  keywords: [
-    'LLM Application Engineer',
-    'LLM Automation',
-    'AI Testing',
-    'LLM Evaluation',
-    'Prompt Injection',
-    'Red Teaming',
-    'RAG Evaluation',
-    'Agentic Workflows',
-    'SDET',
-    'API Automation',
-    'Rest-Assured',
-    'TestNG',
-    'Java',
-    'CI/CD',
-  ],
-  authors: [{ name: 'Gaurav Suryavanshi' }],
-  creator: 'Gaurav Suryavanshi',
+  description: SITE.description,
+  keywords: SITE.keywords,
+  applicationName: 'Gaurav Suryavanshi',
+  authors: [{ name: PERSON.name, url: SITE_URL }],
+  creator: PERSON.name,
+  publisher: PERSON.name,
+  category: 'technology',
+  alternates: { canonical: '/' },
   openGraph: {
-    title: 'Gaurav Suryavanshi | LLM Automation & AI Testing Engineer',
-    description:
-      'LLM automation flows and the testing that keeps them honest — agentic pipelines, RAG evaluation, guardrails, red-teaming, and API test automation.',
-    url: '/',
-    siteName: 'Gaurav Suryavanshi Portfolio',
     type: 'website',
+    locale: 'en_IN',
+    url: '/',
+    siteName: 'Gaurav Suryavanshi',
+    title: SITE.title,
+    description: SITE.description,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE.title,
+    description: SITE.description,
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
   },
+  formatDetection: { telephone: false },
 };
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#ffffff',
+  themeColor: '#fbfbfd',
 };
 
-/* Runs before first paint, and does two things.
+/* Runs before first paint.
 
-   Motion: arms the entrance animations, and only when the visitor has not asked
-   for reduced motion. Without this flag every `[data-rise]` element renders
-   plainly visible, so a blocked script degrades to a static page, not a blank
-   one.
+   Motion: arms the entrance animations only when the visitor has not asked for
+   reduced motion. Without the flag every [data-rise] element renders plainly
+   visible, so a blocked script degrades to a static page, never a blank one.
 
-   Theme: applies a stored light/dark choice to <html> before anything is
-   painted. This has to be inline and synchronous — doing it in an effect would
-   paint the system theme first and flash the wrong colours on every load. With
-   no stored choice the attribute stays off and the stylesheet's media query
-   follows the OS, so a blocked script degrades to exactly the old behaviour. */
+   Theme: applies a stored light/dark choice before anything is painted — doing
+   it in an effect would flash the wrong colours on every load. With no stored
+   choice the attribute stays off and the stylesheet follows the OS. */
 const bootScript = `(function(){try{
   var d=document.documentElement;
   if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.dataset.motion='1';}
@@ -159,16 +90,53 @@ const bootScript = `(function(){try{
   if(t==='light'||t==='dark'){d.dataset.theme=t;}
   var dark=(t==='dark')||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
   var m=document.querySelector('meta[name="theme-color"]');
-  if(m){m.setAttribute('content',dark?'#0b0b0d':'#ffffff');}
+  if(m){m.setAttribute('content',dark?'#000000':'#fbfbfd');}
 }catch(e){}})();`;
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${SITE_URL}/#person`,
+      name: PERSON.name,
+      url: SITE_URL,
+      email: `mailto:${PERSON.email}`,
+      jobTitle: PERSON.role,
+      worksFor: { '@type': 'Organization', name: PERSON.employer },
+      address: { '@type': 'PostalAddress', addressLocality: PERSON.city, addressCountry: 'IN' },
+      alumniOf: { '@type': 'CollegeOrUniversity', name: 'PCCOER, Pune' },
+      sameAs: [PERSON.github],
+      knowsAbout: ['API test automation', 'Rest-Assured', 'TestNG', 'Java', 'Node.js', 'NestJS', 'Oracle SQL', 'LLM testing', 'Retrieval-augmented generation'],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: 'Gaurav Suryavanshi',
+      description: SITE.description,
+      inLanguage: 'en-IN',
+      publisher: { '@id': `${SITE_URL}/#person` },
+    },
+  ],
+};
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={fontVariables} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <a href="#main" className="skip">Skip to content</a>
+        <PhysicsField />
+        <SiteNav />
+        {children}
+        <SiteFooter />
+        <Chat />
+        <RevealOnRoute />
+        <JsonLd data={personLd} />
+      </body>
     </html>
   );
 }

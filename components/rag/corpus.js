@@ -94,10 +94,10 @@ function buildProjectDocs() {
     text: [project.note, project.problem, project.outcome, `Built with ${project.stack.join(', ')}.`]
       .filter(Boolean)
       .join(' '),
-    keywords: [...project.stack, 'project', 'built'],
+    keywords: [...project.stack, project.category, 'project', project.kind === 'work' ? 'work' : 'built'],
     source: 'Project',
-    href: '#projects',
-    hrefLabel: 'See projects',
+    href: `/projects/${project.slug}`,
+    hrefLabel: 'See the project',
   }));
 }
 
@@ -107,7 +107,7 @@ function buildPostDocs() {
     docs.push({
       id: `post:${post.slug}`,
       title: post.title,
-      text: post.summary,
+      text: [post.summary, ...(post.points || [])].join(' '),
       keywords: [...(post.tags || []), 'article', 'wrote', 'writing'],
       source: 'Writing',
       href: `/blog/${post.slug}`,
@@ -115,9 +115,9 @@ function buildPostDocs() {
     });
     /* Body paragraphs are indexed separately: a specific question is usually
        answered by one paragraph, and retrieving the whole article would bury
-       it. Short ones are skipped — they are transitions, not answers. */
+       it. Very short ones are skipped — they are transitions, not answers. */
     post.body
-      .filter((block) => block.type === 'p' && block.text.length > 180)
+      .filter((block) => block.type === 'p' && block.text.length > 110)
       .forEach((block, i) => {
         docs.push({
           id: `post:${post.slug}:${i}`,

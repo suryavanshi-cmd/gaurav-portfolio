@@ -37,7 +37,7 @@ export function applyTheme(mode) {
       : mode;
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', resolved === 'dark' ? '#0b0b0d' : '#ffffff');
+    ?.setAttribute('content', resolved === 'dark' ? '#000000' : '#fbfbfd');
 }
 
 export default function ThemeToggle() {
@@ -72,10 +72,29 @@ export default function ThemeToggle() {
     return () => query.removeEventListener('change', onChange);
   }, [mode]);
 
-  const choose = (next) => {
+  const choose = (next, event) => {
     setArmed(true);
     setMode(next);
-    applyTheme(next);
+
+    /* Where the View Transitions API exists, the new theme grows out of the
+       button as a circle; the stylesheet's ::view-transition rules read the
+       origin and radius from these properties. Elsewhere, or with reduced
+       motion, the colours simply cross-fade. */
+    const root = document.documentElement;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (document.startViewTransition && !reduced && event?.currentTarget) {
+      const box = event.currentTarget.getBoundingClientRect();
+      const x = box.left + box.width / 2;
+      const y = box.top + box.height / 2;
+      const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+      root.style.setProperty('--reveal-x', `${x}px`);
+      root.style.setProperty('--reveal-y', `${y}px`);
+      root.style.setProperty('--reveal-r', `${radius}px`);
+      document.startViewTransition(() => applyTheme(next));
+    } else {
+      applyTheme(next);
+    }
+
     try {
       if (next === 'system') window.localStorage.removeItem('theme');
       else window.localStorage.setItem('theme', next);
@@ -105,7 +124,7 @@ export default function ThemeToggle() {
           className={`theme-option ${ready && mode === option.key ? 'is-active' : ''}`}
           aria-pressed={ready ? mode === option.key : undefined}
           title={option.label}
-          onClick={() => choose(option.key)}
+          onClick={(event) => choose(option.key, event)}
         >
           <span className="theme-glyph" aria-hidden="true">{option.glyph}</span>
           <span className="sr-only">{option.label}</span>
