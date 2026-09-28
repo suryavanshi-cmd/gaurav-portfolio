@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PERSON } from './site';
-import { LAB } from './lab/registry';
+import { LAB_LEARN, LAB_TOOLS } from './lab/registry';
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
@@ -28,9 +28,9 @@ export default function SiteFooter() {
           </div>
 
           <div>
-            <h4>Try it live</h4>
+            <h4>Try it</h4>
             <ul>
-              {LAB.slice(0, 5).map((tool) => (
+              {[...LAB_TOOLS.slice(0, 3), ...LAB_LEARN.slice(0, 2)].map((tool) => (
                 <li key={tool.slug}><Link href={`/lab/${tool.slug}`}>{tool.short}</Link></li>
               ))}
             </ul>

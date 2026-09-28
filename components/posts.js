@@ -13,6 +13,80 @@ import { engineeringPosts } from './engineeringPosts.js';
 
 const llmPosts = [
   {
+    slug: 'langgraph-and-langfuse-in-plain-words',
+    title: 'LangGraph and Langfuse, in plain words',
+    date: '2026-09-28',
+    tags: ['LangGraph', 'Langfuse', 'AI agents'],
+    summary:
+      'My notes while learning two tools for AI apps. LangGraph decides what the app does next. Langfuse records what it actually did. You need both.',
+    points: [
+      'LangGraph: your AI app is a map of steps. Arrows decide what runs next.',
+      'Loops make agents useful — and every loop needs a way out.',
+      'Langfuse: every run is saved as a trace — each step, its time, tokens and cost.',
+      'Test with both: run fixed inputs through the graph, then read the traces.',
+    ],
+    body: [
+      { type: 'p', text: 'These are my notes from learning these two tools. I made two small games from them — links at the end.' },
+
+      { type: 'h2', text: 'LangGraph: a map of steps' },
+      { type: 'p', text: 'A simple AI app is one prompt in, one answer out. An agent is more: it decides, uses a tool, checks the result, and maybe tries again. LangGraph lets you draw that as a map.' },
+      {
+        type: 'table',
+        head: ['Word', 'Plain meaning'],
+        rows: [
+          ['Node', 'One step. A small function.'],
+          ['State', 'The notebook every step reads and writes.'],
+          ['Edge', 'An arrow: what runs next.'],
+          ['Conditional edge', 'An arrow that depends on what just happened.'],
+          ['END', 'Stop here.'],
+        ],
+      },
+      {
+        type: 'code',
+        lang: 'python',
+        code: `graph.add_node("agent", agent)
+graph.add_node("tools", tools)
+graph.add_conditional_edges("agent", wants_tool, {"yes": "tools", "no": END})
+graph.add_edge("tools", "agent")   # the tool's answer goes back to the agent`,
+      },
+
+      { type: 'h2', text: 'Loops need a way out' },
+      { type: 'p', text: 'Agent → tool → agent is a loop, and loops are what make agents work. But a loop that never ends burns money. LangGraph stops any run that takes too many steps (the recursion limit) with an error. Better: give the loop its own exit — “after 3 tries, hand it to a person”.' },
+
+      { type: 'h2', text: 'Pausing for a person' },
+      { type: 'p', text: 'Some steps should not happen without a human — like paying a big refund. LangGraph can pause right before that step, save everything (a checkpoint), and carry on from exactly there when someone says yes.' },
+
+      { type: 'h2', text: 'Langfuse: what really happened' },
+      { type: 'p', text: 'LangGraph decides what should happen. Langfuse records what did. Every run becomes a trace: a timeline of steps, with the time each took, the tokens and cost of every model call, the prompt version used, and any scores.' },
+      {
+        type: 'table',
+        head: ['Complaint', 'Where to look in the trace'],
+        rows: [
+          ['“It’s slow”', 'The longest bar on the timeline'],
+          ['“It’s wrong”', 'What the search step returned'],
+          ['“It’s expensive”', 'Input tokens — and what made them grow'],
+          ['“It changed yesterday”', 'The prompt version on the model call'],
+          ['“It gave up”', 'Steps marked ERROR'],
+        ],
+      },
+
+      { type: 'h2', text: 'How I would test with both' },
+      {
+        type: 'ul',
+        items: [
+          'Keep a list of fixed test inputs, and the path each should take through the graph.',
+          'Run them in CI. Check the answer, and check the steps — a correct answer that took 9 tool calls is still a bug.',
+          'Send every run to Langfuse with its test name, so a failure comes with its full trace.',
+          'Add scores to traces (a judge label, user 👍/👎) and watch them after each prompt change.',
+        ],
+      },
+
+      { type: 'h2', text: 'Try it as a game' },
+      { type: 'p', text: 'Wire the agent yourself in the LangGraph game, then play trace detective in the Langfuse game. Each takes about five minutes.' },
+    ],
+  },
+
+  {
     slug: 'false-positives-kill-guardrails',
     title: 'Why blocking too much breaks an AI guardrail',
     date: '2026-07-14',

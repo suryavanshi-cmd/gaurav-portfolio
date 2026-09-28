@@ -142,3 +142,31 @@ function followupsFrom(hits, quoted) {
 /* Exported for the tests, which pin the thresholds: both are the kind of
    number that gets nudged during a demo and never put back. */
 export const THRESHOLDS = { FLOOR, MIN_COVERAGE, SUPPORT_RATIO, MAX_PASSAGES };
+
+/**
+ * Reshapes a grounded answer around a sentence a model wrote from its
+ * passages. The model is given the passages the server retrieved, so those are
+ * the pages the sentence answers for — not the ones this browser happened to
+ * quote. It can only ever narrow what is said: the gate above has already
+ * decided there was something to say, and this is called only when it did.
+ *
+ * The block carries no inline number. One sentence drawn from three passages
+ * does not belong to any one of them, and pinning it to a number would be a
+ * precision the answer does not have; the sources are listed under it instead.
+ */
+export function phrased(local, data) {
+  if (!local.grounded || !data?.answer) return local;
+
+  const sources = (data.sources?.length ? data.sources : local.sources)
+    .map((source, i) => ({ ...source, n: i + 1 }));
+
+  return {
+    ...local,
+    blocks: [{ text: data.answer, cite: 0 }],
+    sources,
+    /* The words are the model's, so marking "the terms the retriever matched"
+       over them would be pointing at the wrong thing. */
+    terms: [],
+    ai: true,
+  };
+}

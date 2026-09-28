@@ -17,7 +17,7 @@ const TOPICS = [
   { value: 'all', label: 'All' },
   { value: 'testing', label: 'Testing', test: (p) => p.tags.some((t) => /test|ci/i.test(t)) },
   { value: 'systems', label: 'Systems', test: (p) => p.tags.some((t) => /system|database|scal|sql|api|perf/i.test(t)) },
-  { value: 'llm', label: 'LLM', test: (p) => p.tags.some((t) => /llm|rag|guardrail|evaluation|search/i.test(t)) },
+  { value: 'llm', label: 'AI', test: (p) => p.tags.some((t) => /llm|rag|guardrail|evaluation|search|agent|langgraph|langfuse/i.test(t)) },
 ];
 
 export default function WritingBrowser({ posts }) {

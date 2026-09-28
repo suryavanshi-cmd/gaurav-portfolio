@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildIndex } from '../components/rag/retriever.js';
 import { buildCorpus, SUGGESTIONS } from '../components/rag/corpus.js';
-import { composeAnswer, REFUSAL } from '../components/rag/answer.js';
+import { composeAnswer, phrased, REFUSAL } from '../components/rag/answer.js';
 
 /*
   The assistant answers from a fixed corpus and is supposed to refuse anything
@@ -198,4 +198,54 @@ test('a passage below the leader supports nothing and is not quoted', () => {
   const answer = composeAnswer(buildIndex(corpus), 'playwright browser automation');
 
   assert.deepEqual(answer.sources.map((source) => source.title), ['Leader'], 'the distant one waits');
+});
+
+/*
+  The Gemini step (app/api/ask) rewords an answer the gate already admitted.
+  These pin the one thing that step must not do: widen what may be said.
+*/
+
+test('a model sentence answers for the pages it was actually given', () => {
+  const local = composeAnswer(index, 'What is his tech stack?');
+  assert.ok(local.grounded, 'the fixture question grounds');
+
+  const served = [
+    { title: 'Technical skills', source: 'Résumé', href: '/about#skills-title' },
+    { title: 'Backend development', source: 'Résumé', href: '/projects/realtime-chat-backend' },
+  ];
+  const answer = phrased(local, { answer: 'He works mostly in Java and TestNG.', sources: served });
+
+  assert.deepEqual(answer.sources.map((s) => s.title), served.map((s) => s.title));
+  assert.deepEqual(answer.sources.map((s) => s.n), [1, 2], 'numbered from one, without gaps');
+  assert.equal(answer.blocks.length, 1);
+  assert.equal(answer.blocks[0].text, 'He works mostly in Java and TestNG.');
+  assert.equal(answer.blocks[0].cite, 0, 'a synthesised sentence claims no single source');
+  assert.deepEqual(answer.terms, [], 'the retriever did not choose these words');
+  assert.ok(answer.ai, 'the answer says a model wrote it');
+});
+
+test('a refusal is not something a model may reword', () => {
+  /* The gate found nothing to stand on. Handing that to a model and taking a
+     sentence back is exactly the failure the gate exists to prevent, so a
+     refusal has to survive the AI path unchanged — and the hook never calls
+     the endpoint for one in the first place. */
+  const refusal = composeAnswer(index, 'write me a poem about the sea');
+  assert.equal(refusal.grounded, false, 'the fixture question is refused');
+
+  const answer = phrased(refusal, { answer: 'Gaurav enjoys the sea.', sources: [] });
+  assert.deepEqual(answer, refusal, 'the refusal is returned untouched');
+  assert.ok(!answer.ai);
+  assert.equal(answer.blocks[0].text, REFUSAL);
+});
+
+test('a model answer keeps the passages when the server sends none', () => {
+  const local = composeAnswer(index, 'What did he study?');
+  const answer = phrased(local, { answer: 'He read computer science at PCCOER.' });
+
+  assert.deepEqual(
+    answer.sources.map((s) => s.title),
+    local.sources.map((s) => s.title),
+    'it falls back to the passages this browser retrieved rather than citing nothing',
+  );
+  assert.ok(answer.sources.every((s) => s.href), 'every fallback source still has somewhere to go');
 });

@@ -1,22 +1,22 @@
 import JsonLd from '../../components/JsonLd';
 import { DemoCard } from '../../components/cards';
 import { SpotlightGroup } from '../../components/ui';
-import { LAB } from '../../components/lab/registry';
+import { LAB, LAB_LEARN, LAB_TOOLS } from '../../components/lab/registry';
 import { SITE_URL } from '../../components/site';
 
 export const metadata = {
-  title: 'Live demos',
+  title: 'Tools and games',
   description:
-    'Working tools you can use in the browser: a token-bucket rate limiter, a cache stampede simulator, a capacity planner, a JSONPath API chain builder, a prompt-injection game, notes on LLMs and a search assistant.',
+    'Free tools that run in your browser — bill splitter, loan EMI calculator, SIP planner, focus timer, password maker — and games that teach LangGraph, Langfuse, LLM testing and system design by playing.',
   alternates: { canonical: '/lab' },
-  openGraph: { url: '/lab', title: 'Live demos — Gaurav Suryavanshi' },
+  openGraph: { url: '/lab', title: 'Tools and games — Gaurav Suryavanshi' },
 };
 
 export default function LabPage() {
   const list = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Live demos by Gaurav Suryavanshi',
+    name: 'Tools and games by Gaurav Suryavanshi',
     itemListElement: LAB.map((tool, i) => ({
       '@type': 'ListItem',
       position: i + 1,
@@ -29,20 +29,36 @@ export default function LabPage() {
     <main id="main">
       <section className="page-head">
         <div className="wrap">
-          <p className="eyebrow" data-rise>Live demos</p>
-          <h1 className="display" data-rise style={{ '--rise': 1 }}>Try it, don’t take my word for it.</h1>
+          <p className="eyebrow" data-rise>Tools and games</p>
+          <h1 className="display" data-rise style={{ '--rise': 1 }}>Useful things. Fun ways to learn.</h1>
           <p className="lede" data-rise style={{ '--rise': 2 }}>
-            Small working tools for ideas I write about. Everything runs in your browser — no sign-up, no server, no
-            tracking.
+            Everyday tools anyone can use, and small games that explain tech by letting you play. All free, all in
+            your browser — no sign-up, nothing uploaded.
           </p>
+          <nav className="jump" aria-label="On this page" data-rise style={{ '--rise': 3 }}>
+            <a href="#tools">Everyday tools <b>{LAB_TOOLS.length}</b></a>
+            <a href="#learn">Learn by playing <b>{LAB_LEARN.length}</b></a>
+          </nav>
         </div>
       </section>
 
-      <section className="solid" style={{ paddingBottom: 'clamp(72px, 10vw, 128px)' }}>
+      <section id="tools" className="solid lab-group" aria-labelledby="tools-title">
         <div className="wrap">
+          <div className="group-title" data-rise><h2 id="tools-title">Everyday tools</h2><p>For money, time and passwords.</p></div>
           <SpotlightGroup>
             <div className="grid grid-3 stagger" data-rise>
-              {LAB.map((tool) => <DemoCard key={tool.slug} tool={tool} />)}
+              {LAB_TOOLS.map((tool) => <DemoCard key={tool.slug} tool={tool} />)}
+            </div>
+          </SpotlightGroup>
+        </div>
+      </section>
+
+      <section id="learn" className="solid lab-group" style={{ paddingBottom: 'clamp(72px, 10vw, 128px)' }} aria-labelledby="learn-title">
+        <div className="wrap">
+          <div className="group-title" data-rise><h2 id="learn-title">Learn by playing</h2><p>AI agents, LLM testing and system design.</p></div>
+          <SpotlightGroup>
+            <div className="grid grid-3 stagger" data-rise>
+              {LAB_LEARN.map((tool) => <DemoCard key={tool.slug} tool={tool} />)}
             </div>
           </SpotlightGroup>
         </div>

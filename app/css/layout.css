@@ -16,8 +16,12 @@ main { position: relative; z-index: 1; }
 
 /* Page enter. app/template.jsx remounts on every navigation, so this plays
    once per route and never on a re-render. */
+/* `backwards`, not `both`: a fill that outlives the animation keeps a
+   transform on this wrapper, and a transformed ancestor traps every
+   position: fixed child (the reading bar, the section pill) inside the page
+   instead of the screen. */
 .page {
-  animation: page-in 640ms var(--expo) both;
+  animation: page-in 640ms var(--expo) backwards;
 }
 
 @keyframes page-in {

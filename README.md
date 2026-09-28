@@ -11,24 +11,53 @@ live demos that run entirely in the browser.
 | `/` | Hero, stats, what I do, live demos, featured projects, latest writing, contact |
 | `/projects` | Every project, filterable: **Work** (at a job), **Built** (my own, shipped), **Designs** (write-ups, not shipped) |
 | `/projects/[slug]` | Problem, flow, what I did, what was hard, result, stack |
-| `/lab` | Live demos — all client-side, no sign-up, no server |
-| `/lab/[slug]` | One demo, how it works, and the post it goes with |
+| `/lab` | Tools and games — everyday tools, then learn-by-playing games and simulators. All client-side, no sign-up |
+| `/lab/[slug]` | One tool or game, how it works, and the post it goes with |
 | `/writing` | All posts, by topic, with search |
 | `/blog/[slug]` | One post: "In short" points first, then the detail |
 | `/about` | Bio, live Pune time and weather, timeline, skills, certificates |
 
-### Live demos (`components/lab/`)
+### Tools and games (`components/lab/`)
 
-`registry.js` is the one list of demos — the lab index, each demo page, the
-home page and the sitemap all read from it. Each tool is loaded with
-`next/dynamic` in `LabTool.jsx`, so one demo's code never ships with another's.
+`registry.js` is the one list — the tools page, each tool's page, the home
+page's "Try it" switch, the footer, the sitemap and the assistant all read
+from it. Each entry has a `group`: `tool` or `learn`. Each one is loaded with
+`next/dynamic` in `LabTool.jsx`, so one tool's code never ships with another's.
+
+**Everyday tools** — useful to anyone, nothing leaves the browser:
+
+- **Split the bill** — fewest payments to settle a group; saved in
+  `localStorage`, copy-for-WhatsApp summary
+- **Loan EMI calculator** — month-by-month schedule, and what paying extra saves
+- **SIP planner** — growth by year, goal mode (binary search), today's money
+- **Focus timer** — Pomodoro ring; keeps the end time, not ticks, so it stays
+  right in a background tab
+- **Password maker** — `crypto.getRandomValues`, strength in bits and plain words
+
+**Learn by playing**:
+
+- **LangGraph: wire the agent** — four levels (`graphLevels.js`): connect the
+  conditional edges, run test inputs through the graph, recursion limit, a
+  human-approval pause. No model is called — the game is about the graph
+- **Langfuse: trace detective** — six made-up traces (`traceRounds.js`): read
+  the complaint, open the steps, blame the one that caused it
 
 - **Rate limiter** — a token bucket with Poisson traffic, drawn on canvas
 - **Cache stampede** — 400 keys expiring together vs. jitter and single-flight
 - **Capacity planner** — Little's Law: traffic × latency → servers, pools, DB
 - **API chain builder** — JSONPath from one response into the next request;
   a missing value stops the chain by name (`jsonpath.js` is a small subset engine)
+- **Flaky test suite** — 20 seeded CI builds as worker lanes: sleeps vs.
+  waiting for the condition, shared data in parallel, and retries hiding a
+  real bug
+- **LLM test gate** — structure, facts and meaning checks over hand-written
+  sample cases (`evalCases.js`); edit an answer and the code checks re-run.
+  There is no model, so an edited answer is marked "not re-judged"
+- **Circuit breaker** — a thread pool calling a failing or hanging service,
+  with closed / open / half-open states
 - **Guardrail game** and **red-team arena**, **LLM notes**, and the **assistant**
+
+A post lists every demo whose `post` field names it, under "Try it live".
 
 ## Structure
 
@@ -38,7 +67,7 @@ app/
   template.jsx      per-route enter animation
   css/              tokens · layout · pages · lab · ported (older component styles)
   sitemap.js robots.js manifest.js opengraph-image.jsx   SEO
-  blog/[slug]/opengraph-image.jsx                        one preview card per post
+  */[slug]/opengraph-image.jsx   one preview card per post, demo and project
   api/contact/      Supabase-backed contact endpoint (see note below)
 components/
   site.js           site-wide facts from the résumé (PERSON, SKILLS, TIMELINE…)
@@ -66,7 +95,16 @@ request does not land. The build makes no network requests.
   Transitions API where the browser has it.
 - **Nav**: a pill that slides to the current section.
 
+- **Posts**: a reading bar, a section pill under the nav that names the
+  section you are in and opens into a jump list, heading links, and a copy
+  button on code blocks.
+
 All of it is turned off by `prefers-reduced-motion`.
+
+The page-enter animation uses `animation-fill-mode: backwards`, not `both`.
+A fill that outlives the animation leaves a transform on the page wrapper, and
+a transformed ancestor traps every `position: fixed` child inside the page
+instead of the screen.
 
 ## SEO
 
@@ -137,11 +175,23 @@ write-ups and article paragraphs; `components/rag/retriever.js` indexes them
 with BM25 and retrieves for a question; `components/Chat.jsx` shows the passage
 with a link to its source.
 
-There is **no model call**. That is deliberate rather than a shortcut: a hosted
-model needs a key a static site cannot hold safely, costs money per visitor, and
-is free to invent a job Gaurav never had. With no generation step this cannot
-state anything he has not published, and a question that retrieves nothing says
-so instead of returning the least-bad passage.
+**Optional Gemini answers.** With `GEMINI_API_KEY` set on the server,
+`app/api/ask/route.js` re-runs the same retrieval and asks Gemini to write a
+short answer from those passages only. The answer is labelled "Written by
+Gemini from these pages only", and its sources are still shown.
+
+- **The key is server-side only.** Set it in Vercel → Project → Settings →
+  Environment Variables as `GEMINI_API_KEY` (never `NEXT_PUBLIC_…`, never in
+  the repo), then redeploy. `GEMINI_MODEL` optionally picks the model tried first.
+- **The browser sends only the question.** The server picks the passages, so
+  the endpoint cannot be used as a free general-purpose AI proxy. It is also
+  rate-limited per visitor and caches repeated questions.
+- **Retrieval always comes first.** A question that retrieves nothing never
+  reaches the model; the assistant says it could not find it.
+- **Falls back cleanly.** No key (503), a quota error, or a timeout → the best
+  passage is shown as-is, as it was before Gemini. After a 503 the browser
+  stops asking for the rest of the visit. Google's error status and message
+  (never the key) are logged to the function logs as `[ask] …`.
 
 It opens with **⌘K / Ctrl-K** or **`/`**, closes on Escape, and keeps its thread
 in `sessionStorage` so closing the panel does not make a reader start over.

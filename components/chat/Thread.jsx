@@ -7,11 +7,13 @@ import { SUGGESTIONS } from '../rag/corpus.js';
 /*
   The conversation itself.
 
-  An assistant message is a list of passages, each ending in the number of the
-  source it came from. The numbers are the point: they are what separates this
+  An assistant message is either the site's own passages, each ending in the
+  number of the source it came from, or one sentence a model wrote from those
+  passages. The sources are the point either way: they are what separates this
   from a paragraph that merely sounds authoritative. Clicking one takes you to
-  the part of the portfolio the sentence was lifted from, so the claim can be
-  checked against its context rather than believed.
+  the part of the portfolio behind it, so the claim can be checked against its
+  context rather than believed — and the line above them says which of the two
+  you are reading.
 */
 
 /* How far past the last message the log will auto-scroll from. Someone who has
@@ -85,7 +87,7 @@ export default function Thread({ messages, thinking, revealed, fresh, onAsk, onC
 }
 
 function Answer({ message, revealed, onAsk, onCite, onSettle }) {
-  const { blocks, sources, terms, followups, grounded, done } = message;
+  const { blocks, sources, terms, followups, grounded, done, ai } = message;
   let offset = 0;
 
   return (
@@ -129,6 +131,18 @@ function Answer({ message, revealed, onAsk, onCite, onSettle }) {
           </p>
         );
       })}
+
+      {/* Which of the two an answer is, said plainly. The distinction is the
+          reader's to make, not ours to blur: one is the site's own words, the
+          other is a model's sentence built from them, and only the first can
+          be checked word for word against the page it cites. */}
+      {done && sources.length ? (
+        <p className="ask-provenance">
+          {ai
+            ? <><span className="ask-provenance-mark" aria-hidden="true">✦</span> Written by Gemini from these pages only</>
+            : 'Exact text from this page'}
+        </p>
+      ) : null}
 
       {done && sources.length ? (
         <ul className="ask-sources">

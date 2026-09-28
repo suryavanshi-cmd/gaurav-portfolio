@@ -19,6 +19,9 @@ import { useAsk } from './chat/useAsk.js';
   directly or wants the conversation on its own — which is why this stands down
   there entirely: a launcher offering to open the assistant, on top of the
   assistant, is an invitation to somewhere the visitor already is.
+
+  What an answer may say is decided in components/chat/useAsk.js: retrieval
+  first, and Gemini only to phrase what retrieval already admitted.
 */
 
 /* A wrapper rather than an early return inside the panel, because the panel

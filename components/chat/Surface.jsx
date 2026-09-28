@@ -70,8 +70,14 @@ export default function Surface({ ask, variant, onClose, onCite, autoFocus }) {
             already computed, and a composer that stops accepting input for a
             few hundred milliseconds loses whatever was typed into it. */}
         <Composer onSubmit={ask.ask} autoFocus={autoFocus} />
+        {/* This has to stay true in both modes. It used to say "no model, no
+            API call", which stopped being true the day a model was allowed to
+            phrase an answer — and a promise the product has quietly outgrown
+            is worse than no promise. What is still true, and is the part that
+            matters, is that retrieval decides: a model may word an answer the
+            site can support, and nothing else. */}
         <p className="ask-note">
-          Retrieval over this site — no model, no API call. It refuses what it cannot source.
+          Answers come from this site’s own pages, and say which ones. It refuses what it cannot source.
         </p>
       </div>
     </div>
