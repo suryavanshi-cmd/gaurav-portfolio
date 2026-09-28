@@ -51,6 +51,39 @@ export function DemoArt({ art }) {
       );
     case 'breaker':
       return <div className="demo-art demo-art-breaker" aria-hidden="true"><i /><i /><i /><i /><i /><u /></div>;
+    case 'graph':
+      return (
+        <div className="demo-art demo-art-graph" aria-hidden="true">
+          <span>agent</span><span>tool</span><span className="is-end">END</span><i />
+        </div>
+      );
+    case 'trace':
+      return (
+        <div className="demo-art demo-art-trace" aria-hidden="true">
+          <b style={{ '--l': '0%', '--w': '8%' }} />
+          <b style={{ '--l': '8%', '--w': '70%' }} className="is-hot" />
+          <b style={{ '--l': '78%', '--w': '18%' }} />
+          <em>🔍</em>
+        </div>
+      );
+    case 'split':
+      return (
+        <div className="demo-art demo-art-split" aria-hidden="true">
+          <span>A</span><i>₹2,150</i><span>M</span>
+        </div>
+      );
+    case 'ring':
+      return <div className="demo-art demo-art-ring" aria-hidden="true"><span>₹26,035<small>/ month</small></span></div>;
+    case 'growth':
+      return (
+        <div className="demo-art demo-art-bars demo-art-growth" aria-hidden="true">
+          {Array.from({ length: 14 }, (_, i) => <b key={i} style={{ '--h': `${10 + (i / 13) ** 2 * 80}%` }} />)}
+        </div>
+      );
+    case 'timer':
+      return <div className="demo-art demo-art-timer" aria-hidden="true"><span>25:00</span></div>;
+    case 'pw':
+      return <div className="demo-art demo-art-pw" aria-hidden="true"><span>maple-Otter-comet-42</span></div>;
     case 'chat':
       return <div className="demo-art demo-art-chat" aria-hidden="true"><b /><b /><b /></div>;
     default:

@@ -14,6 +14,13 @@ const ChainBuilder = dynamic(() => import('./ChainBuilder'), { loading });
 const FlakySuite = dynamic(() => import('./FlakySuite'), { loading });
 const EvalGate = dynamic(() => import('./EvalGate'), { loading });
 const CircuitBreaker = dynamic(() => import('./CircuitBreaker'), { ssr: false, loading });
+const GraphGame = dynamic(() => import('./GraphGame'), { loading });
+const TraceGame = dynamic(() => import('./TraceGame'), { loading });
+const BillSplitter = dynamic(() => import('./BillSplitter'), { loading });
+const EmiCalculator = dynamic(() => import('./EmiCalculator'), { loading });
+const SipPlanner = dynamic(() => import('./SipPlanner'), { loading });
+const FocusTimer = dynamic(() => import('./FocusTimer'), { loading });
+const PasswordMaker = dynamic(() => import('./PasswordMaker'), { ssr: false, loading });
 const GuardrailGame = dynamic(() => import('../GuardrailGame'), { ssr: false, loading });
 const RedTeamArena = dynamic(() => import('../RedTeamArena'), { loading });
 const LLMWhiteboard = dynamic(() => import('../LLMWhiteboard'), { ssr: false });
@@ -89,6 +96,13 @@ export default function LabTool({ slug }) {
     case 'flaky-suite': return <FlakySuite />;
     case 'eval-gate': return <EvalGate />;
     case 'circuit-breaker': return <CircuitBreaker />;
+    case 'langgraph': return <GraphGame />;
+    case 'langfuse': return <TraceGame />;
+    case 'split-bill': return <BillSplitter />;
+    case 'emi': return <EmiCalculator />;
+    case 'sip': return <SipPlanner />;
+    case 'focus': return <FocusTimer />;
+    case 'password': return <PasswordMaker />;
     case 'llm-notes': return <NotesLauncher />;
     case 'assistant': return <AssistantLauncher />;
     case 'guardrail':

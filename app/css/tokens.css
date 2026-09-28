@@ -206,7 +206,8 @@ ul, ol { margin: 0; padding: 0; }
   transition: transform 200ms var(--ease);
 }
 
-.skip:focus { transform: none; }
+/* Keyboard focus only — a tap or a script moving focus must not reveal it. */
+.skip:focus-visible { transform: none; }
 
 /* ----- Scroll reveal ------------------------------------------------------ */
 

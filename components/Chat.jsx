@@ -7,13 +7,15 @@ import { buildCorpus, SUGGESTIONS } from './rag/corpus';
 /*
   A retrieval assistant over Gaurav's own content.
 
-  There is no model call. The index is built in the browser from the résumé
-  facts, project write-ups and articles already on the page; a question
-  retrieves the best-matching passages and they are shown with a link to where
-  they came from. That is a deliberate trade rather than a shortcut: it needs no
-  API key, nothing leaves the page, it costs nothing to run, and — the part that
-  matters on a portfolio — it cannot state something Gaurav has not published,
-  because it has nothing with which to make one up.
+  The index is built in the browser from the résumé facts, project write-ups
+  and articles already on the site; a question retrieves the best-matching
+  passages, shown with a link to where they came from.
+
+  When the server has a Gemini key (GEMINI_API_KEY, server-side only),
+  /api/ask re-runs the same retrieval and has the model phrase a short answer
+  from those passages only. Without a key, or if the call fails, the best
+  passage is shown as-is — so the assistant never depends on the model, and
+  every answer still cites where it came from.
 */
 
 const TYPE_MS = 11;
@@ -161,6 +163,10 @@ export default function Chat() {
     if (log) log.scrollTop = log.scrollHeight;
   }, [messages, pending]);
 
+  /* Set once the server says AI answers are not configured, so later
+     questions skip the round trip and go straight to the passage. */
+  const aiOff = useRef(false);
+
   const ask = useCallback((question) => {
     const q = question.trim();
     if (!q || pending) return;
@@ -168,10 +174,7 @@ export default function Chat() {
     setMessages((m) => [...m, { role: 'you', text: q, done: true }]);
     setPending(true);
 
-    /* A beat before answering. Retrieval is instant, and a reply that lands in
-       the same frame as the question reads as a canned response. */
-    timers.current.push(window.setTimeout(() => {
-      const answer = answerFor(index, q);
+    const reveal = (answer) => {
       setPending(false);
       setMessages((m) => [...m, { role: 'bot', ...answer, typed: '', done: false }]);
 
@@ -191,7 +194,40 @@ export default function Chat() {
         else finish();
       };
       timers.current.push(window.setTimeout(step, TYPE_MS));
-    }, 300));
+    };
+
+    /* Retrieval runs here first. When it finds something and AI answers are
+       available, the server re-runs the same retrieval and has Gemini phrase
+       an answer from those passages only. Any failure — no key, rate limit,
+       timeout — falls back to showing the best passage itself. */
+    const local = answerFor(index, q);
+    if (!local.sources.length || aiOff.current) {
+      /* A beat before answering: a reply in the same frame reads as canned. */
+      timers.current.push(window.setTimeout(() => reveal(local), 300));
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 14000);
+    fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q }),
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (res.status === 503) aiOff.current = true;
+        return res.ok ? res.json() : null;
+      })
+      .then((data) => {
+        if (data?.answer) {
+          reveal({ ...local, text: data.answer, terms: [], sources: data.sources?.length ? data.sources : local.sources, ai: true });
+        } else {
+          reveal(local);
+        }
+      })
+      .catch(() => reveal(local))
+      .finally(() => window.clearTimeout(timeout));
   }, [index, pending]);
 
   useEffect(() => {
@@ -270,6 +306,7 @@ export default function Chat() {
               {msg.done && msg.role === 'bot' && msg.sources?.length ? (
                 <div className="chat-meta">
                   <div className="chat-sources">
+                    <span className="chat-how">{msg.ai ? '✦ Written by Gemini from these pages only' : 'Exact text from this page'}</span>
                     {msg.sources.map((src) => (
                       <span key={src.title + src.source} className="chat-source">
                         <em>{src.source}</em> {src.title}

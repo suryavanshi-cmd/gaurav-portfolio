@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Counter, CopyEmail, Rotator, SpotlightGroup } from '../components/ui';
-import { DemoCard, Icon, PostCard, ProjectCard } from '../components/cards';
-import { LAB } from '../components/lab/registry';
+import { Icon, PostCard, ProjectCard } from '../components/cards';
+import { LAB, LAB_LEARN, LAB_TOOLS } from '../components/lab/registry';
+import TryIt from '../components/TryIt';
 import { projects } from '../components/projects';
 import { posts } from '../components/posts';
 import { PERSON, TICKER } from '../components/site';
@@ -29,17 +30,17 @@ const DOING = [
   },
   {
     icon: 'spark',
-    title: 'LLM tools',
-    text: 'Search, guardrails and tests for AI features.',
-    items: ['An assistant with no made-up answers', 'A prompt-injection game', 'Notes on LLM testing'],
-    href: '/lab',
+    title: 'AI, made simple',
+    text: 'Games that explain AI agents and how to test them.',
+    items: ['LangGraph: wire an agent', 'Langfuse: trace detective', 'A prompt-injection game'],
+    href: '/lab#learn',
   },
   {
     icon: 'layers',
-    title: 'Apps and ML',
-    text: 'Full products, and a copyright-registered ML project.',
-    items: ['Connect to Nature', 'Rakta-Setu', 'Wildlife analysis (YOLOv5)'],
-    href: '/projects',
+    title: 'Useful tools',
+    text: 'Full apps, and free tools anyone can use.',
+    items: ['Bill splitter, EMI and SIP', 'Connect to Nature', 'Rakta-Setu'],
+    href: '/lab#tools',
   },
 ];
 
@@ -57,13 +58,13 @@ export default function Home() {
           </h1>
           <p className="lede" data-rise style={{ '--rise': 2 }}>
             I build API test automation for health-insurance claims at {PERSON.employer}. On my own I build
-            backend services, full apps, and small live tools you can try right here.
+            backend services, full apps, free everyday tools, and small games that make tech easy to understand.
           </p>
           <p className="rotator" data-rise style={{ '--rise': 3 }}>
             Working with <Rotator words={WORDS} />
           </p>
           <div className="btn-row" data-rise style={{ '--rise': 4 }}>
-            <Link href="/lab" className="btn btn-primary">Try the live demos</Link>
+            <Link href="/lab" className="btn btn-primary">Try the free tools</Link>
             <Link href="/projects" className="btn btn-ghost">See my projects</Link>
           </div>
           <p className="hero-hint" data-rise style={{ '--rise': 5 }}>
@@ -78,7 +79,7 @@ export default function Home() {
           <div className="stats" data-rise>
             <div className="stat"><Counter to={190} suffix="+" /><span>API test cases in one regression suite</span></div>
             <div className="stat"><Counter to={2} suffix="+" /><span>years building test automation</span></div>
-            <div className="stat"><Counter to={LAB.length} /><span>live demos you can try on this site</span></div>
+            <div className="stat"><Counter to={LAB.length} /><span>free tools and games on this site</span></div>
             <div className="stat"><Counter to={posts.length} /><span>short posts on testing and systems</span></div>
           </div>
         </div>
@@ -123,19 +124,17 @@ export default function Home() {
         <div className="wrap">
           <div className="section-head">
             <div>
-              <p className="eyebrow" data-rise>Live demos</p>
-              <h2 id="live-title" className="headline" data-rise style={{ '--rise': 1 }}>Don’t read about it. Try it.</h2>
+              <p className="eyebrow" data-rise>Try it</p>
+              <h2 id="live-title" className="headline" data-rise style={{ '--rise': 1 }}>Useful. And fun.</h2>
               <p className="lede" data-rise style={{ '--rise': 2 }}>
-                Small working tools. Everything runs in your browser — no sign-up, no server.
+                Free tools for everyday life, and games that make tech simple. All in your browser — no sign-up.
               </p>
             </div>
-            <Link href="/lab" className="more-link" data-rise>All {LAB.length} demos <span aria-hidden="true">›</span></Link>
+            <Link href="/lab" className="more-link" data-rise>All {LAB.length} <span aria-hidden="true">›</span></Link>
           </div>
-          <SpotlightGroup>
-            <div className="grid grid-3 stagger" data-rise>
-              {LAB.slice(0, 6).map((tool) => <DemoCard key={tool.slug} tool={tool} />)}
-            </div>
-          </SpotlightGroup>
+          <div data-rise>
+            <TryIt tools={LAB_TOOLS.map(({ about, ...t }) => t)} games={LAB_LEARN.slice(0, 6).map(({ about, ...t }) => t)} />
+          </div>
         </div>
       </section>
 

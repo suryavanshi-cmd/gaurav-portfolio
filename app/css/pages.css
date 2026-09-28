@@ -345,6 +345,50 @@
 
 @keyframes art-switch { from { transform: rotate(0deg); } to { transform: rotate(-35deg); } }
 
+/* LangGraph: a dot hops agent → tool → agent → END. */
+.demo-art-graph { display: flex; align-items: center; justify-content: center; gap: 22px; }
+.demo-art-graph span { position: relative; z-index: 1; padding: 6px 10px; border-radius: 9px; background: var(--bg-elev); box-shadow: 0 0 0 1px var(--line-2); font-size: 11.5px; font-weight: 600; }
+.demo-art-graph span.is-end { background: var(--fg); color: var(--bg); }
+.demo-art-graph i { top: 20px; left: 30%; background: var(--accent); animation: art-hop 3.2s var(--ease) infinite; }
+
+@keyframes art-hop {
+  0%, 12% { left: 30%; }
+  28%, 40% { left: 50%; }
+  56%, 68% { left: 30%; }
+  84%, 100% { left: 70%; }
+}
+
+/* Langfuse: trace bars, one of them glowing, a magnifier sweeping. */
+.demo-art-trace { display: grid; align-content: center; gap: 8px; padding: 0 16px; }
+.demo-art-trace b { position: relative; left: var(--l); width: var(--w); height: 10px; border-radius: 4px; background: var(--accent); opacity: 0.55; }
+.demo-art-trace b.is-hot { background: var(--bad); opacity: 0.9; animation: art-glow 1.6s ease-in-out infinite; }
+.demo-art-trace em { position: absolute; top: 30px; font-size: 22px; font-style: normal; animation: art-scan 3.2s var(--ease) infinite alternate; }
+
+@keyframes art-glow { 50% { box-shadow: 0 0 12px var(--bad); } }
+@keyframes art-scan { from { left: 10%; } to { left: 70%; } }
+
+.demo-art-split { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.demo-art-split span { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 14px; font-weight: 700; }
+.demo-art-split i { position: static; width: auto; height: auto; padding: 5px 10px; border-radius: 999px; background: var(--ok-bg); color: var(--ok); font-size: 13px; font-style: normal; font-weight: 700; animation: art-token 2.4s var(--ease) infinite; }
+
+.demo-art-ring { display: grid; place-items: center; }
+.demo-art-ring::before { content: ''; position: absolute; width: 74px; height: 74px; border-radius: 50%; background: conic-gradient(var(--warn) 0 38%, var(--accent) 38% 100%); -webkit-mask: radial-gradient(circle, transparent 26px, #000 27px); mask: radial-gradient(circle, transparent 26px, #000 27px); left: 18%; animation: art-spin 6s linear infinite; }
+.demo-art-ring span { margin-left: 34%; font-size: 18px; font-weight: 700; letter-spacing: -0.03em; }
+.demo-art-ring small { display: block; color: var(--fg-3); font-size: 11px; font-weight: 500; }
+
+@keyframes art-spin { to { transform: rotate(360deg); } }
+
+.demo-art-growth b { height: var(--h); background: var(--ok); animation: art-rise 2.6s var(--expo) infinite alternate; transform-origin: bottom; }
+
+@keyframes art-rise { from { transform: scaleY(0.2); } }
+
+.demo-art-timer { display: grid; place-items: center; }
+.demo-art-timer::before { content: ''; position: absolute; width: 70px; height: 70px; border-radius: 50%; background: conic-gradient(var(--accent) var(--p, 70%), var(--bg-sunk) 0); -webkit-mask: radial-gradient(circle, transparent 29px, #000 30px); mask: radial-gradient(circle, transparent 29px, #000 30px); animation: art-spin 8s linear infinite reverse; }
+.demo-art-timer span { font-family: var(--font-mono); font-size: 14px; font-weight: 700; }
+
+.demo-art-pw { display: grid; place-items: center; padding: 0 16px; }
+.demo-art-pw span { padding: 8px 12px; border-radius: 10px; background: var(--bg-elev); box-shadow: 0 0 0 1px var(--line); font-family: var(--font-mono); font-size: 12.5px; animation: pw-in 2.4s var(--expo) infinite; }
+
 .demo-art-chat { display: grid; align-content: center; gap: 6px; padding: 14px 16px; }
 
 .demo-art-chat b {
@@ -937,3 +981,40 @@ html[data-motion] .timeline[data-rise].is-in::before { transform: scaleY(1); }
 
 .outline-list button:hover { background: var(--bg-soft); color: var(--fg); }
 .outline-list button.is-on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+/* ----- Tools page ----------------------------------------------------------- */
+
+.jump { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+
+.jump a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--bg-elev);
+  box-shadow: 0 0 0 1px var(--line);
+  color: var(--fg);
+  font-size: 14.5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: box-shadow 200ms var(--ease), transform 250ms var(--spring);
+}
+
+.jump a:hover { box-shadow: 0 0 0 1px var(--accent); transform: translateY(-1px); }
+.jump b { padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 12px; }
+
+.lab-group { scroll-margin-top: 80px; padding-top: clamp(24px, 4vw, 40px); }
+
+@media (max-width: 560px) {
+  .group-title { flex-direction: column; gap: 2px; }
+}
+
+.try-switch { display: flex; margin-bottom: 22px; overflow-x: auto; scrollbar-width: none; }
+.try-grid > * { animation: cb-log-in 460ms var(--expo) both; }
+.try-grid > :nth-child(2) { animation-delay: 60ms; }
+.try-grid > :nth-child(3) { animation-delay: 120ms; }
+.try-grid > :nth-child(4) { animation-delay: 180ms; }
+.try-grid > :nth-child(5) { animation-delay: 240ms; }
+.try-grid > :nth-child(6) { animation-delay: 300ms; }

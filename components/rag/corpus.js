@@ -1,13 +1,15 @@
 import { projects } from '../projects';
 import { posts } from '../posts';
+import { LAB_LEARN, LAB_TOOLS } from '../lab/registry';
 
 /*
   The corpus the assistant answers from.
 
   Everything here is derived from content already on the site — the résumé
   facts, the project write-ups, the articles — so the assistant can only ever
-  repeat something Gaurav has actually published. It cannot invent a fact,
-  because it has no generation step: it retrieves a passage and shows it with a
+  repeat something Gaurav has actually published. Retrieval always comes
+  first; the optional Gemini step (app/api/ask) only rephrases the retrieved
+  passages, and every answer is still shown with a
   link to where it came from.
 
   Chunking is per-idea rather than per-document. A whole article is a poor unit
@@ -81,7 +83,7 @@ const facts = [
   {
     id: 'assistant',
     title: 'How this assistant works',
-    text: 'This assistant is a retrieval system, not a language model. It indexes the résumé facts, project write-ups and articles on this site with BM25, retrieves the best-matching passages for your question, and shows them with a link to the source. It runs entirely in your browser: no API key, no request leaves the page, and it cannot invent a fact because it has no generation step.',
+    text: 'This assistant searches the résumé facts, project write-ups and articles on this site with BM25 and finds the passages that match your question. When AI answers are on, Gemini writes a short reply from those passages only; otherwise it shows the best passage as-is. Every answer links to its source, and if nothing matches it says so instead of guessing.',
     keywords: ['bot', 'chatbot', 'assistant', 'rag', 'work', 'built', 'llm', 'ai', 'you'],
     weight: 1.1,
   },
@@ -133,8 +135,26 @@ function buildPostDocs() {
   return docs;
 }
 
+/* One passage naming every tool and game, from the same list the Tools page
+   uses — so "what can I try here?" has a direct answer. */
+function buildToolDocs() {
+  return [
+    {
+      id: 'tools',
+      title: 'Free tools and games on this site',
+      text: `Free everyday tools anyone can use, right in the browser with no sign-up: ${LAB_TOOLS.map((t) => t.title).join(', ')}. And games that make tech simple by letting you play: ${LAB_LEARN.slice(0, 4).map((t) => t.title).join(', ')}, and more.`,
+      keywords: ['tools', 'tool', 'free', 'games', 'game', 'try', 'play', 'calculator', 'emi', 'sip', 'split', 'password', 'timer', 'langgraph', 'langfuse', 'demo', 'demos'],
+      weight: 1.3,
+      source: 'Tools and games',
+      href: '/lab',
+      hrefLabel: 'Open the tools',
+    },
+  ];
+}
+
 export function buildCorpus() {
   return [
+    ...buildToolDocs(),
     ...facts.map((fact) => ({ ...fact, source: fact.source || 'Résumé' })),
     ...buildProjectDocs(),
     ...buildPostDocs(),
@@ -145,5 +165,6 @@ export const SUGGESTIONS = [
   'What does Gaurav do now?',
   'What is his tech stack?',
   'Has he built AI or ML things?',
+  'What free tools are on this site?',
   'How do I contact him?',
 ];
