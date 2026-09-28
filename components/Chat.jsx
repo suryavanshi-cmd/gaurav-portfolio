@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Surface from './chat/Surface.jsx';
 import { goToSource } from './chat/goToSource.js';
@@ -15,10 +16,19 @@ import { useAsk } from './chat/useAsk.js';
   answer was clipped and the composer sat wherever the keyboard left it.
 
   The dedicated /ask page renders the same surface for anyone who arrives there
-  directly or wants the conversation on its own.
+  directly or wants the conversation on its own — which is why this stands down
+  there entirely: a launcher offering to open the assistant, on top of the
+  assistant, is an invitation to somewhere the visitor already is.
 */
 
+/* A wrapper rather than an early return inside the panel, because the panel
+   owns the conversation and persists it: mounted on /ask it would be a second
+   thread writing over the page's own. */
 export default function Chat() {
+  return usePathname() === '/ask' ? null : <AssistantPanel />;
+}
+
+function AssistantPanel() {
   const [open, setOpen] = useState(false);
   const ask = useAsk();
   const askQuestion = ask.ask;

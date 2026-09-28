@@ -229,6 +229,6 @@ export const posts = [...llmPosts, ...engineeringPosts]
 
 export const postsBySlug = Object.fromEntries(posts.map((post) => [post.slug, post]));
 
-export { formatDate } from './format';
+export { formatDate } from './format.js';
 
 export const allTags = [...new Set(posts.flatMap((post) => post.tags))].sort();

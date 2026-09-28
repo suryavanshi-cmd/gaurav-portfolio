@@ -54,7 +54,7 @@ const MAX_FOLLOWUPS = 3;
  *
  * @returns {{
  *   blocks: {text: string, cite: number}[],
- *   sources: {n: number, title: string, source: string, anchor?: string, href?: string, hrefLabel?: string}[],
+ *   sources: {n: number, title: string, source: string, href?: string, hrefLabel?: string}[],
  *   terms: string[],
  *   followups: string[],
  *   grounded: boolean,
@@ -86,7 +86,6 @@ export function composeAnswer(index, question, { limit = 5, maxPassages = MAX_PA
     n: i + 1,
     title: hit.doc.title,
     source: hit.doc.source,
-    anchor: hit.doc.anchor,
     href: hit.doc.href,
     hrefLabel: hit.doc.hrefLabel,
   }));

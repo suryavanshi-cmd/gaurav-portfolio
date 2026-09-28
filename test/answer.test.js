@@ -79,13 +79,17 @@ test('every quoted passage carries a citation, numbered from one', () => {
 });
 
 test('a citation points at somewhere the visitor can go', () => {
-  /* Either a section of this page or an external link. A citation you cannot
-     open is decoration. */
-  const answer = composeAnswer(index, 'How do I get in touch?');
-  assert.ok(
-    answer.sources.every((source) => source.anchor || source.href),
-    'every source has a destination',
-  );
+  /* A citation you cannot open is decoration. Since the site became several
+     pages a destination has to be a whole one — a bare '#skills' resolves to
+     whatever page the assistant happens to be open on, which is the wrong
+     section on four pages out of five and nothing at all on the fifth. */
+  for (const doc of buildCorpus()) {
+    assert.ok(doc.href, `${doc.id} has a destination`);
+    assert.ok(
+      doc.href.startsWith('/') || doc.href.startsWith('mailto:') || doc.href.startsWith('http'),
+      `${doc.id} points at a page rather than a fragment: ${doc.href}`,
+    );
+  }
 });
 
 test('one document is quoted once, however many of its chunks matched', () => {
