@@ -84,6 +84,27 @@ export function DemoArt({ art }) {
       return <div className="demo-art demo-art-timer" aria-hidden="true"><span>25:00</span></div>;
     case 'pw':
       return <div className="demo-art demo-art-pw" aria-hidden="true"><span>maple-Otter-comet-42</span></div>;
+    case 'sql':
+      return (
+        <div className="demo-art demo-art-sql" aria-hidden="true">
+          <span><b>SELECT</b> city, COUNT(*)</span>
+          <span><b>FROM</b> orders <b>JOIN</b> …</span>
+          <em>Index Scan · 610 rows · 0.4 ms</em>
+        </div>
+      );
+    case 'raft':
+      return (
+        <div className="demo-art demo-art-raft" aria-hidden="true">
+          <i className="is-leader" /><i /><i /><i /><i />
+        </div>
+      );
+    case 'crdt':
+      return (
+        <div className="demo-art demo-art-crdt" aria-hidden="true">
+          <span>Trip pl<b className="is-a">|</b>an</span>
+          <span>Trip pl<b className="is-b">|</b>an</span>
+        </div>
+      );
     case 'chat':
       return <div className="demo-art demo-art-chat" aria-hidden="true"><b /><b /><b /></div>;
     default:

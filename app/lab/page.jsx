@@ -1,13 +1,13 @@
 import JsonLd from '../../components/JsonLd';
 import { DemoCard } from '../../components/cards';
 import { SpotlightGroup } from '../../components/ui';
-import { LAB, LAB_LEARN, LAB_TOOLS } from '../../components/lab/registry';
+import { LAB, LAB_BUILDS, LAB_LEARN, LAB_TOOLS } from '../../components/lab/registry';
 import { SITE_URL } from '../../components/site';
 
 export const metadata = {
   title: 'Tools and games',
   description:
-    'Free tools that run in your browser — bill splitter, loan EMI calculator, SIP planner, focus timer, password maker — and games that teach LangGraph, Langfuse, LLM testing and system design by playing.',
+    'Systems built from scratch and running live — a SQL database with a query planner, Raft consensus, a CRDT collaborative editor — plus free everyday tools and games that teach LangGraph, Langfuse and system design.',
   alternates: { canonical: '/lab' },
   openGraph: { url: '/lab', title: 'Tools and games — Gaurav Suryavanshi' },
 };
@@ -30,15 +30,27 @@ export default function LabPage() {
       <section className="page-head">
         <div className="wrap">
           <p className="eyebrow" data-rise>Tools and games</p>
-          <h1 className="display" data-rise style={{ '--rise': 1 }}>Useful things. Fun ways to learn.</h1>
+          <h1 className="display" data-rise style={{ '--rise': 1 }}>Real systems. Useful tools. Fun ways to learn.</h1>
           <p className="lede" data-rise style={{ '--rise': 2 }}>
-            Everyday tools anyone can use, and small games that explain tech by letting you play. All free, all in
-            your browser — no sign-up, nothing uploaded.
+            Systems I built from scratch and you can run right here, everyday tools anyone can use, and small games
+            that explain tech by letting you play. All in your browser — no sign-up, nothing uploaded.
           </p>
           <nav className="jump" aria-label="On this page" data-rise style={{ '--rise': 3 }}>
+            <a href="#built">Built from scratch <b>{LAB_BUILDS.length}</b></a>
             <a href="#tools">Everyday tools <b>{LAB_TOOLS.length}</b></a>
             <a href="#learn">Learn by playing <b>{LAB_LEARN.length}</b></a>
           </nav>
+        </div>
+      </section>
+
+      <section id="built" className="solid lab-group" aria-labelledby="built-title">
+        <div className="wrap">
+          <div className="group-title" data-rise><h2 id="built-title">Built from scratch</h2><p>A database, a consensus algorithm and a real-time editor — each with its own tests.</p></div>
+          <SpotlightGroup>
+            <div className="grid grid-3 stagger" data-rise>
+              {LAB_BUILDS.map((tool) => <DemoCard key={tool.slug} tool={tool} />)}
+            </div>
+          </SpotlightGroup>
         </div>
       </section>
 
