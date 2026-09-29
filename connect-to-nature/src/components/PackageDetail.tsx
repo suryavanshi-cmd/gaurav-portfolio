@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Scene } from './Scene';
+import { Photo, PhotoCredit } from './ui/Photo';
+import { photosFor } from '@/lib/photo-credits';
 import { Itinerary } from './Itinerary';
 import { BookingPanel } from './BookingPanel';
 import { Pill } from './ui/Field';
@@ -12,11 +14,16 @@ import type { TripPackage } from '@/lib/types';
 export function PackageDetail({ pkg }: { pkg: TripPackage }) {
   const { t, tx, money } = useIntl();
   const listing = pkg.listing;
+  const hero = photosFor('packages', pkg.slug)[0] ?? (listing ? photosFor('farms', listing.slug)[0] : undefined);
 
   return (
     <article className="pb-24">
       <div className="relative h-[46svh] min-h-[300px] overflow-hidden">
-        <Scene scene={listing?.scene ?? pkg.region?.hero_scene ?? 'orchard'} seed={pkg.slug} className="h-full w-full" />
+        {hero ? (
+          <Photo photo={hero} priority sizes="100vw" className="h-full w-full" />
+        ) : (
+          <Scene scene={listing?.scene ?? pkg.region?.hero_scene ?? 'orchard'} seed={pkg.slug} className="h-full w-full" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-canvas)] via-transparent to-transparent" />
       </div>
 

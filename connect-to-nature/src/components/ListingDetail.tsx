@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Scene } from './Scene';
+import { Photo, PhotoCredit } from './ui/Photo';
 import { Stars, Pill } from './ui/Field';
 import { Reveal } from './ui/Reveal';
 import { BookingPanel } from './BookingPanel';
 import { ListingCard } from './ListingCard';
 import { CROPS, STAY_TYPES, DISTRICT_NAMES } from '@/lib/seed-content';
+import { photosFor } from '@/lib/photo-credits';
 import { LOCALE_META, type Locale } from '@/i18n/config';
 import type { Listing, Review } from '@/lib/types';
 
@@ -23,6 +25,10 @@ export function ListingDetail({
   const { t, tx, money, date, list } = useIntl();
   const months = list('months');
   const photo = listing.photos?.[0];
+  /* Up to three photographs of this landscape, the first one full width. They
+     are not photographs of this farm — it does not exist — so the credit under
+     the hero says where each was actually taken. */
+  const gallery = photo ? [] : photosFor('farms', listing.slug);
 
   return (
     <article className="pb-24">
@@ -30,10 +36,17 @@ export function ListingDetail({
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={photo.url} alt={tx(listing.title)} className="h-full w-full object-cover" />
+        ) : gallery[0] ? (
+          <Photo photo={gallery[0]} priority sizes="100vw" className="h-full w-full" />
         ) : (
           <Scene scene={listing.scene} seed={listing.slug} className="h-full w-full" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-canvas)] via-transparent to-transparent" />
+        {gallery[0] && (
+          <div className="absolute right-3 top-3 max-w-[70%] rounded-full bg-black/40 px-3 py-1.5 text-right backdrop-blur-md">
+            <PhotoCredit photo={gallery[0]} className="!text-white/85" />
+          </div>
+        )}
       </div>
 
       {/* The hero's gradient is absolutely positioned, so it paints above
@@ -98,6 +111,31 @@ export function ListingDetail({
                 </dl>
               </section>
             </Reveal>
+
+            {gallery.length > 1 && (
+              <Reveal>
+                <section>
+                  <h2 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">
+                    {t('listing.around')}
+                  </h2>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {gallery.slice(1).map((shot) => (
+                      <figure key={shot.id}>
+                        <Photo
+                          photo={shot}
+                          sizes="(min-width: 640px) 44vw, 92vw"
+                          className="aspect-[16/10] w-full rounded-[18px]"
+                          rounded
+                        />
+                        <figcaption className="mt-2">
+                          <PhotoCredit photo={shot} />
+                        </figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                </section>
+              </Reveal>
+            )}
 
             <Reveal>
               <section>

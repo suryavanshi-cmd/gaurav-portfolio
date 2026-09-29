@@ -1,11 +1,16 @@
 'use client';
 
+import type React from 'react';
 import Link from 'next/link';
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
-import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useReducedMotion } from '@/lib/useReducedMotion';
+import { Fragment, useRef } from 'react';
 import { useIntl } from '@/i18n/provider';
-import { FieldBackdrop } from './FieldBackdrop';
+import { HeroReel } from './HeroReel';
+import { FilmButton, FilmHost } from './story/Film';
+import { PLATFORM_FEE_RATE } from '@/lib/env';
 import type { Region } from '@/lib/types';
+import { ramp } from '@/lib/ramp';
 
 export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: number }) {
   const { t } = useIntl();
@@ -13,12 +18,11 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
 
-  /* Three speeds: the sky barely moves, the field follows the scroll, the words
-     leave first. Enough depth to notice, not enough to see the trick. */
+  /* Two speeds: the picture barely moves, the words leave first. Enough depth
+     to notice, not enough to see the trick. */
   const skyY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '8%']);
-  const fieldY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '22%']);
   const textY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '-12%']);
-  const fade = useTransform(scrollYProgress, [0, 0.75], [1, reduced ? 1 : 0.1]);
+  const fade = useTransform(scrollYProgress, ramp(0, 0.75, 1, reduced ? 1 : 0.1));
 
   const districts = regions.reduce((total, region) => total + (region.districts?.length ?? 0), 0);
 
@@ -32,24 +36,36 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
   return (
     <section
       ref={ref}
-      className="relative -mt-16 flex min-h-[94svh] flex-col justify-end overflow-hidden pt-16"
+      data-tone="dark"
+      /* isolate keeps the video's negative z-index inside this section. Without
+         it the reel is painted behind the nearest ancestor with a background,
+         and the dark story band this now sits in has one. */
+      className="relative isolate -mt-16 flex min-h-[94svh] flex-col justify-end overflow-hidden pt-16"
     >
+      {/* The coast, drifting, behind everything. It parallaxes a touch slower
+          than the words so the section has depth without the video ever
+          appearing to slide off its own frame. */}
+      <motion.div style={{ y: skyY, scale: reduced ? 1 : 1.08 }} className="absolute inset-0 -z-20">
+        <HeroReel className="h-full w-full" />
+      </motion.div>
+
+      {/* Everything from here down sits on a photograph, so the section carries
+          its own light-on-dark palette rather than the page's ink-on-paper
+          one. Setting the three text variables does it once for the whole
+          subtree, including the stat card and both buttons. */}
       <motion.div
-        style={{ y: skyY }}
-        className="absolute inset-0 -z-20"
-        aria-hidden="true"
+        style={{ y: textY, opacity: fade }}
+        className="mx-auto w-full max-w-6xl px-4 pb-28 sm:px-6 sm:pb-36"
       >
-        <div className="h-full w-full bg-[linear-gradient(to_bottom,var(--sky-top),var(--sky-bottom))]" />
-      </motion.div>
-
-      <motion.div style={{ y: fieldY }} className="absolute inset-x-0 bottom-0 -z-10 h-[52%]">
-        <FieldBackdrop className="h-full w-full" />
-        {/* The field is carried into the page background so the section ends
-            without a seam. */}
-        <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-b from-transparent to-[var(--color-canvas)]" />
-      </motion.div>
-
-      <motion.div style={{ y: textY, opacity: fade }} className="mx-auto w-full max-w-6xl px-4 pb-28 sm:px-6 sm:pb-36">
+      <div
+        style={{
+          '--color-ink': '#ffffff',
+          '--color-ink-2': 'rgba(255,255,255,0.9)',
+          '--color-muted': 'rgba(255,255,255,0.78)',
+          '--color-line': 'rgba(255,255,255,0.22)',
+        } as React.CSSProperties}
+        className="text-white [text-shadow:0_1px_18px_rgba(0,0,0,0.35)]"
+      >
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -59,14 +75,23 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
           {t('hero.eyebrow')}
         </motion.p>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-4 max-w-3xl text-[clamp(2.4rem,6.2vw,4.4rem)] font-semibold leading-[1.05] tracking-[-0.03em]"
-        >
-          {t('hero.title')}
-        </motion.h1>
+        {/* The headline arrives a word at a time, each coming into focus as
+            it rises — the first thing on the page to move, so it sets the
+            pace for everything after it. */}
+        <h1 className="mt-4 max-w-3xl text-[clamp(2.4rem,6.2vw,4.4rem)] font-semibold leading-[1.05] tracking-[-0.03em]">
+          {t('hero.title').split(/\s+/).map((word, i) => (
+            <Fragment key={`${i}-${word}`}>
+              <motion.span
+                className="inline-block"
+                initial={reduced ? false : { opacity: 0, y: '0.45em', filter: 'blur(12px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 0.8, delay: 0.1 + i * 0.055, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {word}
+              </motion.span>{' '}
+            </Fragment>
+          ))}
+        </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -86,16 +111,17 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
           <Link href="/planner" className="btn btn-primary px-6 py-3.5 text-[15px]">
             {t('hero.ctaPrimary')}
           </Link>
-          <Link href="/explore" className="btn btn-outline bg-[color-mix(in_srgb,var(--color-surface)_72%,transparent)] px-6 py-3.5 text-[15px] backdrop-blur-md">
+          <Link href="/explore" className="btn btn-outline border-white/40 bg-white/12 px-6 py-3.5 text-[15px] text-white backdrop-blur-md hover:bg-white/20">
             {t('hero.ctaSecondary')}
           </Link>
+          <FilmButton className="text-white hover:bg-white/12" />
         </motion.div>
 
         <motion.dl
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="glass mt-12 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 rounded-[22px] border border-[color-mix(in_srgb,var(--color-line)_60%,transparent)] px-6 py-5 sm:grid-cols-4"
+          className="mt-12 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 rounded-[22px] border border-white/20 bg-black/22 px-6 py-5 backdrop-blur-xl backdrop-saturate-150 sm:grid-cols-4"
         >
           {stats.map((stat) => (
             <div key={stat.label}>
@@ -104,7 +130,30 @@ export function Hero({ regions, farmCount }: { regions: Region[]; farmCount: num
             </div>
           ))}
         </motion.dl>
+      </div>
       </motion.div>
+
+      {/* A line with a bead running down it: there is more below. Desktop
+          only — on a phone the stat card already sits where it would go. */}
+      <motion.div
+        style={{ opacity: fade }}
+        aria-hidden="true"
+        className="absolute bottom-10 right-8 hidden flex-col items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/65 lg:flex"
+      >
+        <span className="[writing-mode:vertical-rl]">{t('story.film.scroll')}</span>
+        <span className="relative h-14 w-px overflow-hidden bg-white/25">
+          <span className="absolute left-0 top-0 h-4 w-px animate-[ctn-bead_2.2s_cubic-bezier(0.65,0,0.35,1)_infinite] bg-white" />
+        </span>
+      </motion.div>
+
+      <FilmHost
+        stats={{
+          farms: farmCount,
+          districts,
+          languages: 3,
+          share: Math.round((1 - PLATFORM_FEE_RATE) * 100),
+        }}
+      />
     </section>
   );
 }

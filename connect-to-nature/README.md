@@ -139,6 +139,33 @@ The browser sends which farm, which dates and how many people. Never the price.
 `/api/bookings` looks the listing up, recomputes the total and the split, checks
 `listing_is_available()` in the database, and only then inserts.
 
+### Payments, before Razorpay
+
+Until Razorpay keys are added, checkout runs in **test mode**: after the
+booking, the guest picks UPI, card or netbanking, presses Pay, and gets a
+payment-successful screen with a payment reference. No money moves, and every
+screen says so — but everything else is real:
+
+- a row in `payments` (amount, method, status, reference), and
+- a line in `payment_events` for every step: booking created, checkout opened,
+  method chosen, payment started, payment succeeded, booking confirmed — and
+  checkout closed without paying, when that happens.
+
+Travellers see each trip's payment and its log under **My trips**; the admin
+page has a **Payments** section with totals, every payment with its log, and
+the latest hundred events across all bookings.
+
+Neither table can be written by the browser. The two writes go through
+`record_test_payment()` and `log_checkout_event()` in
+`supabase/migrations/20260926150000_payment_ledger.sql`, which check that the
+booking is the caller's and that the server marked it as a test booking, so a
+guest cannot use them to mark a real booking paid or write their own text into
+the log. `supabase/tests/payments.sql` asserts each of those refusals.
+
+When Razorpay keys are added, `/api/payments/test` refuses to run, checkout
+opens Razorpay instead, and the Razorpay route writes to the same two tables
+(with the service role) — so the history carries straight on.
+
 ## Running it
 
 ```bash
@@ -206,20 +233,31 @@ says which mode you are in.
 
 ### Deploying
 
-**Deployed at** <https://connect-to-nature-ob8pw1aue.vercel.app> — behind
-Vercel Authentication until someone turns it off (Project → Settings →
-Deployment Protection → Vercel Authentication → Disabled), which is the default
-for a new project.
+**Deployed at** <https://connect-to-nature.vercel.app> — public; the
+deployment-specific `*-<hash>.vercel.app` URLs are behind Vercel Authentication,
+which is the default for a new project and applies to them, not to the
+production domain.
 
-That deployment is a bootstrap: the Vercel Git integration was not authorised
-for this account when it was made, so the project could not be linked to the
-repository, and its install step fetches this directory from a pinned commit
-instead. It does not redeploy on push. **Connecting the repository supersedes
-it** — import the repository and set **Root Directory** to
-`connect-to-nature`. No environment variables are needed for the first deploy:
-`.env.production` already points at the live database. Add
-`SUPABASE_SERVICE_ROLE_KEY` and the Razorpay pair when you want approvals and
-payments.
+That deployment is a **bootstrap**: the Vercel Git integration could not be
+authorised for this account, so the project was created by uploading a manifest
+whose install step fetches this directory from a pinned commit. It is a real
+build of real code, but **it does not redeploy when the repository changes.**
+
+To replace it with a linked project — which is what you want:
+
+1. In Vercel, **Add New → Project**, pick `suryavanshi-cmd/gaurav-portfolio`,
+   and set **Root Directory** to `connect-to-nature`. No environment variables
+   are needed for the first deploy; `.env.production` already points at the
+   database. Add `SUPABASE_SERVICE_ROLE_KEY` and the Razorpay pair when you want
+   approvals and real payments.
+2. Delete the bootstrap `connect-to-nature` project (and the throwaway
+   `ctn-scope-check` one) once the linked project is deploying.
+
+`vercel.json` here sets `ignoreCommand`, because this is one directory of a
+repository that also holds the portfolio site and rakta-setu: without it, every
+commit to either of those would rebuild and redeploy this project. The command
+exits 0 — skip — when the last commit touched nothing in this directory, and
+Vercel builds if the command itself fails, which is the safe direction.
 
 For the two portals, point both `www.<domain>` and `shetkari.<domain>` at the
 same project; the middleware does the rest. On a `*.vercel.app` URL there is no
@@ -231,6 +269,48 @@ container and runs the assertions, then — on `main`, and only if
 `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_ID` and `SUPABASE_DB_PASSWORD` are
 set — runs `supabase db push` against the project.
 
+## Latency
+
+The database is in Mumbai and so are the guests, so `vercel.json` pins the
+functions to `bom1`: a function in Washington pays roughly 250ms for every
+round trip it makes to Mumbai, and single-digit milliseconds in the same
+region. Everything below is about making the number of those round trips
+approach zero.
+
+- **The catalogue is cached** (`unstable_cache`, five minutes) behind tags, and
+  read through a cookie-free client — a cached function may not touch request
+  state, and what a visitor sees of the catalogue does not depend on who they
+  are. Bookings, host dashboards and the admin screen keep the cookie-bound
+  client and are never cached.
+- **Writes drop the cache by tag**, so an approved farm is public on the next
+  request rather than up to five minutes later.
+- **The farm page makes one query, not three.** Reviews arrive embedded with
+  the farm; similar farms come off the cached catalogue instead of a second
+  fetch of every listing.
+- **Every read has a deadline** over the whole operation, not per attempt:
+  supabase-js retries inside its own fetch, so a signal passed to fetch bounds
+  one attempt while the call runs on. Measured against an unreachable host, a
+  plain fetch failed in 99ms and the same query through the client took
+  7,063ms.
+- **Failures are not cached**, so recovery is immediate, and a breaker holds
+  for ten seconds after one so an outage is paid for once rather than once per
+  request.
+
+Measured locally, with the database deliberately unreachable — the worst case
+these paths are designed for:
+
+| | before | after |
+| --- | --- | --- |
+| `/` | 7,081ms | 2,736ms first request, then 25–39ms |
+| `/farm/[slug]` | 14,116ms | 20ms |
+| first contentful paint, `/` | 2,696ms | 184ms |
+
+And what a person feels, worst input-to-paint across each flow: explore's
+filters 64ms, the planner's four steps 24ms, switching language 96ms (152ms
+before `useDeferredValue` — the page re-renders at lower priority while the
+control moves under the finger immediately). Cumulative layout shift is 0 on
+both the home and explore pages.
+
 ## The seed content
 
 `src/lib/seed-content.ts` is the one place the twelve farms, thirty-seven
@@ -240,12 +320,48 @@ activities, four packages and eight reviews are written. It is read twice: by
 configured — so the demo and a freshly reset database show exactly the same
 thing. CI fails if the generated SQL is out of date.
 
-Farms with no photographs get a drawing generated from their own slug and
-landscape (`src/components/Scene.tsx`) rather than a grey box or a stock photo
-of somebody else's farm. It is replaced the moment a host uploads a real one.
-
 **The farms, hosts and reviews are written for this build.** The database, the
 policies, the planner, the payment flow and the three languages are real.
+
+## Photographs, and the reel on the front page
+
+Every picture on the site is a real photograph of Maharashtra — the mango
+orchards on the laterite above Ratnagiri, the rice terraces at Pabhare, the
+surf at Mhapan, the vines at Nashik — reused from Wikimedia Commons under a
+licence that allows it.
+
+`scripts/media-manifest.json` names each Commons file and says where it was
+taken; `npm run media:fetch` pulls the photographer, licence and source page
+off Commons itself, encodes an AVIF ladder plus one JPEG into `public/photos`,
+and writes `src/lib/photo-credits.ts`. The credits are read off the file rather
+than typed beside it, so a credit cannot drift away from its picture. Output is
+committed: a page load is a static file, with no image optimiser to wake up.
+
+Two things the credit line has to say, and does. The photographers licensed
+their work and are owed their names. And **the farms are invented while the
+landscapes are not** — a picture filed under a farm in Pawas may have been
+taken at Vengurla — so each credit names the place in the frame, not the farm
+it illustrates. The whole list is at `/credits`.
+
+There is no openly-licensed film of this coast worth putting behind a headline,
+so `npm run media:reel` builds the motion instead: a slow drift across six of
+those photographs, dissolving one into the next, the last dissolving back into
+the first so the loop has no seam. 26 seconds, 943 KB of VP9 or 1.6 MB of
+H.264. It needs `ffmpeg` on the path (`FFMPEG=/path/to/ffmpeg npm run
+media:reel`); the output is committed, so building the site does not.
+
+The reel earns its place by costing nothing until it is free. The poster is an
+AVIF of the reel's own first frame and is what gets measured as the largest
+paint; the video is not requested until `load` has fired and the browser is
+idle, and never at all under `prefers-reduced-motion`, Save-Data, or a
+connection reporting 2g or 3g. It pauses when scrolled past or the tab goes to
+the background. Home still paints in 168 ms warm, with a cumulative layout
+shift of zero.
+
+A host who has just finished onboarding has neither a photograph of their own
+nor a curated landscape, so they still get a drawing generated from their slug
+(`src/components/Scene.tsx`) rather than a grey box. Their own photograph
+replaces it the moment they upload one.
 
 ## Design
 
@@ -256,6 +372,47 @@ on everything that moves. Scroll-triggered reveals, a sliding indicator on every
 segmented control, a parallax hero, sheets that spring up from the bottom on a
 phone. Light and dark are both explicit, resolved before first paint so nothing
 flashes, and `prefers-reduced-motion` turns all of it off.
+
+### The front page
+
+It is laid out the way a product page is: a dark band about the place, then a
+light half about booking it (`src/components/story/`).
+
+- **A section bar** sticks under the site's bar, and takes its place when that
+  bar slides away on the way down. Both read the `data-tone` of the section
+  beneath them and switch between dark and light glass to match.
+- **Highlights** — six photographs that walk themselves along while on
+  screen. The active dot is the clock: it runs a CSS animation for the length
+  of a slide and the gallery advances on `animationend`, so pause is one
+  property. It stops at the end instead of looping.
+- **A statement** that lights up word by word as it is scrolled. One scroll
+  listener writes a single `--p`; each word computes its own opacity in CSS.
+- **Take a closer look** — the product viewer. A column of glass pills over
+  one large photograph; each pill grows into its own panel (shared layout,
+  not a second element) and the picture crossfades to match. The first pill
+  is the colour picker: two swatches that switch the view between Kokan and
+  Nashik. Only the photograph on screen is mounted, so the section fetches
+  one image, not nine.
+- **The coast** arrives as a card and opens out to full screen, using only
+  transforms and a radius.
+- **Hour by hour** — four times of day behind one row of tabs, crossfaded.
+- **The film** — "Watch the film · 0:15", in the hero and beside the
+  highlights. Fifteen seconds of motion design in six scenes: the mark draws
+  itself, the fields and three short lines, the route drawn down the coast
+  from real coordinates, three photographs opening upwards, the numbers
+  counting up, and an end card that leads to the planner. It is drawn by the
+  page, not a video file, so it is sharp at any size and in all three
+  languages. One motion value is the clock and every element reads from it,
+  which is what makes it pausable and seekable to the frame. It is a separate
+  chunk (`story/FilmOverlay.tsx`), fetched when the button is first hovered
+  or pressed, so none of it is on the front page's first load.
+
+Two traps worth knowing about if you add more of this. motion compiles
+`useTransform(progress, [a, b], [0, 1])` on an opacity to a native
+`ViewTimeline`, which ignores the `offset` given to `useScroll` — use the
+`ramp()` helper in `src/lib/ramp.ts` instead. And motion's `useReducedMotion`
+disagrees with the server's HTML on first render; use the one in
+`src/lib/useReducedMotion.ts`.
 
 ## Not built
 

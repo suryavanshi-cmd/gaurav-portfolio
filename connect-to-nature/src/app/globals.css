@@ -20,6 +20,10 @@
      hero comes from the grass, and a busy sky would fight it. */
   --sky-top: #e8f2f7;
   --sky-bottom: #f4f7ea;
+  /* What the hero reel is darkened with so the headline stays readable over a
+     bright sky. Light mode fades the picture towards the page; dark mode has
+     to actually darken it. */
+  --reel-scrim: #f7f9f4;
 
   --color-leaf: #157f5f;
   --color-leaf-soft: #e6f4ee;
@@ -43,6 +47,7 @@
 [data-theme="dark"] {
   --sky-top: #0d1620;
   --sky-bottom: #101a16;
+  --reel-scrim: #05070a;
   --color-canvas: #08090b;
   --color-surface: #121316;
   --color-surface-2: #1b1c20;
@@ -104,6 +109,13 @@
 
   input, select, textarea, button { font: inherit; color: inherit; }
 
+  /* Removes the ~300ms delay some mobile browsers hold a tap for while they
+     wait to see whether it was a double-tap-to-zoom. Every control here is
+     already big enough not to need zooming. */
+  a, button, [role="radio"], [role="button"], input, select, textarea, label {
+    touch-action: manipulation;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -115,10 +127,14 @@
 }
 
 @layer components {
+  /* Legibility comes from the opacity, not from the blur.
+     The blur is applied in the markup with Tailwind's own backdrop utilities:
+     writing `backdrop-filter` by hand here compiled down to the -webkit- alias
+     alone, which left the bar reading as plain transparency and let the cards
+     underneath show straight through it. 90% is opaque enough to read against
+     anything, and still lets the field move behind it. */
   .glass {
-    background: color-mix(in srgb, var(--color-canvas) 72%, transparent);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: color-mix(in srgb, var(--color-canvas) 90%, transparent);
   }
 
   .card {
@@ -225,6 +241,14 @@
 
   .hairline { border-top: 1px solid var(--color-line); }
 
+  /* The viewport is declared viewport-fit=cover so the field reaches the
+     bottom of a notched phone; these keep the controls out of the cutouts. */
+  .safe-x {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  .safe-b { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+
   .measure { max-width: 40rem; }
 
   /* Wide things — itinerary tables, calendars — scroll inside themselves rather
@@ -234,4 +258,39 @@
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
   }
+}
+
+/* The dark band under the hero, the way a product page turns the lights down
+   for the part that is about the thing itself. Scoped by variables like the
+   hero's own palette, so every card, chip and hairline inside it follows
+   without a single dark: variant. The leaf green is left alone: the buttons
+   in here are the same buttons as everywhere else. */
+.theme-dark {
+  --color-canvas: #000000;
+  --color-surface: #161617;
+  --color-surface-2: #1d1d1f;
+  --color-ink: #f5f5f7;
+  --color-ink-2: #d2d2d7;
+  --color-muted: #86868b;
+  --color-line: rgba(255, 255, 255, 0.12);
+  --color-line-strong: rgba(255, 255, 255, 0.2);
+  --reel-scrim: #000000;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  color-scheme: dark;
+}
+
+/* The active dot in the highlights gallery is also its clock: the fill runs
+   for exactly as long as the slide is shown, and the slide advances when the
+   fill ends. Pausing the animation pauses the gallery, with nothing to keep
+   in sync. */
+@keyframes ctn-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* The bead on the hero's scroll cue: drops down the line and out of it. */
+@keyframes ctn-bead {
+  0% { transform: translateY(-100%); }
+  70%, 100% { transform: translateY(360%); }
 }

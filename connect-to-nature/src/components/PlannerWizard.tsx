@@ -7,6 +7,8 @@ import { useIntl } from '@/i18n/provider';
 import { SegmentedControl } from './ui/SegmentedControl';
 import { Field } from './ui/Field';
 import { Scene } from './Scene';
+import { Photo } from './ui/Photo';
+import { PHOTOS, photosFor } from '@/lib/photo-credits';
 import { Itinerary } from './Itinerary';
 import { BookingPanel } from './BookingPanel';
 import { Stars, Pill } from './ui/Field';
@@ -132,6 +134,8 @@ export function PlannerWizard({
               {[{ slug: null as string | null }, ...regions.map((region) => ({ slug: region.slug }))].map((option) => {
                 const region = regions.find((item) => item.slug === option.slug);
                 const selected = answers.regionSlug === option.slug;
+                /* "Either" gets the ghats, which both vibhags have. */
+                const cover = option.slug ? photosFor('regions', option.slug)[0] : PHOTOS['green-lush'];
                 return (
                   <button
                     key={option.slug ?? 'any'}
@@ -141,7 +145,11 @@ export function PlannerWizard({
                     style={selected ? { outline: '2px solid var(--color-leaf)', outlineOffset: '2px' } : undefined}
                   >
                     <div className="aspect-[16/9] overflow-hidden">
-                      <Scene scene={region?.hero_scene ?? 'hills'} seed={option.slug ?? 'any-region'} className="h-full w-full" />
+                      {cover ? (
+                        <Photo photo={cover} sizes="(min-width: 640px) 46vw, 92vw" className="h-full w-full" />
+                      ) : (
+                        <Scene scene={region?.hero_scene ?? 'hills'} seed={option.slug ?? 'any-region'} className="h-full w-full" />
+                      )}
                     </div>
                     <div className="p-4">
                       <p className="text-[15px] font-medium">{region ? tx(region.name) : t('planner.anyRegion')}</p>
@@ -310,7 +318,11 @@ function PlannerResultView({
     <>
       <div className="card overflow-hidden">
         <div className="relative aspect-[16/7]">
-          <Scene scene={listing.scene} seed={listing.slug} className="h-full w-full" />
+          {photosFor('farms', listing.slug)[0] ? (
+            <Photo photo={photosFor('farms', listing.slug)[0]} sizes="(min-width: 768px) 60vw, 92vw" className="h-full w-full" />
+          ) : (
+            <Scene scene={listing.scene} seed={listing.slug} className="h-full w-full" />
+          )}
         </div>
         <div className="p-6 sm:p-8">
           <p className="text-[13px] uppercase tracking-[0.12em] text-[var(--color-muted)]">{t('planner.resultTitle')}</p>
@@ -390,7 +402,11 @@ function PlannerResultView({
             {alternatives.map((option) => (
               <div key={option.id} className="card flex items-center gap-4 p-4">
                 <div className="h-16 w-24 shrink-0 overflow-hidden rounded-xl">
-                  <Scene scene={option.scene} seed={option.slug} className="h-full w-full" />
+                  {photosFor('farms', option.slug)[0] ? (
+                    <Photo photo={photosFor('farms', option.slug)[0]} sizes="96px" className="h-full w-full" />
+                  ) : (
+                    <Scene scene={option.scene} seed={option.slug} className="h-full w-full" />
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[14px] font-medium">{tx(option.host?.farm_name)}</p>

@@ -9,3 +9,8 @@ out
 next-env.d.ts
 supabase/.temp
 supabase/.branches
+
+# Originals pulled from Wikimedia Commons so a re-encode does not re-download
+# 56 MB of photographs. The encoded files in public/photos are committed; this
+# is only the working copy behind them.
+.media-cache
