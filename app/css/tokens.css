@@ -202,12 +202,13 @@ ul, ol { margin: 0; padding: 0; }
   color: var(--bg);
   font-size: 14px;
   font-weight: 600;
+  opacity: 0;
   transform: translateY(-150%);
-  transition: transform 200ms var(--ease);
+  transition: transform 200ms var(--ease), opacity 200ms var(--ease);
 }
 
 /* Keyboard focus only — a tap or a script moving focus must not reveal it. */
-.skip:focus-visible { transform: none; }
+.skip:focus-visible { opacity: 1; transform: none; }
 
 /* ----- Scroll reveal ------------------------------------------------------ */
 

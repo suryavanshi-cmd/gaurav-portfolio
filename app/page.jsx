@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Counter, CopyEmail, Rotator, SpotlightGroup } from '../components/ui';
 import { Icon, PostCard, ProjectCard } from '../components/cards';
-import { LAB, LAB_LEARN, LAB_TOOLS } from '../components/lab/registry';
+import { LAB, LAB_BUILDS, LAB_LEARN, LAB_TOOLS } from '../components/lab/registry';
 import TryIt from '../components/TryIt';
 import { projects } from '../components/projects';
 import { posts } from '../components/posts';
@@ -37,10 +37,10 @@ const DOING = [
   },
   {
     icon: 'layers',
-    title: 'Useful tools',
-    text: 'Full apps, and free tools anyone can use.',
-    items: ['Bill splitter, EMI and SIP', 'Connect to Nature', 'Rakta-Setu'],
-    href: '/lab#tools',
+    title: 'Systems from scratch',
+    text: 'Databases, distributed systems and real-time apps.',
+    items: ['A SQL database with a query planner', 'Raft consensus', 'A live collaborative editor'],
+    href: '/lab#built',
   },
 ];
 
@@ -58,13 +58,13 @@ export default function Home() {
           </h1>
           <p className="lede" data-rise style={{ '--rise': 2 }}>
             I build API test automation for health-insurance claims at {PERSON.employer}. On my own I build
-            backend services, full apps, free everyday tools, and small games that make tech easy to understand.
+            systems from scratch — a SQL database, Raft consensus, a real-time collaborative editor — that you can run right here.
           </p>
           <p className="rotator" data-rise style={{ '--rise': 3 }}>
             Working with <Rotator words={WORDS} />
           </p>
           <div className="btn-row" data-rise style={{ '--rise': 4 }}>
-            <Link href="/lab" className="btn btn-primary">Try the free tools</Link>
+            <Link href="/lab" className="btn btn-primary">Run what I’ve built</Link>
             <Link href="/projects" className="btn btn-ghost">See my projects</Link>
           </div>
           <p className="hero-hint" data-rise style={{ '--rise': 5 }}>
@@ -125,15 +125,15 @@ export default function Home() {
           <div className="section-head">
             <div>
               <p className="eyebrow" data-rise>Try it</p>
-              <h2 id="live-title" className="headline" data-rise style={{ '--rise': 1 }}>Useful. And fun.</h2>
+              <h2 id="live-title" className="headline" data-rise style={{ '--rise': 1 }}>Built to run, not just to read.</h2>
               <p className="lede" data-rise style={{ '--rise': 2 }}>
-                Free tools for everyday life, and games that make tech simple. All in your browser — no sign-up.
+                Systems written from scratch, everyday tools and games — all running in your browser. No sign-up.
               </p>
             </div>
             <Link href="/lab" className="more-link" data-rise>All {LAB.length} <span aria-hidden="true">›</span></Link>
           </div>
           <div data-rise>
-            <TryIt tools={LAB_TOOLS.map(({ about, ...t }) => t)} games={LAB_LEARN.slice(0, 6).map(({ about, ...t }) => t)} />
+            <TryIt builds={LAB_BUILDS.map(({ about, ...t }) => t)} tools={LAB_TOOLS.map(({ about, ...t }) => t)} games={LAB_LEARN.slice(0, 6).map(({ about, ...t }) => t)} />
           </div>
         </div>
       </section>

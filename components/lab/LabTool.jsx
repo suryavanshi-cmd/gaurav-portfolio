@@ -21,6 +21,9 @@ const EmiCalculator = dynamic(() => import('./EmiCalculator'), { loading });
 const SipPlanner = dynamic(() => import('./SipPlanner'), { loading });
 const FocusTimer = dynamic(() => import('./FocusTimer'), { loading });
 const PasswordMaker = dynamic(() => import('./PasswordMaker'), { ssr: false, loading });
+const QueryLite = dynamic(() => import('./QueryLite'), { ssr: false, loading });
+const RaftDemo = dynamic(() => import('./RaftDemo'), { ssr: false, loading });
+const CrdtEditor = dynamic(() => import('./CrdtEditor'), { ssr: false, loading });
 const GuardrailGame = dynamic(() => import('../GuardrailGame'), { ssr: false, loading });
 const RedTeamArena = dynamic(() => import('../RedTeamArena'), { loading });
 const LLMWhiteboard = dynamic(() => import('../LLMWhiteboard'), { ssr: false });
@@ -103,6 +106,9 @@ export default function LabTool({ slug }) {
     case 'sip': return <SipPlanner />;
     case 'focus': return <FocusTimer />;
     case 'password': return <PasswordMaker />;
+    case 'querylite': return <QueryLite />;
+    case 'raft': return <RaftDemo />;
+    case 'crdt-editor': return <CrdtEditor />;
     case 'llm-notes': return <NotesLauncher />;
     case 'assistant': return <AssistantLauncher />;
     case 'guardrail':

@@ -28,5 +28,8 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Run engine tests (QueryLite, Raft, CRDT)
+        run: npm test
+
       - name: Build Next.js application
         run: npm run build

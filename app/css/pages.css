@@ -389,6 +389,32 @@
 .demo-art-pw { display: grid; place-items: center; padding: 0 16px; }
 .demo-art-pw span { padding: 8px 12px; border-radius: 10px; background: var(--bg-elev); box-shadow: 0 0 0 1px var(--line); font-family: var(--font-mono); font-size: 12.5px; animation: pw-in 2.4s var(--expo) infinite; }
 
+/* QueryLite: a query and its plan line. */
+.demo-art-sql { display: grid; align-content: center; gap: 4px; padding: 0 16px; font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-2); }
+.demo-art-sql b { color: var(--accent); font-weight: 600; }
+.demo-art-sql em { margin-top: 4px; color: var(--ok); font-style: normal; animation: art-check 3.2s var(--ease) infinite; }
+
+/* Raft: five servers in a ring, the leader pulsing heartbeats. */
+.demo-art-raft { display: block; }
+.demo-art-raft i { width: 14px; height: 14px; background: var(--bg-elev); box-shadow: 0 0 0 1.5px var(--line-2); }
+.demo-art-raft i:nth-child(1) { left: calc(50% - 7px); top: 10px; }
+.demo-art-raft i:nth-child(2) { left: calc(50% + 34px); top: 34px; }
+.demo-art-raft i:nth-child(3) { left: calc(50% + 20px); top: 70px; }
+.demo-art-raft i:nth-child(4) { left: calc(50% - 34px); top: 70px; }
+.demo-art-raft i:nth-child(5) { left: calc(50% - 48px); top: 34px; }
+.demo-art-raft i.is-leader { background: var(--accent); box-shadow: 0 0 0 0 var(--accent); animation: art-beat 1.4s ease-out infinite; }
+
+@keyframes art-beat { to { box-shadow: 0 0 0 26px transparent; } }
+
+/* CRDT: two cursors in the same word. */
+.demo-art-crdt { display: grid; align-content: center; gap: 8px; padding: 0 16px; font-size: 14px; font-weight: 600; }
+.demo-art-crdt span { padding: 5px 10px; border-radius: 8px; background: var(--bg-elev); box-shadow: 0 0 0 1px var(--line); }
+.demo-art-crdt b { animation: art-caret 1s steps(1) infinite; }
+.demo-art-crdt b.is-a { color: var(--accent); }
+.demo-art-crdt b.is-b { color: var(--ok); animation-delay: 0.5s; }
+
+@keyframes art-caret { 50% { opacity: 0; } }
+
 .demo-art-chat { display: grid; align-content: center; gap: 6px; padding: 14px 16px; }
 
 .demo-art-chat b {

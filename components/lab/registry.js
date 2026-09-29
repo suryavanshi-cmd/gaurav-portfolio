@@ -5,9 +5,10 @@
   page all read this, so adding a demo is one entry here plus its component in
   components/lab/LabTool.jsx.
 
-  Two groups: `tool` (everyday tools anyone can use — money, time, passwords)
-  and `learn` (games and simulators that explain an idea by letting you play
-  with it).
+  Three groups: `build` (systems written from scratch — a SQL database, Raft
+  consensus, a CRDT editor — each with its own test suite in tests/),
+  `tool` (everyday tools anyone can use) and `learn` (games and simulators
+  that explain an idea by letting you play with it).
 
   `art` picks the small CSS-only preview drawn on the demo's card.
   `post` links the demo to the article that explains the idea behind it.
@@ -188,6 +189,59 @@ const DEMOS = [
   },
 ];
 
+/* Systems built from scratch. The engines live in lib/ and are tested in
+   tests/ (npm test); these pages are their live front ends. */
+const BUILDS = [
+  {
+    slug: 'querylite',
+    title: 'QueryLite: a SQL database',
+    short: 'QueryLite (SQL DB)',
+    note: 'A SQL database written from scratch — parser, B+ tree indexes, a query planner, joins and transactions — running live on 22,000 rows in your browser.',
+    about: [
+      'A hand-written parser turns SQL into a syntax tree. Errors point to the exact spot: “Expected FROM near FORM”.',
+      'Every index is a B+ tree. The planner picks an index lookup when a condition can use one — unless it would match most of the table, when reading every row is cheaper.',
+      'Joins run as an index nested loop, a hash join or a plain nested loop, depending on what is indexed. The plan shown is the one that ran, with real row counts.',
+      'BEGIN, COMMIT and ROLLBACK use an undo log, and indexes are kept in step. Your changes are saved in this browser.',
+    ],
+    tags: ['Databases', 'Built from scratch'],
+    art: 'sql',
+    post: null,
+    group: 'build',
+  },
+  {
+    slug: 'raft',
+    title: 'Raft consensus, live',
+    short: 'Raft consensus',
+    note: 'The algorithm that keeps etcd and Kubernetes consistent. Five servers elect a leader and replicate a log — crash them and split the network while it runs.',
+    about: [
+      'Each server is a follower, a candidate or the leader. If a follower hears nothing from a leader before its timer runs out, it starts an election.',
+      'The leader copies client commands to the others and commits an entry once a majority has it. A minority on the wrong side of a network split can never commit.',
+      'The same safety checks as the test suite run on every step: at most one leader per term, and every server applies the same commands in the same order.',
+      'The test suite runs 40 random scenarios of crashes, restarts and partitions and checks those rules after every millisecond.',
+    ],
+    tags: ['Distributed systems', 'Built from scratch'],
+    art: 'raft',
+    post: null,
+    group: 'build',
+  },
+  {
+    slug: 'crdt-editor',
+    title: 'Live collaborative editor',
+    short: 'CRDT editor',
+    note: 'Real-time editing with no server. Three devices share a note — take one offline, edit everywhere, reconnect, and they merge. Open a second tab and it syncs live.',
+    about: [
+      'Built on a CRDT (RGA): every character gets a unique id, and a delete leaves a tombstone. Edits can arrive late, twice or out of order and every copy still ends up the same.',
+      'Tabs sync for real through the browser’s BroadcastChannel; the three devices on the page talk over a simulated network with a delay and an off switch.',
+      'Your cursor stays where it was when someone else types before it.',
+      'The tests run 60 random offline-editing sessions across three copies and check they always converge.',
+    ],
+    tags: ['Real-time', 'Built from scratch'],
+    art: 'crdt',
+    post: null,
+    group: 'build',
+  },
+];
+
 /* Everyday tools: useful to anyone, no sign-up, nothing leaves the browser. */
 const TOOLS = [
   {
@@ -267,7 +321,8 @@ const TOOLS = [
   },
 ];
 
-export const LAB = [...TOOLS, ...DEMOS.map((d) => ({ group: 'learn', ...d }))];
+export const LAB = [...BUILDS, ...TOOLS, ...DEMOS.map((d) => ({ group: 'learn', ...d }))];
+export const LAB_BUILDS = LAB.filter((t) => t.group === 'build');
 export const LAB_TOOLS = LAB.filter((t) => t.group === 'tool');
 export const LAB_LEARN = LAB.filter((t) => t.group === 'learn');
 

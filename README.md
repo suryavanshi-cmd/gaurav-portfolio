@@ -24,6 +24,30 @@ page's "Try it" switch, the footer, the sitemap and the assistant all read
 from it. Each entry has a `group`: `tool` or `learn`. Each one is loaded with
 `next/dynamic` in `LabTool.jsx`, so one tool's code never ships with another's.
 
+**Built from scratch** — the engines live in `lib/`, each with its own tests
+in `tests/`, and each has a live page:
+
+- **QueryLite** (`lib/querylite/`) — a SQL database: hand-written lexer and
+  recursive-descent parser, B+ tree indexes (`btree.mjs`), a planner that
+  pushes filters down, picks index or full scans (skipping an index that
+  would match over 30% of rows), and chooses index nested loop / hash /
+  nested loop joins; GROUP BY, HAVING, ORDER BY, LIMIT, LEFT JOIN, NULL
+  semantics, BEGIN/COMMIT/ROLLBACK with an undo log. Seeded with 22,060 rows
+  (`seed.mjs`); the console saves your changes in `localStorage`.
+- **Raft** (`lib/raft.mjs`) — leader election, log replication and commit,
+  per the Raft paper, in a deterministic millisecond simulator with crashes,
+  restarts and partitions. Safety invariants are checked on every step.
+- **CRDT editor** (`lib/crdt.mjs`) — an RGA text CRDT with Lamport ids,
+  tombstones, causal buffering and caret anchoring. The page syncs real tabs
+  through `BroadcastChannel` and three simulated devices over a network with
+  a delay and offline switches.
+
+Run the tests with `npm test` (Node's built-in runner, no dependencies). CI
+runs them before every build. They include property tests: 60 random queries
+comparing index plans with full scans, 40 random Raft failure scenarios with
+zero safety violations, and 60 random offline-editing sessions that must
+converge.
+
 **Everyday tools** — useful to anyone, nothing leaves the browser:
 
 - **Split the bill** — fewest payments to settle a group; saved in
@@ -285,4 +309,5 @@ npm run dev      # http://localhost:3000
 
 ```bash
 npm run build && npm start
+npm test         # engine tests: QueryLite, Raft, CRDT
 ```
