@@ -339,10 +339,28 @@ Leave it empty and the deploy step runs against a `.open-next/worker.js` that
 was never built, so the build fails in under a minute having never compiled
 anything — which looks like a code failure and is not one.
 
-Anything the build itself needs — a `NEXT_PUBLIC_…` value, or a variable read
-while prerendering — goes in **Build variables and secrets**, which is separate
-from the runtime secrets below: build variables are not visible at runtime, and
-runtime secrets are not visible to the build.
+Anything the build itself needs goes in **Build variables and secrets**, which
+is a different place from the runtime secrets below: build variables are not
+visible at runtime, and runtime secrets are not visible to the build. A
+`NEXT_PUBLIC_…` name is always a build variable, because it is inlined when the
+site is compiled.
+
+| Build variable | Value |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | `https://www.gauravspace.com` |
+
+That one decides every absolute URL the site emits — canonical link, sitemap,
+robots.txt, OpenGraph and Twitter images. Set it to whichever hostname should
+be the canonical one, and set it in the build rather than at runtime, or the
+built pages will advertise the fallback instead.
+
+#### Hostnames
+
+Both `gauravspace.com` and `www.gauravspace.com` have to be attached to the
+Worker under **Settings → Domains & Routes**; they are separate hostnames and
+adding one does not create the other, so a Worker reachable on `www` alone
+leaves the bare domain with no DNS record and no way to connect. Whichever one
+`NEXT_PUBLIC_SITE_URL` names is the one search engines will consolidate on.
 
 Secrets are not read from `.env` in production — set them once per Worker:
 
