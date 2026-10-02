@@ -354,6 +354,37 @@ robots.txt, OpenGraph and Twitter images. Set it to whichever hostname should
 be the canonical one, and set it in the build rather than at runtime, or the
 built pages will advertise the fallback instead.
 
+#### Build speed
+
+Measured on this project, with a warm cache: `next build` compiles in about 4
+seconds and then spends most of its time prerendering — 126 pages, 13 of them
+generated OpenGraph images — for roughly 18 seconds in total. The OpenNext
+bundle on top takes it to about 39 seconds. In CI, add `npm ci`.
+
+So the time is in installing and prerendering, not in the compiler, and the two
+settings that help are both in **Settings → Build**:
+
+| Setting | Why |
+| --- | --- |
+| **Build cache** → Enable | Caches `~/.npm` and `.next/cache`, which removes most of the install and lets unchanged pages be reused. The largest single win. |
+| **Build watch paths** → exclude unrelated paths | This repository also holds `agent-forge/`, `connect-to-nature/` and `rakta-setu/`. Without watch paths a push touching only those rebuilds and redeploys the portfolio for nothing. |
+
+Reasonable exclude list for the watch paths, all of which are incapable of
+changing the built site: `agent-forge/*`, `connect-to-nature/*`,
+`rakta-setu/*`, `test/*`, `tests/*`, `.github/*`, `README.md`.
+
+Expect roughly 2–3 minutes cold, and 60–90 seconds once the build cache is
+warm. A push that only touches an excluded path costs nothing at all.
+Sub-30-second push-to-deploy is not reachable for this site — `next build`
+alone cannot go below its prerendering work. `npm run cf:deploy` from a local
+checkout is about 55 seconds, since it skips the clone and install, but it is
+manual.
+
+Two things deliberately *not* done, because each trades a real risk or a real
+loss for a few seconds: building with Turbopack (OpenNext runs `next build`
+itself, and that combination is unproven), and collapsing the 13 per-page
+OpenGraph images into one static image (faster build, worse link previews).
+
 #### Hostnames
 
 Both `gauravspace.com` and `www.gauravspace.com` have to be attached to the
