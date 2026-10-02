@@ -80,17 +80,20 @@ export const viewport = {
    reduced motion. Without the flag every [data-rise] element renders plainly
    visible, so a blocked script degrades to a static page, never a blank one.
 
-   Theme: applies a stored light/dark choice before anything is painted — doing
-   it in an effect would flash the wrong colours on every load. With no stored
-   choice the attribute stays off and the stylesheet follows the OS. */
+   Theme: applies the theme before anything is painted — doing it in an effect
+   would flash the wrong colours on every load. Light is the default, so with
+   no stored choice this writes data-theme="light" and a dark-OS visitor still
+   lands on white; only an explicit "system" choice leaves the attribute off
+   and lets the stylesheet follow the OS. A blocked script therefore degrades
+   to OS-following rather than to a blank page. */
 const bootScript = `(function(){try{
   var d=document.documentElement;
   if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.dataset.motion='1';}
   var t=null;try{t=localStorage.getItem('theme');}catch(e){}
-  if(t==='light'||t==='dark'){d.dataset.theme=t;}
-  var dark=(t==='dark')||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if(t!=='system'){d.dataset.theme=(t==='dark')?'dark':'light';}
+  var dark=(t==='dark')||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
   var m=document.querySelector('meta[name="theme-color"]');
-  if(m){m.setAttribute('content',dark?'#000000':'#fbfbfd');}
+  if(m){m.setAttribute('content',dark?'#000000':'#ffffff');}
 }catch(e){}})();`;
 
 const personLd = {

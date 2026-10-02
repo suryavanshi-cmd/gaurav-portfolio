@@ -37,13 +37,14 @@ export function applyTheme(mode) {
       : mode;
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', resolved === 'dark' ? '#000000' : '#fbfbfd');
+    ?.setAttribute('content', resolved === 'dark' ? '#000000' : '#ffffff');
 }
 
 export default function ThemeToggle() {
-  /* 'system' on the server and on the first client render, so the markup
-     matches; the effect below corrects it once we can read storage. */
-  const [mode, setMode] = useState('system');
+  /* 'light' on the server and on the first client render, because light is the
+     default the boot script applies; the effect below corrects it once we can
+     read storage. */
+  const [mode, setMode] = useState('light');
   const [ready, setReady] = useState(false);
   /* The indicator may only animate in response to a click. Arming it on mount
      instead is subtly wrong: `ready` flips in the same commit that moves the
@@ -58,7 +59,7 @@ export default function ThemeToggle() {
     } catch {
       /* Storage blocked — the control still works for this page view. */
     }
-    setMode(stored === 'light' || stored === 'dark' ? stored : 'system');
+    setMode(stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'light');
     setReady(true);
   }, []);
 
