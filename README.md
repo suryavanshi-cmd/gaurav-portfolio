@@ -319,6 +319,31 @@ npm run cf:preview   # build, then serve it in the real Workers runtime locally
 npm run cf:deploy    # build, then deploy to the gaurav-portfolio Worker
 ```
 
+#### Workers Builds settings
+
+Deploys from Git run through [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/),
+which is a **build command** followed by a **deploy command** (or, on a pull
+request, a **preview command**). One field has to be set by hand, in
+**Worker → Settings → Build**:
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npm run cf:build` |
+| Deploy command | `npx wrangler deploy` (the default) |
+| Preview command | `npx wrangler preview` (the default) |
+
+The build command is not optional here, and it cannot be moved into
+`wrangler.jsonc`: Workers Builds [does not honour Custom Builds in the Wrangler
+config](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
+Leave it empty and the deploy step runs against a `.open-next/worker.js` that
+was never built, so the build fails in under a minute having never compiled
+anything — which looks like a code failure and is not one.
+
+Anything the build itself needs — a `NEXT_PUBLIC_…` value, or a variable read
+while prerendering — goes in **Build variables and secrets**, which is separate
+from the runtime secrets below: build variables are not visible at runtime, and
+runtime secrets are not visible to the build.
+
 Secrets are not read from `.env` in production — set them once per Worker:
 
 ```bash
