@@ -204,9 +204,11 @@ with a link to its source.
 short answer from those passages only. The answer is labelled "Written by
 Gemini from these pages only", and its sources are still shown.
 
-- **The key is server-side only.** Set it in Vercel → Project → Settings →
-  Environment Variables as `GEMINI_API_KEY` (never `NEXT_PUBLIC_…`, never in
-  the repo), then redeploy. `GEMINI_MODEL` optionally picks the model tried first.
+- **The key is server-side only.** Set it as a secret named `GEMINI_API_KEY`
+  (never `NEXT_PUBLIC_…`, never in the repo), then redeploy — on Cloudflare
+  with `npx wrangler secret put GEMINI_API_KEY`, on Vercel under Project →
+  Settings → Environment Variables. `GEMINI_MODEL` optionally picks the model
+  tried first.
 - **The browser sends only the question.** The server picks the passages, so
   the endpoint cannot be used as a free general-purpose AI proxy. It is also
   rate-limited per visitor and caches repeated questions.
@@ -297,7 +299,47 @@ dependencies and deploy settings:
 
 ## Stack
 
-Next.js 15, React 19, Supabase, deployed on Vercel.
+Next.js 15, React 19, Supabase. Deploys to Cloudflare Workers (via the
+OpenNext adapter) and to Vercel from the same source — see **Deploying**.
+
+## Deploying
+
+The same build runs on Cloudflare Workers and on Vercel; neither target is
+required for the other.
+
+### Cloudflare Workers
+
+Both API routes are server routes, so this is a Worker rather than a static
+export. [OpenNext](https://opennext.js.org/cloudflare) adapts `next build` for
+the Workers runtime; `wrangler.jsonc` points at its output and turns on
+`nodejs_compat`, which the `runtime = 'nodejs'` routes need.
+
+```bash
+npm run cf:preview   # build, then serve it in the real Workers runtime locally
+npm run cf:deploy    # build, then deploy to the gaurav-portfolio Worker
+```
+
+Secrets are not read from `.env` in production — set them once per Worker:
+
+```bash
+npx wrangler secret put GEMINI_API_KEY
+npx wrangler secret put SUPABASE_URL
+npx wrangler secret put SUPABASE_PUBLISHABLE_KEY
+```
+
+Without them the site still works: `/api/ask` answers 503 and the assistant
+falls back to quoting the retrieved passage, and the contact form reports that
+it is unavailable rather than losing a message silently.
+
+Two things differ from a Node host. The `/api/ask` in-memory answer cache and
+per-visitor rate limit live in a single isolate, so on Workers they are
+per-isolate and short-lived — the limit still blunts abuse but is looser than
+the 12-per-10-minutes it reads as. Move both to Workers KV if that matters.
+
+### Vercel
+
+`vercel.json` builds `main` with the default Next.js pipeline; no adapter is
+involved.
 
 ## Local development
 
