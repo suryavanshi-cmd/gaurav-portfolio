@@ -9,7 +9,7 @@
   paragraph. Slugs never change — they are the URLs other sites link to.
 */
 
-import { engineeringPosts } from './engineeringPosts';
+import { engineeringPosts } from './engineeringPosts.js';
 
 const llmPosts = [
   {
@@ -303,6 +303,6 @@ export const posts = [...llmPosts, ...engineeringPosts]
 
 export const postsBySlug = Object.fromEntries(posts.map((post) => [post.slug, post]));
 
-export { formatDate } from './format';
+export { formatDate } from './format.js';
 
 export const allTags = [...new Set(posts.flatMap((post) => post.tags))].sort();

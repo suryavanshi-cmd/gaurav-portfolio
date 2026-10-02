@@ -6,7 +6,22 @@
   and in the about-page timeline — nothing else restates these.
 */
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://gaurav-portfolio-topaz.vercel.app').replace(/\/$/, '');
+/*
+  The canonical origin, and the one fact here that is not from the résumé.
+
+  Every absolute URL the site emits is built from this: the canonical link, the
+  sitemap, robots.txt, and the OpenGraph and Twitter image URLs. So a wrong
+  value here is not cosmetic — a `rel="canonical"` pointing at another host
+  tells search engines to index that host instead of this one, and link
+  previews fetch their images from it.
+
+  `NEXT_PUBLIC_SITE_URL` overrides it, and being a NEXT_PUBLIC_ name it is
+  inlined when the site is compiled rather than read at runtime: on Cloudflare
+  it has to be a Workers Builds *build* variable, not a runtime secret. The
+  fallback is the live domain so that a build which forgets to set it is still
+  correct rather than quietly advertising somewhere else.
+*/
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.gauravspace.com').replace(/\/$/, '');
 
 export const PERSON = {
   name: 'Gaurav Suryavanshi',

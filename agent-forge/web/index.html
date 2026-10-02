@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent Forge</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf8; --panel: #fff; --ink: #1a1a19; --muted: #6b6a66;
+    --line: #e5e3de; --accent: #2f5d50; --warn: #8a5a2b;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #16161a; --panel: #1e1e23; --ink: #eceae6; --muted: #9a988f;
+            --line: #2e2e35; --accent: #7fb3a1; --warn: #d9a05b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0 16px 48px; background: var(--bg); color: var(--ink);
+         font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  header { padding: 28px 0 18px; }
+  h1 { font-size: 1.35rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 0.9rem; }
+  .panel { background: var(--panel); border: 1px solid var(--line);
+           border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  select, input[type=text], textarea {
+    font: inherit; color: inherit; background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; }
+  input[type=text], textarea { flex: 1 1 260px; min-width: 0; }
+  button { font: inherit; cursor: pointer; border: 1px solid var(--line);
+           background: var(--accent); color: #fff; border-radius: 8px; padding: 9px 15px; }
+  button.ghost { background: transparent; color: var(--muted); }
+  button:disabled { opacity: 0.5; cursor: default; }
+  label.drop { display: block; border: 1.5px dashed var(--line); border-radius: var(--radius);
+               padding: 22px; text-align: center; color: var(--muted); cursor: pointer; }
+  label.drop.over { border-color: var(--accent); color: var(--accent); }
+  .msg { margin: 14px 0; }
+  .q { font-weight: 600; }
+  .a { white-space: pre-wrap; margin-top: 6px; }
+  .refused { color: var(--warn); }
+  .cites { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px;
+           font-size: 0.85rem; color: var(--muted); }
+  .cite { margin: 5px 0; }
+  .meta { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+  .docs { font-size: 0.86rem; color: var(--muted); }
+  .docs div { padding: 3px 0; }
+  .err { color: #b4432e; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Agent Forge</h1>
+    <div class="sub">Feed it your data. It answers from that data, or it says it cannot.</div>
+  </header>
+
+  <div class="panel">
+    <div class="row">
+      <select id="agent"></select>
+      <input type="text" id="newSlug" placeholder="new-agent-slug">
+      <button id="create">Create agent</button>
+    </div>
+    <div class="meta" id="stats"></div>
+  </div>
+
+  <div class="panel">
+    <label class="drop" id="drop">
+      <input type="file" id="file" multiple hidden>
+      Drop files here, or click to choose.<br>
+      <span class="sub">Excel, CSV, PDF, Word, PowerPoint, JSON, Markdown, or any text file.</span>
+    </label>
+    <div class="docs" id="docs"></div>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <input type="text" id="q" placeholder="Ask something answerable from the uploaded data">
+      <button id="askBtn">Ask</button>
+    </div>
+    <div id="thread"></div>
+  </div>
+</div>
+
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const state = { agent: null, last: null };
+
+async function api(path, options = {}) {
+  const res = await fetch(`/api${path}`, options);
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || res.statusText);
+  return body;
+}
+
+async function loadAgents() {
+  const { agents } = await api('/agents');
+  $('agent').innerHTML = agents.map((a) => `<option value="${a.slug}">${a.name}</option>`).join('')
+    || '<option value="">no agents yet</option>';
+  if (agents.length) {
+    state.agent = $('agent').value || agents[0].slug;
+    $('agent').value = state.agent;
+    await refresh();
+  }
+}
+
+async function refresh() {
+  if (!state.agent) return;
+  const [{ stats }, { documents }] = await Promise.all([
+    api(`/agents/${state.agent}`),
+    api(`/agents/${state.agent}/documents`),
+  ]);
+  $('stats').textContent =
+    `${stats.documents} documents, ${stats.chunks} chunks, ${stats.learned_facts} corrections, ${stats.ungrounded} unanswered`;
+  $('docs').innerHTML = documents.map((d) =>
+    `<div>${d.title} <span class="sub">— ${d.source_kind}, ${d.chunk_count} chunks</span></div>`).join('');
+}
+
+$('agent').onchange = () => { state.agent = $('agent').value; refresh(); };
+
+$('create').onclick = async () => {
+  const slug = $('newSlug').value.trim();
+  if (!slug) return;
+  try {
+    await api('/agents', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ slug, name: slug }),
+    });
+    $('newSlug').value = '';
+    await loadAgents();
+  } catch (err) { alert(err.message); }
+};
+
+/* ---- upload ---- */
+const drop = $('drop');
+drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', (e) => {
+  e.preventDefault();
+  drop.classList.remove('over');
+  upload([...e.dataTransfer.files]);
+});
+$('file').onchange = (e) => upload([...e.target.files]);
+
+async function upload(files) {
+  if (!state.agent) return alert('Create an agent first.');
+  for (const file of files) {
+    const form = new FormData();
+    form.append('file', file);
+    $('docs').insertAdjacentHTML('afterbegin', `<div id="up">${file.name} — reading…</div>`);
+    try {
+      const r = await api(`/agents/${state.agent}/documents`, { method: 'POST', body: form });
+      document.getElementById('up')?.remove();
+      $('docs').insertAdjacentHTML('afterbegin',
+        `<div>${file.name} — ${r.skipped ? 'already known' : `${r.chunks} chunks learned`}</div>`);
+    } catch (err) {
+      document.getElementById('up')?.remove();
+      $('docs').insertAdjacentHTML('afterbegin', `<div class="err">${file.name} — ${err.message}</div>`);
+    }
+  }
+  refresh();
+}
+
+/* ---- ask ---- */
+$('askBtn').onclick = ask;
+$('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') ask(); });
+
+async function ask() {
+  const question = $('q').value.trim();
+  if (!question || !state.agent) return;
+  $('q').value = '';
+  $('askBtn').disabled = true;
+
+  const node = document.createElement('div');
+  node.className = 'msg';
+  node.innerHTML = `<div class="q"></div><div class="a">thinking…</div>`;
+  node.querySelector('.q').textContent = question;
+  $('thread').prepend(node);
+
+  try {
+    const r = await api(`/agents/${state.agent}/ask`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ question }),
+    });
+    state.last = r;
+
+    const a = node.querySelector('.a');
+    a.textContent = r.answer;
+    if (!r.grounded) a.classList.add('refused');
+
+    if (r.citations.length) {
+      const cites = document.createElement('div');
+      cites.className = 'cites';
+      cites.innerHTML = '<strong>From your data:</strong>' + r.citations.map((c) =>
+        `<div class="cite">[${c.passage}] ${c.where || 'document'} — ${c.excerpt.replace(/\s+/g, ' ')}…</div>`).join('');
+      node.append(cites);
+    }
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.innerHTML = `${r.mode}, score ${r.topScore.toFixed(4)} · `;
+    const good = Object.assign(document.createElement('button'), { className: 'ghost', textContent: '👍' });
+    const bad = Object.assign(document.createElement('button'), { className: 'ghost', textContent: '👎' });
+    const fix = Object.assign(document.createElement('button'), { className: 'ghost', textContent: 'correct this' });
+    good.onclick = () => feedback(r.interactionId, 'up', null, meta);
+    bad.onclick = () => feedback(r.interactionId, 'down', null, meta);
+    fix.onclick = () => {
+      const correction = prompt('What should it have said?');
+      if (correction) feedback(r.interactionId, 'down', correction, meta);
+    };
+    meta.append(good, bad, fix);
+    node.append(meta);
+  } catch (err) {
+    node.querySelector('.a').innerHTML = `<span class="err">${err.message}</span>`;
+  } finally {
+    $('askBtn').disabled = false;
+  }
+}
+
+async function feedback(interactionId, verdict, correction, meta) {
+  try {
+    await api(`/agents/${state.agent}/feedback`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ interactionId, verdict, correction }),
+    });
+    meta.insertAdjacentHTML('beforeend', ' <span class="sub">— learned</span>');
+    refresh();
+  } catch (err) { alert(err.message); }
+}
+
+loadAgents();
+</script>
+</body>
+</html>

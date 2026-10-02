@@ -28,7 +28,13 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Run engine tests (QueryLite, Raft, CRDT)
+      # Two suites, one step. The engines (QueryLite, Raft, CRDT) are the
+      # kind of code a build cannot vouch for at all. The assistant's are
+      # thresholds in components/rag/answer.js: loosen them and it answers
+      # questions the site has no answer to, tighten them and the questions it
+      # offers on its own empty state refuse. Neither failure shows up in a
+      # build, so both run before it.
+      - name: Engines, grounding and refusal
         run: npm test
 
       - name: Build Next.js application

@@ -1,21 +1,26 @@
 /* ==========================================================================
    Tokens and base.
 
-   An Apple-like palette: off-white paper, near-black ink, one blue accent, and
-   greys that step down in contrast rather than in hue. Every page and component
+   A white page, near-black ink, one blue accent, and greys that step down in
+   contrast rather than in hue. The page itself is pure white; cards sit on it
+   as white too and take their definition from --line and --shadow-1, while
+   --bg-soft and --bg-sunk are the bands that separate sections. Every page and component
    reads these custom properties, so a theme change is one attribute flip.
 
    Theme contract (see ThemeToggle.jsx and the boot script in layout.jsx):
      <html> with no data-theme   follow the OS, via the media query below
      data-theme="light"          force light
      data-theme="dark"           force dark
+   Light is the default: the boot script writes data-theme="light" when nothing
+   is stored, so a dark-OS visitor still lands on white. The bare no-attribute
+   state is reached only by choosing "system" explicitly.
    The dark palette is therefore declared twice — once under the media query,
    guarded so an explicit light choice still wins on a dark OS, and once under
    the attribute.
    ========================================================================== */
 
 :root {
-  --bg: #fbfbfd;
+  --bg: #ffffff;
   --bg-elev: #ffffff;
   --bg-soft: #f5f5f7;
   --bg-sunk: #ececf0;
@@ -28,7 +33,7 @@
   --accent-hover: #0077ed;
   --accent-ink: #ffffff;
   --accent-soft: rgb(0 113 227 / 10%);
-  --glass: rgb(251 251 253 / 72%);
+  --glass: rgb(255 255 255 / 72%);
   --ok: #1d8a4e;
   --bad: #d6302f;
   --warn: #b25e00;

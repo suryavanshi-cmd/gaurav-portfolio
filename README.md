@@ -204,9 +204,11 @@ with a link to its source.
 short answer from those passages only. The answer is labelled "Written by
 Gemini from these pages only", and its sources are still shown.
 
-- **The key is server-side only.** Set it in Vercel → Project → Settings →
-  Environment Variables as `GEMINI_API_KEY` (never `NEXT_PUBLIC_…`, never in
-  the repo), then redeploy. `GEMINI_MODEL` optionally picks the model tried first.
+- **The key is server-side only.** Set it as a secret named `GEMINI_API_KEY`
+  (never `NEXT_PUBLIC_…`, never in the repo), then redeploy — on Cloudflare
+  with `npx wrangler secret put GEMINI_API_KEY`, on Vercel under Project →
+  Settings → Environment Variables. `GEMINI_MODEL` optionally picks the model
+  tried first.
 - **The browser sends only the question.** The server picks the passages, so
   the endpoint cannot be used as a free general-purpose AI proxy. It is also
   rate-limited per visitor and caches repeated questions.
@@ -297,7 +299,121 @@ dependencies and deploy settings:
 
 ## Stack
 
-Next.js 15, React 19, Supabase, deployed on Vercel.
+Next.js 15, React 19, Supabase. Deploys to Cloudflare Workers (via the
+OpenNext adapter) and to Vercel from the same source — see **Deploying**.
+
+## Deploying
+
+The same build runs on Cloudflare Workers and on Vercel; neither target is
+required for the other.
+
+### Cloudflare Workers
+
+Both API routes are server routes, so this is a Worker rather than a static
+export. [OpenNext](https://opennext.js.org/cloudflare) adapts `next build` for
+the Workers runtime; `wrangler.jsonc` points at its output and turns on
+`nodejs_compat`, which the `runtime = 'nodejs'` routes need.
+
+```bash
+npm run cf:preview   # build, then serve it in the real Workers runtime locally
+npm run cf:deploy    # build, then deploy to the gaurav-portfolio Worker
+```
+
+#### Workers Builds settings
+
+Deploys from Git run through [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/),
+which is a **build command** followed by a **deploy command** (or, on a pull
+request, a **preview command**). One field has to be set by hand, in
+**Worker → Settings → Build**:
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npm run cf:build` |
+| Deploy command | `npx wrangler deploy` (the default) |
+| Preview command | `npx wrangler preview` (the default) |
+
+The build command is not optional here, and it cannot be moved into
+`wrangler.jsonc`: Workers Builds [does not honour Custom Builds in the Wrangler
+config](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
+Leave it empty and the deploy step runs against a `.open-next/worker.js` that
+was never built, so the build fails in under a minute having never compiled
+anything — which looks like a code failure and is not one.
+
+Anything the build itself needs goes in **Build variables and secrets**, which
+is a different place from the runtime secrets below: build variables are not
+visible at runtime, and runtime secrets are not visible to the build. A
+`NEXT_PUBLIC_…` name is always a build variable, because it is inlined when the
+site is compiled.
+
+| Build variable | Value |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | `https://www.gauravspace.com` |
+
+That one decides every absolute URL the site emits — canonical link, sitemap,
+robots.txt, OpenGraph and Twitter images. Set it to whichever hostname should
+be the canonical one, and set it in the build rather than at runtime, or the
+built pages will advertise the fallback instead.
+
+#### Build speed
+
+Measured on this project, with a warm cache: `next build` compiles in about 4
+seconds and then spends most of its time prerendering — 126 pages, 13 of them
+generated OpenGraph images — for roughly 18 seconds in total. The OpenNext
+bundle on top takes it to about 39 seconds. In CI, add `npm ci`.
+
+So the time is in installing and prerendering, not in the compiler, and the two
+settings that help are both in **Settings → Build**:
+
+| Setting | Why |
+| --- | --- |
+| **Build cache** → Enable | Caches `~/.npm` and `.next/cache`, which removes most of the install and lets unchanged pages be reused. The largest single win. |
+| **Build watch paths** → exclude unrelated paths | This repository also holds `agent-forge/`, `connect-to-nature/` and `rakta-setu/`. Without watch paths a push touching only those rebuilds and redeploys the portfolio for nothing. |
+
+Reasonable exclude list for the watch paths, all of which are incapable of
+changing the built site: `agent-forge/*`, `connect-to-nature/*`,
+`rakta-setu/*`, `test/*`, `tests/*`, `.github/*`, `README.md`.
+
+Expect roughly 2–3 minutes cold, and 60–90 seconds once the build cache is
+warm. A push that only touches an excluded path costs nothing at all.
+Sub-30-second push-to-deploy is not reachable for this site — `next build`
+alone cannot go below its prerendering work. `npm run cf:deploy` from a local
+checkout is about 55 seconds, since it skips the clone and install, but it is
+manual.
+
+Two things deliberately *not* done, because each trades a real risk or a real
+loss for a few seconds: building with Turbopack (OpenNext runs `next build`
+itself, and that combination is unproven), and collapsing the 13 per-page
+OpenGraph images into one static image (faster build, worse link previews).
+
+#### Hostnames
+
+Both `gauravspace.com` and `www.gauravspace.com` have to be attached to the
+Worker under **Settings → Domains & Routes**; they are separate hostnames and
+adding one does not create the other, so a Worker reachable on `www` alone
+leaves the bare domain with no DNS record and no way to connect. Whichever one
+`NEXT_PUBLIC_SITE_URL` names is the one search engines will consolidate on.
+
+Secrets are not read from `.env` in production — set them once per Worker:
+
+```bash
+npx wrangler secret put GEMINI_API_KEY
+npx wrangler secret put SUPABASE_URL
+npx wrangler secret put SUPABASE_PUBLISHABLE_KEY
+```
+
+Without them the site still works: `/api/ask` answers 503 and the assistant
+falls back to quoting the retrieved passage, and the contact form reports that
+it is unavailable rather than losing a message silently.
+
+Two things differ from a Node host. The `/api/ask` in-memory answer cache and
+per-visitor rate limit live in a single isolate, so on Workers they are
+per-isolate and short-lived — the limit still blunts abuse but is looser than
+the 12-per-10-minutes it reads as. Move both to Workers KV if that matters.
+
+### Vercel
+
+`vercel.json` builds `main` with the default Next.js pipeline; no adapter is
+involved.
 
 ## Local development
 

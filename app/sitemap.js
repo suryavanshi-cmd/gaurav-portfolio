@@ -18,6 +18,9 @@ export default function sitemap() {
     page('/', 1, 'weekly'),
     page('/projects', 0.9, 'weekly'),
     page('/lab', 0.9, 'weekly'),
+    /* The assistant has its own page rather than only a panel, so it is a
+       thing to land on and a link to send — which only holds if it is listed. */
+    page('/ask', 0.9, 'weekly'),
     page('/writing', 0.8, 'weekly'),
     page('/about', 0.7),
     ...LAB.map((tool) => page(`/lab/${tool.slug}`, 0.8)),

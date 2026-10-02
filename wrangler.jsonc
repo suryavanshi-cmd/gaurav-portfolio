@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+
+  // The name of the Worker this deploys to. It must stay `gaurav-portfolio`:
+  // that Worker already exists in the account, and a different name here
+  // would quietly create a second one and leave the live site on the old.
+  "name": "gaurav-portfolio",
+  "main": ".open-next/worker.js",
+
+  // nodejs_compat is required: both API routes declare `runtime = 'nodejs'`,
+  // and the adapter's own server code needs the Node built-ins. The date must
+  // be 2024-09-23 or later for that flag to apply.
+  "compatibility_date": "2026-10-02",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Everything Next emits as static — the client bundles, /public, the
+  // prerendered HTML — is served straight off Cloudflare's edge rather than
+  // through the Worker.
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  // Request logs and errors in the dashboard. The /api/ask route logs Gemini's
+  // status and message on failure, and this is where that comes out.
+  "observability": {
+    "enabled": true
+  }
+}

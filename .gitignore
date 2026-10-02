@@ -30,3 +30,8 @@ pnpm-debug.log*
 # editor files
 .vscode/
 .idea/
+
+# Cloudflare (OpenNext build output and wrangler state)
+/.open-next
+/.wrangler
+cloudflare-env.d.ts

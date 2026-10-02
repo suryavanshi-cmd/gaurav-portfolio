@@ -14,7 +14,7 @@
 
 const REPO = 'https://github.com/suryavanshi-cmd/gaurav-portfolio/tree/main';
 
-export { KINDS } from './format';
+export { KINDS } from './format.js';
 
 export const projects = [
   /* ----- Work ------------------------------------------------------------ */
