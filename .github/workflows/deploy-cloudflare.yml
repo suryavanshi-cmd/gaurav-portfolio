@@ -1,0 +1,99 @@
+name: Deploy to Cloudflare Workers
+
+# Cloudflare's own Workers Builds needs a build command typed into the
+# dashboard; it does not read one from wrangler.jsonc, and without it every
+# build fails in about a minute without compiling. This workflow does the same
+# job from the repository, where the build command lives in version control.
+#
+# It stays inert until CLOUDFLARE_API_TOKEN exists as a repository secret, so
+# adding this file changes nothing on its own.
+#
+# To turn it on:
+#   1. Cloudflare dashboard - My Profile - API Tokens - Create Token, using
+#      the "Edit Cloudflare Workers" template.
+#   2. GitHub repo - Settings - Secrets and variables - Actions - New
+#      repository secret:
+#        CLOUDFLARE_API_TOKEN   the token from step 1
+#        CLOUDFLARE_ACCOUNT_ID  5f6ae2706fce1544518421e703cfb4b7
+#   3. Once it is green, turn off the dashboard's Workers Builds for this
+#      project so the two do not race each other.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Baked into the bundle at build time, so the canonical URL and every
+      # absolute link come out right without depending on a dashboard variable.
+      NEXT_PUBLIC_SITE_URL: https://www.gauravspace.com
+    steps:
+      - name: Check for deploy credentials
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "CLOUDFLARE_API_TOKEN is not set - skipping deploy."
+            echo "See the comment at the top of this workflow to enable it."
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.creds.outputs.present == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        if: steps.creds.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.creds.outputs.present == 'true'
+        run: npm ci --no-audit --no-fund
+
+      # Deploying a broken build to the live domain is worse than not
+      # deploying, so the same two suites CI runs gate the deploy as well.
+      - name: Engines, grounding and refusal
+        if: steps.creds.outputs.present == 'true'
+        run: npm test
+
+      - name: Build and deploy with OpenNext
+        if: steps.creds.outputs.present == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm run cf:deploy
+
+      - name: Verify the live site served the new build
+        if: steps.creds.outputs.present == 'true'
+        run: |
+          set -e
+          # Give the edge a moment to pick the new version up.
+          sleep 20
+          canonical=$(curl -sS --max-time 30 https://www.gauravspace.com/ \
+            | grep -o 'rel="canonical" href="[^"]*"' | head -1 || true)
+          echo "canonical: $canonical"
+          case "$canonical" in
+            *www.gauravspace.com*) echo "canonical OK" ;;
+            *) echo "::error::canonical is still '$canonical'"; exit 1 ;;
+          esac
+          ask=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 \
+            https://www.gauravspace.com/ask || true)
+          echo "/ask: $ask"
+          [ "$ask" = "200" ] || { echo "::error::/ask returned $ask"; exit 1; }
