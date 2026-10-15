@@ -42,8 +42,10 @@ Tools and CI: Git, GitHub, Docker, Maven, CI/CD pipelines, ELK stack
 ### Backend Automation Test Intern — Bajaj Finserv Health
 2024
 
-- Built a microservice that parsed HTTPS traffic logs from the ELK stack, generated
-  equivalent curl requests, and replayed them as an automated regression suite.
+- Built a microservice that parsed HTTPS and clickstream traffic logs from the
+  observability stack, derived the underlying API calls, generated equivalent
+  requests and replayed them as an automated regression suite — removing roughly
+  80% of the manual effort previously needed to author those workflow tests.
 - Migrated the service from Node.js to NestJS for improved throughput and a
   modular, scalable architecture.
 
@@ -74,6 +76,10 @@ Replicated Growable Array for collaborative text editing. Lamport-clock identifi
 tombstone deletion, idempotent operation application and a causal buffer for
 out-of-order delivery, so replicas edit offline and converge without a server or locks.
 
+### e-Yantra Robotics Competition — IIT Bombay
+Selected participant in IIT Bombay's e-Yantra Robotics Competition, working through
+the staged task rounds in Python.
+
 ### Portfolio with grounded retrieval API — Next.js on Cloudflare Workers
 Full-stack site with a retrieval-augmented question endpoint over a corpus of my own
 project writeups. Covers document parsing, chunking, grounding and the persistence
@@ -92,3 +98,25 @@ Honours project: Wildlife Conservation Analysis using Machine Learning
 Introduction to Generative AI (Udemy) · Introduction to Machine Learning (Coursera) ·
 Java (Udemy) · Copyright registration: Wildlife Conservation and Analysis Using
 Machine Learning
+
+<!-- ============================================================
+     DELETE THIS BLOCK BEFORE SENDING.
+
+     Three things are not in the resume above because I could not
+     verify them. Each needs one answer from you:
+
+     1. Go — not listed under Languages. I need to know what you
+        built in it before writing it in. e-Yantra tasks are Python
+        (and sometimes embedded C), so if the Go was something else,
+        tell me what and where.
+
+     2. e-Yantra dates — I wrote no year. Which edition was it, and
+        did you clear the qualifier / reach the finals? "Selected
+        participant" is the weakest true version; if you placed or
+        finished a stage, that is stronger and should say so.
+
+     3. The 80% — I wrote it as "roughly 80% of the manual effort
+        previously needed to author those workflow tests." If that
+        is not what it measured, correct it. An interviewer will
+        ask what the denominator was.
+     ============================================================ -->
