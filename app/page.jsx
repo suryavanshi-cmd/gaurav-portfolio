@@ -5,7 +5,7 @@ import { LAB, LAB_BUILDS, LAB_LEARN, LAB_TOOLS } from '../components/lab/registr
 import TryIt from '../components/TryIt';
 import { projects } from '../components/projects';
 import { posts } from '../components/posts';
-import { PERSON, TICKER } from '../components/site';
+import { PERSON } from '../components/site';
 
 export const metadata = {
   alternates: { canonical: '/' },
@@ -57,19 +57,17 @@ export default function Home() {
             I test software for a living. <span className="hero-soft">I build it for fun.</span>
           </h1>
           <p className="lede" data-rise style={{ '--rise': 2 }}>
-            I build API test automation for health-insurance claims at {PERSON.employer}. On my own I build
-            systems from scratch — a SQL database, Raft consensus, a real-time collaborative editor — that you can run right here.
+            I write API test automation for health-insurance claims at {PERSON.employer}. On my own I build
+            systems from scratch — a SQL database, Raft consensus, a live collaborative editor. You can run
+            every one of them here, in your browser.
           </p>
           <p className="rotator" data-rise style={{ '--rise': 3 }}>
             Working with <Rotator words={WORDS} />
           </p>
           <div className="btn-row" data-rise style={{ '--rise': 4 }}>
-            <Link href="/lab" className="btn btn-primary">Run what I’ve built</Link>
+            <Link href="/lab" className="btn btn-primary">Try it in your browser</Link>
             <Link href="/projects" className="btn btn-ghost">See my projects</Link>
           </div>
-          <p className="hero-hint" data-rise style={{ '--rise': 5 }}>
-            <i aria-hidden="true" /> Move your cursor or tap — the dots in the background are real spring physics.
-          </p>
         </div>
         <span className="scroll-cue" aria-hidden="true" />
       </section>
@@ -92,7 +90,8 @@ export default function Home() {
               <p className="eyebrow" data-rise>What I do</p>
               <h2 id="doing-title" className="headline" data-rise style={{ '--rise': 1 }}>More than testing.</h2>
               <p className="lede" data-rise style={{ '--rise': 2 }}>
-                Testing is my job. Backend work, AI tools and full apps are how I make sure I understand what I test.
+                Testing is my job. I also write the backend, the AI tools and the whole app — because that is
+                how I know what I am testing.
               </p>
             </div>
           </div>
@@ -110,15 +109,6 @@ export default function Home() {
           </SpotlightGroup>
         </div>
       </section>
-
-      <div className="solid">
-        <div className="ticker" aria-label="Tools from my résumé">
-          <div className="ticker-move">
-            <span className="ticker-run">{TICKER.map((item) => <span key={item}>{item}</span>)}</span>
-            <span className="ticker-run" aria-hidden="true">{TICKER.map((item) => <span key={`${item}-2`}>{item}</span>)}</span>
-          </div>
-        </div>
-      </div>
 
       <section className="soft section" aria-labelledby="live-title">
         <div className="wrap">
@@ -160,7 +150,7 @@ export default function Home() {
           <div className="section-head">
             <div>
               <p className="eyebrow" data-rise>Writing</p>
-              <h2 id="writing-title" className="headline" data-rise style={{ '--rise': 1 }}>Short. Plain. Useful.</h2>
+              <h2 id="writing-title" className="headline" data-rise style={{ '--rise': 1 }}>Notes on testing and systems.</h2>
             </div>
             <Link href="/writing" className="more-link" data-rise>All posts <span aria-hidden="true">›</span></Link>
           </div>
