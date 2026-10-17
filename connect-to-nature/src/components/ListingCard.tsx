@@ -3,13 +3,19 @@
 import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Scene } from './Scene';
+import { Photo } from './ui/Photo';
 import { Stars } from './ui/Field';
+import { NavProgress } from './ui/NavProgress';
 import type { Listing } from '@/lib/types';
 import { DISTRICT_NAMES } from '@/lib/seed-content';
+import { photosFor } from '@/lib/photo-credits';
 
-export function ListingCard({ listing, compact = false }: { listing: Listing; compact?: boolean }) {
+export function ListingCard({ listing, compact = false, priority = false }: { listing: Listing; compact?: boolean; priority?: boolean }) {
   const { t, tx, money } = useIntl();
+  /* A host's own photograph of their own farm beats anything we can choose for
+     them; the curated landscape is what stands in until one arrives. */
   const photo = listing.photos?.[0];
+  const stand_in = photo ? undefined : photosFor('farms', listing.slug)[0];
   // Six activities on a farm are often three kinds of day out; the card shows
   // the kinds, deduplicated, rather than repeating "Walks and climbs" twice.
   const categories = [...new Set((listing.activities ?? []).map((activity) => activity.category))].slice(0, 3);
@@ -27,6 +33,13 @@ export function ListingCard({ listing, compact = false }: { listing: Listing; co
             alt={tx(photo.alt) || tx(listing.title)}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
             style={{ transitionTimingFunction: 'var(--ease-spring)' }}
+          />
+        ) : stand_in ? (
+          <Photo
+            photo={stand_in}
+            priority={priority}
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+            className="h-full w-full transition-transform duration-700 group-hover:scale-[1.04]"
           />
         ) : (
           <Scene
@@ -79,8 +92,9 @@ export function ListingCard({ listing, compact = false }: { listing: Listing; co
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="text-[17px] font-semibold">{money(listing.base_price)}</span>
             <span className="text-[12px] text-[var(--color-muted)]">{t('common.perPersonTwoDays')}</span>
-            <span className="ml-auto whitespace-nowrap text-[12px] text-[var(--color-muted)]">
+            <span className="ml-auto flex items-center whitespace-nowrap text-[12px] text-[var(--color-muted)]">
               {t('listing.capacity')} {listing.max_guests}
+              <NavProgress />
             </span>
           </div>
         </div>

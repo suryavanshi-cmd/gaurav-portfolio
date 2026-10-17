@@ -1,7 +1,8 @@
 import { isSupabaseConfigured } from './env';
 import { createServerSupabase } from './supabase/server';
 import { demoBookings, demoListings, demoRegions } from './demo-data';
-import type { Region } from './types';
+import { demoLedger } from './payments';
+import type { I18nJson, Payment, PaymentEvent, Region } from './types';
 
 export interface AdminStats {
   farms: number;
@@ -82,4 +83,77 @@ export async function getAllRegions(): Promise<Region[]> {
   if (!supabase) return demoRegions;
   const { data } = await supabase.from('regions').select('*').order('sort_order');
   return (data ?? []) as Region[];
+}
+
+/* ─── payments ─────────────────────────────────────────────────────────────── */
+
+export interface AdminPayment extends Payment {
+  booking: {
+    code: string;
+    guest_name: string;
+    start_date: string;
+    listing: { slug: string; title: I18nJson } | null;
+    payment_events: PaymentEvent[];
+  } | null;
+}
+
+export interface AdminPaymentEvent extends PaymentEvent {
+  booking: { code: string; guest_name: string } | null;
+}
+
+function demoPayments(): { payments: AdminPayment[]; events: AdminPaymentEvent[] } {
+  const payments: AdminPayment[] = [];
+  const events: AdminPaymentEvent[] = [];
+  for (const booking of demoBookings) {
+    const ledger = demoLedger(booking);
+    const listing = booking.listing ? { slug: booking.listing.slug, title: booking.listing.title } : null;
+    for (const payment of ledger.payments) {
+      payments.push({
+        ...payment,
+        booking: {
+          code: booking.code,
+          guest_name: booking.guest_name,
+          start_date: booking.start_date,
+          listing,
+          payment_events: ledger.payment_events,
+        },
+      });
+    }
+    for (const event of ledger.payment_events) {
+      events.push({ ...event, booking: { code: booking.code, guest_name: booking.guest_name } });
+    }
+  }
+  events.sort((a, b) => b.created_at.localeCompare(a.created_at) || b.id - a.id);
+  return { payments, events };
+}
+
+/* Every payment, newest first, each with its booking and the booking's whole
+   log. Read through the admin's own session: the ledger's policies let an
+   admin see every row, so this needs no service role. */
+export async function getAdminPayments(): Promise<AdminPayment[]> {
+  if (!isSupabaseConfigured) return demoPayments().payments;
+  const supabase = await createServerSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('payments')
+    .select('*, booking:bookings(code, guest_name, start_date, listing:listings(slug, title), payment_events(*))')
+    .order('created_at', { ascending: false })
+    // The log inside each payment is put in order by PaymentLog itself, rather
+    // than by ordering an embed nested under an alias here.
+    .limit(200);
+  return error || !data ? [] : (data as unknown as AdminPayment[]);
+}
+
+/* The raw log across every booking — the last hundred lines. */
+export async function getPaymentEventFeed(): Promise<AdminPaymentEvent[]> {
+  if (!isSupabaseConfigured) return demoPayments().events;
+  const supabase = await createServerSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('payment_events')
+    .select('*, booking:bookings(code, guest_name)')
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+    .limit(100);
+  return error || !data ? [] : (data as unknown as AdminPaymentEvent[]);
 }

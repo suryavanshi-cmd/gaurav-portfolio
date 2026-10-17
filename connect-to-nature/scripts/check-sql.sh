@@ -34,4 +34,7 @@ PGOPTIONS="" psql -v ON_ERROR_STOP=1 -q -d "${DB}" -f "${HERE}/supabase/tests/as
 echo "→ row-level security"
 PGOPTIONS="" psql -v ON_ERROR_STOP=1 -q -d "${DB}" -f "${HERE}/supabase/tests/rls.sql"
 
+echo "→ payment ledger"
+PGOPTIONS="" psql -v ON_ERROR_STOP=1 -q -d "${DB}" -f "${HERE}/supabase/tests/payments.sql"
+
 echo "SQL check passed."

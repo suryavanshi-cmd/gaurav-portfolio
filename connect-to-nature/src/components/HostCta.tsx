@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Reveal } from './ui/Reveal';
 import { Scene } from './Scene';
+import { Photo } from './ui/Photo';
+import { PHOTOS } from '@/lib/photo-credits';
 
 export function HostCta() {
   const { t } = useIntl();
@@ -12,7 +14,11 @@ export function HostCta() {
     <Reveal>
       <div className="card relative overflow-hidden">
         <div className="absolute inset-0 -z-10 opacity-70">
-          <Scene scene="vineyard" seed="host-cta" className="h-full w-full" />
+          {PHOTOS['pabhare-house'] ? (
+            <Photo photo={PHOTOS['pabhare-house']} sizes="100vw" className="h-full w-full" />
+          ) : (
+            <Scene scene="vineyard" seed="host-cta" className="h-full w-full" />
+          )}
         </div>
         <div className="bg-[color-mix(in_srgb,var(--color-surface)_82%,transparent)] p-8 backdrop-blur-xl sm:p-12">
           <h2 className="max-w-xl text-[clamp(1.5rem,3vw,2.2rem)] font-semibold tracking-[-0.025em]">

@@ -1,13 +1,19 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useDeferredValue, useMemo, useState } from 'react';
 import {
   DEFAULT_LOCALE, LOCALE_COOKIE, LOCALE_MAX_AGE, LOCALE_META, type Locale,
 } from './config';
 import { formatDate, formatMoney, pickText, translate, translateList, type I18nField } from './dictionaries';
 
 interface IntlValue {
+  /* What the page renders in. Deferred: switching language re-renders every
+     component on the page, and React can do that at lower priority while the
+     click paints immediately. */
   locale: Locale;
+  /* What the switcher shows as chosen. Never deferred — the control has to
+     move under the finger that pressed it, or the tap reads as ignored. */
+  selected: Locale;
   setLocale: (next: Locale) => void;
   t: (path: string, vars?: Record<string, string | number>) => string;
   list: (path: string) => string[];
@@ -26,6 +32,7 @@ export function IntlProvider({
   children: React.ReactNode;
 }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
+  const deferredLocale = useDeferredValue(locale);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
@@ -36,14 +43,15 @@ export function IntlProvider({
   }, []);
 
   const value = useMemo<IntlValue>(() => ({
-    locale,
+    locale: deferredLocale,
+    selected: locale,
     setLocale,
-    t: (path, vars) => translate(locale, path, vars),
-    list: (path) => translateList(locale, path),
-    tx: (field) => pickText(field, locale),
+    t: (path, vars) => translate(deferredLocale, path, vars),
+    list: (path) => translateList(deferredLocale, path),
+    tx: (field) => pickText(field, deferredLocale),
     money: (amount) => formatMoney(amount),
-    date: (iso) => formatDate(iso, locale),
-  }), [locale, setLocale]);
+    date: (iso) => formatDate(iso, deferredLocale),
+  }), [deferredLocale, locale, setLocale]);
 
   return <IntlContext.Provider value={value}>{children}</IntlContext.Provider>;
 }

@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Reveal } from './ui/Reveal';
 import { Scene } from './Scene';
+import { Photo } from './ui/Photo';
 import type { Region } from '@/lib/types';
+import { photosFor } from '@/lib/photo-credits';
 import { revealDelay } from '@/lib/stagger';
 
 /* Regions come out of the regions table, not out of the code — an admin can add
@@ -14,11 +16,17 @@ export function RegionCards({ regions }: { regions: Region[] }) {
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      {regions.map((region, index) => (
+      {regions.map((region, index) => {
+        const photo = photosFor('regions', region.slug)[0];
+        return (
         <Reveal key={region.id} delay={revealDelay(index)}>
           <article className="card card-hover h-full overflow-hidden">
             <div className="relative aspect-[16/7] overflow-hidden">
-              <Scene scene={region.hero_scene} seed={region.slug} className="h-full w-full" />
+              {photo ? (
+                <Photo photo={photo} sizes="(min-width: 768px) 46vw, 92vw" className="h-full w-full" />
+              ) : (
+                <Scene scene={region.hero_scene} seed={region.slug} className="h-full w-full" />
+              )}
             </div>
             <div className="p-6 sm:p-7">
               <div className="flex items-center gap-3">
@@ -54,7 +62,8 @@ export function RegionCards({ regions }: { regions: Region[] }) {
             </div>
           </article>
         </Reveal>
-      ))}
+        );
+      })}
     </div>
   );
 }
