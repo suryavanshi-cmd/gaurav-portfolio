@@ -36,9 +36,9 @@ export const PERSON = {
 };
 
 export const SITE = {
-  title: 'Gaurav Suryavanshi — A student everywhere'
+  title: 'Gaurav Suryavanshi — A student everywhere',
   description:
-    'A student everywhere and an engineer by mindset, Gaurav loves learning and sharing ideas from mathematics, technology, films and everyday life—with a little sarcasm.'
+    'A student everywhere and an engineer by mindset, Gaurav loves learning and sharing ideas from mathematics, technology, films and everyday life—with a little sarcasm.',
   keywords: [
     'Gaurav Suryavanshi',
     'Student everywhere',

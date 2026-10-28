@@ -13,8 +13,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Gaurav Suryavanshi — A little curious. Always creating.',
-    description: 'Software, cinema, curiosity, and the little things that make me who I am.',
+    title: 'Gaurav Suryavanshi — A student everywhere. Always learning.',
+    description: 'An engineer by mindset. A student everywhere. Learning and sharing with a little sarcasm.',
   },
 };
 
@@ -24,24 +24,24 @@ const interests = [
     symbol: '✳',
     label: 'THE DEFAULT SETTING',
     title: 'A student everywhere.',
-    description: 'I learn from almost anything: engineering, mathematics, people, films and the world around me. One question tends to become ten. Very efficient, obviously.'
-    extra: 'Currently enrolled in the university of asking too many questions.'
+    description: 'I learn from almost anything: engineering, mathematics, people, films and the world around me. One question tends to become ten. Very efficient, obviously.',
+    extra: 'Currently enrolled in the university of asking too many questions.',
   },
   {
     number: '02',
     symbol: '◉',
     label: 'AFTER THE LAPTOP CLOSES',
     title: 'Stories, please.',
-    description: 'Films are my other classroom. Great stories stay with me, change how I see things and occasionally inspire something I want to make.'
-    extra: '“Just one more film” — historically, a very reliable plan.'
+    description: 'Films are my other classroom. Great stories stay with me, change how I see things and occasionally inspire something I want to make.',
+    extra: '“Just one more film” — historically, a very reliable plan.',
   },
   {
     number: '03',
     symbol: '↗',
     label: 'MY FAVOURITE EXPERIMENT',
     title: 'Make it. Share it.',
-    description: 'I think like an engineer beyond software: learn how something works, experiment, make a useful thing and explain it so somebody else can learn too.'
-    extra: 'If it fails, I call it research. Surprisingly effective.'
+    description: 'I think like an engineer beyond software: learn how something works, experiment, make a useful thing and explain it so somebody else can learn too.',
+    extra: 'If it fails, I call it research. Surprisingly effective.',
   },
 ];
 
