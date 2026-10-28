@@ -6,6 +6,16 @@ export const metadata = {
   title: 'Gaurav Suryavanshi — Curious mind. Creative builder.',
   description: 'A personal corner of the internet for Gaurav Suryavanshi. A curious software creator, film enthusiast, and lifelong learner based in Pune, India.',
   alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Gaurav Suryavanshi — A little curious. Always creating.',
+    description: 'Software, cinema, curiosity, and the little things that make me who I am.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gaurav Suryavanshi — A little curious. Always creating.',
+    description: 'Software, cinema, curiosity, and the little things that make me who I am.',
+  },
 };
 
 const interests = [
