@@ -36,11 +36,17 @@ export const PERSON = {
 };
 
 export const SITE = {
-  title: 'Gaurav Suryavanshi — SDET, API automation and LLM tools',
+  title: 'Gaurav Suryavanshi — A student everywhere'
   description:
-    'Gaurav Suryavanshi is an SDET in Pune. He builds API test automation in Java 17, TestNG and Rest-Assured, writes backend services in Node.js and NestJS, and makes LLM tools and live demos you can try in the browser.',
+    'A student everywhere and an engineer by mindset, Gaurav loves learning and sharing ideas from mathematics, technology, films and everyday life—with a little sarcasm.'
   keywords: [
     'Gaurav Suryavanshi',
+    'Student everywhere',
+    'Lifelong learner',
+    'Learning and sharing',
+    'Engineering mindset',
+    'Mathematics teacher',
+    'Film enthusiast',
     'SDET',
     'API test automation',
     'Rest-Assured',

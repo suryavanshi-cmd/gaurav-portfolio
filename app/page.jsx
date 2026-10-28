@@ -3,12 +3,12 @@ import './css/personal.css';
 import { PERSON } from '../components/site';
 
 export const metadata = {
-  title: 'Gaurav Suryavanshi — Curious mind. Creative builder.',
-  description: 'A personal corner of the internet for Gaurav Suryavanshi. A curious software creator, film enthusiast, and lifelong learner based in Pune, India.',
+  title: 'Gaurav Suryavanshi — A student everywhere. Always learning.',
+  description: 'A student everywhere, an engineer by mindset, a curious maker and teacher who loves learning, sharing, mathematics, films and a little sarcasm.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Gaurav Suryavanshi — A little curious. Always creating.',
-    description: 'Software, cinema, curiosity, and the little things that make me who I am.',
+    title: 'Gaurav Suryavanshi — A student everywhere. Always learning.',
+    description: 'Always learning and sharing: engineering, mathematics, films, everyday curiosity, and a little sarcasm.',
     type: 'website',
   },
   twitter: {
@@ -23,25 +23,25 @@ const interests = [
     number: '01',
     symbol: '✳',
     label: 'THE DEFAULT SETTING',
-    title: 'Always curious.',
-    description: 'I ask too many questions, look things up for no particular reason, and enjoy going down rabbit holes just to see where they lead.',
-    extra: 'The best ideas usually start with “what if?”',
+    title: 'A student everywhere.',
+    description: 'I learn from almost anything: engineering, mathematics, people, films and the world around me. One question tends to become ten. Very efficient, obviously.'
+    extra: 'Currently enrolled in the university of asking too many questions.'
   },
   {
     number: '02',
     symbol: '◉',
     label: 'AFTER THE LAPTOP CLOSES',
-    title: 'A good film, always.',
-    description: 'I love watching movies. A great story can stay in my head for days, and sometimes sends me searching for a new idea of my own.',
-    extra: 'Stories have a way of changing perspectives.',
+    title: 'Stories, please.',
+    description: 'Films are my other classroom. Great stories stay with me, change how I see things and occasionally inspire something I want to make.'
+    extra: '“Just one more film” — historically, a very reliable plan.'
   },
   {
     number: '03',
     symbol: '↗',
     label: 'MY FAVOURITE EXPERIMENT',
-    title: 'Making things.',
-    description: 'I genuinely like creating software: little tools, bigger systems, odd experiments, and the occasional idea that starts with absolutely no plan.',
-    extra: 'Some things work. All of them teach me something.',
+    title: 'Make it. Share it.',
+    description: 'I think like an engineer beyond software: learn how something works, experiment, make a useful thing and explain it so somebody else can learn too.'
+    extra: 'If it fails, I call it research. Surprisingly effective.'
   },
 ];
 
@@ -95,19 +95,19 @@ export default function Home() {
 
         <section className="mp-hero" aria-labelledby="mp-title">
           <div className="mp-hero-copy">
-            <div className="mp-kicker"><span className="mp-kicker-dot" /> A PERSONAL CORNER OF THE INTERNET <span className="mp-kicker-dash">—</span> PUNE, INDIA</div>
+            <div className="mp-kicker"><span className="mp-kicker-dot" /> A STUDENT OF EVERYTHING, EVERYWHERE <span className="mp-kicker-dash">—</span> PUNE, INDIA</div>
             <h1 id="mp-title">
-              A little <em>curious.</em>
-              <span>Always creating<span className="mp-title-dot">.</span></span>
+              A student <em>everywhere.</em>
+              <span>Always learning<span className="mp-title-dot">.</span></span>
             </h1>
             <p className="mp-hero-intro">
-              Hey, I’m <strong>Gaurav.</strong> I write software, watch a lot of movies, think about how things work, and occasionally turn a random thought into something real.
+              Hey, I’m <strong>Gaurav.</strong> An engineer by mindset and a student everywhere I go. I love learning, sharing what I discover, building things, teaching mathematics and watching films. Sometimes I even close a browser tab.
             </p>
             <div className="mp-hero-actions">
               <a className="mp-action-primary" href="#about">Get to know me <span aria-hidden="true">↗</span></a>
               <a className="mp-action-text" href="#making">See what I’m making <span aria-hidden="true">↗</span></a>
             </div>
-            <div className="mp-side-note"><span aria-hidden="true">↳</span> Not a résumé. Just a little more of me.</div>
+            <div className="mp-side-note"><span aria-hidden="true">↳</span> Not a résumé. Notes from a lifelong student.</div>
           </div>
 
           <div className="mp-hero-art" aria-label="Portrait and personal stickers">
@@ -125,19 +125,19 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="mp-sticker mp-sticker-top" aria-hidden="true">GOOD IDEAS<br />START SMALL ✳</div>
-            <div className="mp-sticker mp-sticker-round" aria-hidden="true"><span>STILL<br />FIGURING<br />IT OUT</span><b>↗</b></div>
+            <div className="mp-sticker mp-sticker-top" aria-hidden="true">LEARN<br />THEN SHARE ✳</div>
+            <div className="mp-sticker mp-sticker-round" aria-hidden="true"><span>STUDENT<br />OF<br />EVERYTHING</span><b>↗</b></div>
             <div className="mp-hand-note" aria-hidden="true">hi, that’s me! <span>⤴</span></div>
-            <div className="mp-hero-art-caption">SOMEWHERE BETWEEN THE NEXT IDEA AND THE NEXT FILM.</div>
+            <div className="mp-hero-art-caption">LEARNING EVERYWHERE. FIGURING IT OUT AS I GO.</div>
           </div>
         </section>
 
         <div className="mp-ticker" aria-label="Things that describe me">
-          <span>CURIOUS MIND</span><i aria-hidden="true">✳</i>
-          <span>MOVIE PERSON</span><i aria-hidden="true">✳</i>
-          <span>SOFTWARE MAKER</span><i aria-hidden="true">✳</i>
-          <span>LIFELONG LEARNER</span><i aria-hidden="true">✳</i>
-          <span>VERY MUCH HUMAN</span>
+          <span>STUDENT EVERYWHERE</span><i aria-hidden="true">✳</i>
+          <span>FILMS & STORIES</span><i aria-hidden="true">✳</i>
+          <span>ENGINEER BY MINDSET</span><i aria-hidden="true">✳</i>
+          <span>LEARN & SHARE</span><i aria-hidden="true">✳</i>
+          <span>SARCASM INCLUDED</span>
         </div>
 
         <section id="about" className="mp-about mp-section" aria-labelledby="mp-about-title">
@@ -146,15 +146,15 @@ export default function Home() {
             <span className="mp-small-arrow" aria-hidden="true">↘</span>
           </div>
           <div className="mp-about-layout">
-            <h2 id="mp-about-title">I like understanding things.<br /><em>Then making my own.</em></h2>
+            <h2 id="mp-about-title">Always a student.<br /><em>Of more than one subject.</em></h2>
             <div className="mp-about-copy">
-              <p>I’m a software engineer, but that’s just one part of the story. Before any job title, I’m someone who gets excited by a new question, an interesting film, or an idea scribbled down at the wrong time.</p>
-              <p>My favourite way to learn is to build. I enjoy untangling complicated problems, experimenting with different approaches, and making things that feel surprisingly simple in the end.</p>
-              <p>I've also spent time teaching engineering mathematics. Explaining a tricky idea until it finally clicks for someone else is a kind of magic I never get tired of.</p>
+              <p>Software engineering is what I do professionally; being a student everywhere is who I am. I learn from mathematics, technology, films, conversations and ordinary things most people walk past.</p>
+              <p>I like asking questions, making things, getting them wrong, fixing them and sharing what finally makes sense. The engineer in me likes solutions; the student in me keeps asking why.</p>
+              <p>I teach engineering mathematics too. The best part is when a difficult idea clicks for someone else. The bonus is discovering how much the teacher still has to learn.</p>
               <Link className="mp-inline-link" href="/about">The slightly more professional version <span aria-hidden="true">↗</span></Link>
             </div>
           </div>
-          <div className="mp-scribble" aria-hidden="true">stay curious, always. <span>✳</span></div>
+          <div className="mp-scribble" aria-hidden="true">forever a student, apparently. <span>✳</span></div>
         </section>
 
         <section id="interests" className="mp-interests mp-section" aria-labelledby="mp-interests-title">
@@ -163,8 +163,8 @@ export default function Home() {
             <span className="mp-small-arrow" aria-hidden="true">↘</span>
           </div>
           <div className="mp-heading-flex">
-            <h2 id="mp-interests-title">A few things that<br /><em>make me, me.</em></h2>
-            <p>Because there’s a lot more to a person than the things they put on LinkedIn.</p>
+            <h2 id="mp-interests-title">Things I learn from.<br /><em>Things I enjoy.</em></h2>
+            <p>Curiosity doesn’t respect job descriptions. Thankfully.</p>
           </div>
           <div className="mp-interest-grid">
             {interests.map((item) => (
@@ -184,10 +184,10 @@ export default function Home() {
         <section className="mp-moments" aria-label="Little moments of an ordinary day">
           <div className="mp-moments-title"><span className="mp-index">A FEW FAMILIAR SCENES</span><span>✳</span></div>
           <div className="mp-moments-grid">
-            <div><span>01</span><p>One more question<br />before I sleep.</p></div>
-            <div><span>02</span><p>A film I’ll keep<br />thinking about.</p></div>
-            <div><span>03</span><p>Too many tabs,<br />one new idea.</p></div>
-            <div><span>04</span><p>“What if I just<br />build it?”</p></div>
+            <div><span>01</span><p>A new question.<br />At midnight, naturally.</p></div>
+            <div><span>02</span><p>Movie credits roll.<br />Learning continues.</p></div>
+            <div><span>03</span><p>Twenty open tabs.<br />Apparently, research.</p></div>
+            <div><span>04</span><p>Learn it. Build it.<br />Explain it. Repeat.</p></div>
           </div>
         </section>
 
@@ -198,7 +198,7 @@ export default function Home() {
           </div>
           <div className="mp-heading-flex">
             <h2 id="mp-making-title">Ideas I followed<br /><em>all the way through.</em></h2>
-            <p>No endless technology lists. Just a few things I was curious enough to make real.</p>
+            <p>Not everything I learn becomes software. Here are a few questions that did—and what I built while trying to answer them.</p>
           </div>
           <div className="mp-work-grid">
             {projects.map((project) => (
@@ -219,13 +219,13 @@ export default function Home() {
 
         <section className="mp-note mp-section" aria-labelledby="mp-note-title">
           <span className="mp-index">04 / A NOTE TO SELF</span>
-          <div className="mp-note-content"><span className="mp-note-mark" aria-hidden="true">“</span><h2 id="mp-note-title">Keep asking better questions.<br /><em>Keep making little things.</em><br />Keep enjoying the story.</h2><span className="mp-note-sign">— Gaurav, probably with 20 tabs open.</span></div>
+          <div className="mp-note-content"><span className="mp-note-mark" aria-hidden="true">“</span><h2 id="mp-note-title">Be a student everywhere.<br /><em>Learn something. Share something.</em><br />Don’t take yourself too seriously.</h2><span className="mp-note-sign">— Gaurav, who absolutely needed that twenty-first tab.</span></div>
         </section>
 
         <section className="mp-contact mp-section" aria-labelledby="mp-contact-title">
           <div className="mp-section-heading"><span className="mp-index">05 / KEEP IN TOUCH</span><span className="mp-small-arrow" aria-hidden="true">↘</span></div>
           <div className="mp-contact-inner">
-            <div><p>HAVE AN IDEA, A QUESTION OR A FILM RECOMMENDATION?</p><h2 id="mp-contact-title">Come say <em>hello.</em></h2></div>
+            <div><p>HAVE SOMETHING TO TEACH ME, A QUESTION, OR A FILM RECOMMENDATION?</p><h2 id="mp-contact-title">Come say <em>hello.</em></h2></div>
             <a className="mp-contact-button" href={'mailto:' + PERSON.email} aria-label="Email Gaurav">↗</a>
           </div>
           <div className="mp-contact-links">
@@ -237,7 +237,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="mp-footer"><span>© {new Date().getFullYear()} Gaurav Suryavanshi</span><span>Made with curiosity in Pune, India. <span aria-hidden="true">✳</span></span><a href="#main">Back to top ↑</a></footer>
+        <footer className="mp-footer"><span>© {new Date().getFullYear()} Gaurav Suryavanshi</span><span>A student everywhere. Made with curiosity in Pune, India. <span aria-hidden="true">✳</span></span><a href="#main">Back to top ↑</a></footer>
       </div>
     </main>
   );
