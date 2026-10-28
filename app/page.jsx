@@ -1,181 +1,234 @@
 import Link from 'next/link';
-import { Counter, CopyEmail, Rotator, SpotlightGroup } from '../components/ui';
-import { Icon, PostCard, ProjectCard } from '../components/cards';
-import { LAB, LAB_BUILDS, LAB_LEARN, LAB_TOOLS } from '../components/lab/registry';
-import TryIt from '../components/TryIt';
-import { projects } from '../components/projects';
-import { posts } from '../components/posts';
+import './css/personal.css';
 import { PERSON } from '../components/site';
 
 export const metadata = {
+  title: 'Gaurav Suryavanshi — Curious mind. Creative builder.',
+  description: 'A personal corner of the internet for Gaurav Suryavanshi. A curious software creator, film enthusiast, and lifelong learner based in Pune, India.',
   alternates: { canonical: '/' },
 };
 
-const WORDS = ['Java 17', 'TestNG', 'Rest-Assured', 'Oracle SQL', 'Node.js', 'NestJS', 'Spring Boot', 'MongoDB', 'Python'];
+const interests = [
+  {
+    number: '01',
+    symbol: '✳',
+    label: 'THE DEFAULT SETTING',
+    title: 'Always curious.',
+    description: 'I ask too many questions, look things up for no particular reason, and enjoy going down rabbit holes just to see where they lead.',
+    extra: 'The best ideas usually start with “what if?”',
+  },
+  {
+    number: '02',
+    symbol: '◉',
+    label: 'AFTER THE LAPTOP CLOSES',
+    title: 'A good film, always.',
+    description: 'I love watching movies. A great story can stay in my head for days, and sometimes sends me searching for a new idea of my own.',
+    extra: 'Stories have a way of changing perspectives.',
+  },
+  {
+    number: '03',
+    symbol: '↗',
+    label: 'MY FAVOURITE EXPERIMENT',
+    title: 'Making things.',
+    description: 'I genuinely like creating software: little tools, bigger systems, odd experiments, and the occasional idea that starts with absolutely no plan.',
+    extra: 'Some things work. All of them teach me something.',
+  },
+];
 
-const DOING = [
+const projects = [
   {
-    icon: 'test',
-    title: 'Test automation',
-    text: 'API test frameworks in Java 17, TestNG and Rest-Assured.',
-    items: ['190+ case regression suite', 'Parallel runs in CI', 'Schema and database checks'],
-    href: '/projects/claims-api-test-framework',
+    number: '01 / A DATABASE, FROM ZERO',
+    title: 'QueryLite',
+    description: 'I wanted to understand what happens between writing a SQL query and getting an answer. So I built a tiny database engine.',
+    href: '/projects/querylite',
+    icon: 'select * from ideas;',
+    tag: 'A PERSONAL EXPERIMENT',
+    type: 'database',
   },
   {
-    icon: 'server',
-    title: 'Backend',
-    text: 'Services in Node.js, NestJS, Express and Spring Boot.',
-    items: ['REST, SSE and JWT auth', 'Socket.io real-time', 'MongoDB and Oracle SQL'],
-    href: '/projects/realtime-chat-backend',
+    number: '02 / A DISTRIBUTED EXPERIMENT',
+    title: 'Raft, made visual',
+    description: 'A hands-on way to explore how machines agree, disagree, fail, and still find their way back.',
+    href: '/projects/raft-consensus',
+    icon: '● — ● — ●',
+    tag: 'LEARNING BY BUILDING',
+    type: 'raft',
   },
   {
-    icon: 'spark',
-    title: 'AI, made simple',
-    text: 'Games that explain AI agents and how to test them.',
-    items: ['LangGraph: wire an agent', 'Langfuse: trace detective', 'A prompt-injection game'],
-    href: '/lab#learn',
-  },
-  {
-    icon: 'layers',
-    title: 'Systems from scratch',
-    text: 'Databases, distributed systems and real-time apps.',
-    items: ['A SQL database with a query planner', 'Raft consensus', 'A live collaborative editor'],
-    href: '/lab#built',
+    number: '03 / A REAL-TIME IDEA',
+    title: 'A shared canvas',
+    description: 'Two people, one space, and edits that stay in sync. A small window into collaborative systems.',
+    href: '/projects/crdt-editor',
+    icon: 'A + B → ∞',
+    tag: 'AN INTERACTIVE BUILD',
+    type: 'crdt',
   },
 ];
 
 export default function Home() {
-  const featured = projects.filter((project) => project.featured);
-  const latest = posts.slice(0, 3);
-
   return (
-    <main id="main">
-      <section className="hero" aria-labelledby="hero-title">
-        <div className="wrap">
-          <p className="eyebrow" data-rise>SDET · {PERSON.city}, {PERSON.country}</p>
-          <h1 id="hero-title" className="display hero-title" data-rise style={{ '--rise': 1 }}>
-            I test software for a living. <span className="hero-soft">I build it for fun.</span>
-          </h1>
-          <p className="lede" data-rise style={{ '--rise': 2 }}>
-            I write API test automation for health-insurance claims at {PERSON.employer}. On my own I build
-            systems from scratch — a SQL database, Raft consensus, a live collaborative editor. You can run
-            every one of them here, in your browser.
-          </p>
-          <p className="rotator" data-rise style={{ '--rise': 3 }}>
-            Working with <Rotator words={WORDS} />
-          </p>
-          <div className="btn-row" data-rise style={{ '--rise': 4 }}>
-            <Link href="/lab" className="btn btn-primary">Try it in your browser</Link>
-            <Link href="/projects" className="btn btn-ghost">See my projects</Link>
-          </div>
-        </div>
-        <span className="scroll-cue" aria-hidden="true" />
-      </section>
+    <main id="main" className="mp-home">
+      <div className="mp-page">
+        <header className="mp-header">
+          <Link className="mp-logo" href="/" aria-label="Gaurav Suryavanshi — homepage">
+            <span className="mp-logo-circle">g.</span>
+            <span>gaurav<span className="mp-logo-period">.</span></span>
+          </Link>
+          <nav className="mp-navigation" aria-label="Homepage navigation">
+            <a href="#about">About me</a>
+            <a href="#interests">Little things</a>
+            <a href="#making">Things I make</a>
+            <Link href="/lab">Playground</Link>
+          </nav>
+          <a className="mp-header-contact" href={'mailto:' + PERSON.email}>Say hello <span aria-hidden="true">↗</span></a>
+        </header>
 
-      <section className="solid section-tight" aria-label="In numbers">
-        <div className="wrap">
-          <div className="stats" data-rise>
-            <div className="stat"><Counter to={190} suffix="+" /><span>API test cases in one regression suite</span></div>
-            <div className="stat"><Counter to={2} suffix="+" /><span>years building test automation</span></div>
-            <div className="stat"><Counter to={LAB.length} /><span>free tools and games on this site</span></div>
-            <div className="stat"><Counter to={posts.length} /><span>short posts on testing and systems</span></div>
+        <section className="mp-hero" aria-labelledby="mp-title">
+          <div className="mp-hero-copy">
+            <div className="mp-kicker"><span className="mp-kicker-dot" /> A PERSONAL CORNER OF THE INTERNET <span className="mp-kicker-dash">—</span> PUNE, INDIA</div>
+            <h1 id="mp-title">
+              A little <em>curious.</em>
+              <span>Always creating<span className="mp-title-dot">.</span></span>
+            </h1>
+            <p className="mp-hero-intro">
+              Hey, I’m <strong>Gaurav.</strong> I write software, watch a lot of movies, think about how things work, and occasionally turn a random thought into something real.
+            </p>
+            <div className="mp-hero-actions">
+              <a className="mp-action-primary" href="#about">Get to know me <span aria-hidden="true">↗</span></a>
+              <a className="mp-action-text" href="#making">See what I’m making <span aria-hidden="true">↗</span></a>
+            </div>
+            <div className="mp-side-note"><span aria-hidden="true">↳</span> Not a résumé. Just a little more of me.</div>
           </div>
-        </div>
-      </section>
 
-      <section className="solid section" aria-labelledby="doing-title">
-        <div className="wrap">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow" data-rise>What I do</p>
-              <h2 id="doing-title" className="headline" data-rise style={{ '--rise': 1 }}>More than testing.</h2>
-              <p className="lede" data-rise style={{ '--rise': 2 }}>
-                Testing is my job. I also write the backend, the AI tools and the whole app — because that is
-                how I know what I am testing.
-              </p>
+          <div className="mp-hero-art" aria-label="Portrait and personal stickers">
+            <div className="mp-sketch-circle" aria-hidden="true" />
+            <div className="mp-photo-outer">
+              <div className="mp-photo-inner">
+                <span className="mp-photo-initials" aria-hidden="true">GS</span>
+                <img
+                  src="https://avatars.githubusercontent.com/u/304623412?v=4"
+                  alt="Gaurav Suryavanshi's GitHub profile image"
+                  width="540"
+                  height="540"
+                  loading="eager"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            </div>
+            <div className="mp-sticker mp-sticker-top" aria-hidden="true">GOOD IDEAS<br />START SMALL ✳</div>
+            <div className="mp-sticker mp-sticker-round" aria-hidden="true"><span>STILL<br />FIGURING<br />IT OUT</span><b>↗</b></div>
+            <div className="mp-hand-note" aria-hidden="true">hi, that’s me! <span>⤴</span></div>
+            <div className="mp-hero-art-caption">SOMEWHERE BETWEEN THE NEXT IDEA AND THE NEXT FILM.</div>
+          </div>
+        </section>
+
+        <div className="mp-ticker" aria-label="Things that describe me">
+          <span>CURIOUS MIND</span><i aria-hidden="true">✳</i>
+          <span>MOVIE PERSON</span><i aria-hidden="true">✳</i>
+          <span>SOFTWARE MAKER</span><i aria-hidden="true">✳</i>
+          <span>LIFELONG LEARNER</span><i aria-hidden="true">✳</i>
+          <span>VERY MUCH HUMAN</span>
+        </div>
+
+        <section id="about" className="mp-about mp-section" aria-labelledby="mp-about-title">
+          <div className="mp-section-heading">
+            <span className="mp-index">01 / A LITTLE ABOUT ME</span>
+            <span className="mp-small-arrow" aria-hidden="true">↘</span>
+          </div>
+          <div className="mp-about-layout">
+            <h2 id="mp-about-title">I like understanding things.<br /><em>Then making my own.</em></h2>
+            <div className="mp-about-copy">
+              <p>I’m a software engineer, but that’s just one part of the story. Before any job title, I’m someone who gets excited by a new question, an interesting film, or an idea scribbled down at the wrong time.</p>
+              <p>My favourite way to learn is to build. I enjoy untangling complicated problems, experimenting with different approaches, and making things that feel surprisingly simple in the end.</p>
+              <p>I've also spent time teaching engineering mathematics. Explaining a tricky idea until it finally clicks for someone else is a kind of magic I never get tired of.</p>
+              <Link className="mp-inline-link" href="/about">The slightly more professional version <span aria-hidden="true">↗</span></Link>
             </div>
           </div>
-          <SpotlightGroup>
-            <div className="grid grid-4 stagger" data-rise>
-              {DOING.map((item) => (
-                <Link key={item.title} href={item.href} className="card do-card">
-                  <span className="do-icon"><Icon name={item.icon} /></span>
+          <div className="mp-scribble" aria-hidden="true">stay curious, always. <span>✳</span></div>
+        </section>
+
+        <section id="interests" className="mp-interests mp-section" aria-labelledby="mp-interests-title">
+          <div className="mp-section-heading">
+            <span className="mp-index">02 / THE LITTLE THINGS</span>
+            <span className="mp-small-arrow" aria-hidden="true">↘</span>
+          </div>
+          <div className="mp-heading-flex">
+            <h2 id="mp-interests-title">A few things that<br /><em>make me, me.</em></h2>
+            <p>Because there’s a lot more to a person than the things they put on LinkedIn.</p>
+          </div>
+          <div className="mp-interest-grid">
+            {interests.map((item) => (
+              <article className="mp-interest" key={item.number}>
+                <div className="mp-interest-top"><span>{item.number} / 03</span><span className="mp-interest-symbol" aria-hidden="true">{item.symbol}</span></div>
+                <div className="mp-interest-content">
+                  <p className="mp-micro-label">{item.label}</p>
                   <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                  <ul>{item.items.map((line) => <li key={line}>{line}</li>)}</ul>
-                </Link>
-              ))}
-            </div>
-          </SpotlightGroup>
-        </div>
-      </section>
+                  <p>{item.description}</p>
+                </div>
+                <p className="mp-interest-foot">{item.extra}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section className="soft section" aria-labelledby="live-title">
-        <div className="wrap">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow" data-rise>Try it</p>
-              <h2 id="live-title" className="headline" data-rise style={{ '--rise': 1 }}>Built to run, not just to read.</h2>
-              <p className="lede" data-rise style={{ '--rise': 2 }}>
-                Systems written from scratch, everyday tools and games — all running in your browser. No sign-up.
-              </p>
-            </div>
-            <Link href="/lab" className="more-link" data-rise>All {LAB.length} <span aria-hidden="true">›</span></Link>
+        <section className="mp-moments" aria-label="Little moments of an ordinary day">
+          <div className="mp-moments-title"><span className="mp-index">A FEW FAMILIAR SCENES</span><span>✳</span></div>
+          <div className="mp-moments-grid">
+            <div><span>01</span><p>One more question<br />before I sleep.</p></div>
+            <div><span>02</span><p>A film I’ll keep<br />thinking about.</p></div>
+            <div><span>03</span><p>Too many tabs,<br />one new idea.</p></div>
+            <div><span>04</span><p>“What if I just<br />build it?”</p></div>
           </div>
-          <div data-rise>
-            <TryIt builds={LAB_BUILDS.map(({ about, ...t }) => t)} tools={LAB_TOOLS.map(({ about, ...t }) => t)} games={LAB_LEARN.slice(0, 6).map(({ about, ...t }) => t)} />
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="solid section" aria-labelledby="work-title">
-        <div className="wrap">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow" data-rise>Projects</p>
-              <h2 id="work-title" className="headline" data-rise style={{ '--rise': 1 }}>Things I’ve built.</h2>
-            </div>
-            <Link href="/projects" className="more-link" data-rise>All projects <span aria-hidden="true">›</span></Link>
+        <section id="making" className="mp-making mp-section" aria-labelledby="mp-making-title">
+          <div className="mp-section-heading">
+            <span className="mp-index">03 / SOME THINGS I'VE MADE</span>
+            <span className="mp-small-arrow" aria-hidden="true">↘</span>
           </div>
-          <SpotlightGroup>
-            <div className="grid grid-2 stagger" data-rise>
-              {featured.map((project) => <ProjectCard key={project.slug} project={project} />)}
-            </div>
-          </SpotlightGroup>
-        </div>
-      </section>
+          <div className="mp-heading-flex">
+            <h2 id="mp-making-title">Ideas I followed<br /><em>all the way through.</em></h2>
+            <p>No endless technology lists. Just a few things I was curious enough to make real.</p>
+          </div>
+          <div className="mp-work-grid">
+            {projects.map((project) => (
+              <Link href={project.href} key={project.href} className={'mp-work mp-work-' + project.type}>
+                <div className="mp-work-top"><span>{project.number}</span><span aria-hidden="true">↗</span></div>
+                <div className="mp-work-art" aria-hidden="true"><span>{project.icon}</span></div>
+                <div className="mp-work-bottom">
+                  <p className="mp-micro-label">{project.tag}</p>
+                  <h3>{project.title}</h3>
+                  <p>{project.description}</p>
+                  <span className="mp-work-link">Explore this project ↗</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="mp-more-projects"><Link href="/projects">See everything I’ve built <span aria-hidden="true">↗</span></Link><Link href="/lab">Or try something in the playground <span aria-hidden="true">↗</span></Link></div>
+        </section>
 
-      <section className="soft section" aria-labelledby="writing-title">
-        <div className="wrap">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow" data-rise>Writing</p>
-              <h2 id="writing-title" className="headline" data-rise style={{ '--rise': 1 }}>Notes on testing and systems.</h2>
-            </div>
-            <Link href="/writing" className="more-link" data-rise>All posts <span aria-hidden="true">›</span></Link>
-          </div>
-          <SpotlightGroup>
-            <div className="grid grid-3 stagger" data-rise>
-              {latest.map((post) => <PostCard key={post.slug} post={post} />)}
-            </div>
-          </SpotlightGroup>
-        </div>
-      </section>
+        <section className="mp-note mp-section" aria-labelledby="mp-note-title">
+          <span className="mp-index">04 / A NOTE TO SELF</span>
+          <div className="mp-note-content"><span className="mp-note-mark" aria-hidden="true">“</span><h2 id="mp-note-title">Keep asking better questions.<br /><em>Keep making little things.</em><br />Keep enjoying the story.</h2><span className="mp-note-sign">— Gaurav, probably with 20 tabs open.</span></div>
+        </section>
 
-      <section className="solid section contact-band" aria-labelledby="contact-title">
-        <div className="wrap">
-          <p className="eyebrow" data-rise>Contact</p>
-          <h2 id="contact-title" className="display" data-rise style={{ '--rise': 1 }}>Let’s talk.</h2>
-          <p className="lede" data-rise style={{ '--rise': 2 }}>
-            I’m open to SDET, API test automation and LLM application engineering roles.
-          </p>
-          <div className="btn-row" data-rise style={{ '--rise': 3 }}>
-            <CopyEmail email={PERSON.email} />
-            <a href={PERSON.github} className="btn btn-ghost" target="_blank" rel="noreferrer noopener">GitHub ↗</a>
-            <a href={PERSON.resume} className="btn btn-ghost" download>Résumé (PDF)</a>
+        <section className="mp-contact mp-section" aria-labelledby="mp-contact-title">
+          <div className="mp-section-heading"><span className="mp-index">05 / KEEP IN TOUCH</span><span className="mp-small-arrow" aria-hidden="true">↘</span></div>
+          <div className="mp-contact-inner">
+            <div><p>HAVE AN IDEA, A QUESTION OR A FILM RECOMMENDATION?</p><h2 id="mp-contact-title">Come say <em>hello.</em></h2></div>
+            <a className="mp-contact-button" href={'mailto:' + PERSON.email} aria-label="Email Gaurav">↗</a>
           </div>
-        </div>
-      </section>
+          <div className="mp-contact-links">
+            <a href={'mailto:' + PERSON.email}>Email ↗</a>
+            <a href={PERSON.github} target="_blank" rel="noreferrer noopener">GitHub ↗</a>
+            <Link href="/writing">Writing ↗</Link>
+            <Link href="/ask">Ask me something ↗</Link>
+            <a href={PERSON.resume} download>Résumé, if you need it ↗</a>
+          </div>
+        </section>
+
+        <footer className="mp-footer"><span>© {new Date().getFullYear()} Gaurav Suryavanshi</span><span>Made with curiosity in Pune, India. <span aria-hidden="true">✳</span></span><a href="#main">Back to top ↑</a></footer>
+      </div>
     </main>
   );
 }
