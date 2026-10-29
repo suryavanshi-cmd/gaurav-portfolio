@@ -5,7 +5,7 @@ import { CERTIFICATES, PERSON, SKILLS, TIMELINE } from '../../components/site';
 export const metadata = {
   title: 'About',
   description:
-    'About Gaurav Suryavanshi: SDET at Vidal Health TPA in Pune, former backend developer and backend automation intern, B.E. Computer Science (CGPA 8.96), with a copyright-registered machine-learning project.',
+    'An engineer by mindset and a student everywhere. Gaurav is curious about mathematics, films, people and technology. He enjoys learning, sharing, teaching and making things; his professional experience is here too.',
   alternates: { canonical: '/about' },
   openGraph: { url: '/about', title: 'About — Gaurav Suryavanshi', type: 'profile' },
 };
@@ -16,15 +16,13 @@ export default function AboutPage() {
       <section className="page-head">
         <div className="wrap about-top">
           <div>
-            <p className="eyebrow" data-rise>About</p>
-            <h1 className="display" data-rise style={{ '--rise': 1 }}>Hi, I’m Gaurav.</h1>
+            <p className="eyebrow" data-rise>About / A student everywhere</p>
+            <h1 className="display" data-rise style={{ '--rise': 1 }}>Hi, I’m Gaurav. Still learning.</h1>
             <p className="lede" data-rise style={{ '--rise': 2 }}>
-              I’m an SDET in {PERSON.city}. For 2+ years I have built and owned API test automation for large
-              health-insurance claims systems — where a bug doesn’t just look wrong, it reaches somebody’s claim.
+              I'm an engineer by mindset and a student everywhere I go—learning from mathematics, technology, films, people, and whatever catches my curiosity. I like sharing what I learn, occasionally with sarcasm. Apparently curiosity doesn’t have an off switch.
             </p>
             <p className="lede" data-rise style={{ '--rise': 3 }}>
-              I’ve also worked as a backend developer — Node.js services, real-time chat, a chatbot. I still build: full
-              apps, LLM tools and the live demos on this site. Building a thing is the best way to learn how to break it.
+              Professionally, I build and test software in {PERSON.city}. Beyond that I teach engineering mathematics, watch films, try new ideas and build experiments. My work is one chapter, not the whole story.
             </p>
             <div className="btn-row" data-rise style={{ '--rise': 4 }}>
               <a href={PERSON.resume} className="btn btn-primary" download>Download résumé</a>
@@ -41,7 +39,7 @@ export default function AboutPage() {
       <section className="solid section" aria-labelledby="path-title">
         <div className="wrap-prose">
           <p className="eyebrow" data-rise>Experience</p>
-          <h2 id="path-title" className="headline" data-rise style={{ '--rise': 1, marginBottom: 40 }}>The path so far.</h2>
+          <h2 id="path-title" className="headline" data-rise style={{ '--rise': 1, marginBottom: 40 }}>Places I’ve learned.</h2>
           <ol className="timeline" data-rise>
             {TIMELINE.map((entry) => (
               <li key={`${entry.title}-${entry.where}`}>
@@ -59,9 +57,9 @@ export default function AboutPage() {
         <div className="wrap">
           <div className="section-head">
             <div>
-              <p className="eyebrow" data-rise>Skills</p>
+              <p className="eyebrow" data-rise>Professional toolkit</p>
               <h2 id="skills-title" className="headline" data-rise style={{ '--rise': 1 }}>What I work with.</h2>
-              <p className="lede" data-rise style={{ '--rise': 2 }}>Grouped the way my résumé groups them.</p>
+              <p className="lede" data-rise style={{ '--rise': 2 }}>Things I've learned for work. Not a complete inventory of my curiosity.</p>
             </div>
           </div>
           <SpotlightGroup>
@@ -89,8 +87,8 @@ export default function AboutPage() {
         <div className="wrap">
           <div className="section-head">
             <div>
-              <p className="eyebrow" data-rise>Beyond testing</p>
-              <h2 id="beyond-title" className="headline" data-rise style={{ '--rise': 1 }}>Things I build on my own.</h2>
+              <p className="eyebrow" data-rise>Learning by making</p>
+              <h2 id="beyond-title" className="headline" data-rise style={{ '--rise': 1 }}>Questions I tried answering by building.</h2>
             </div>
           </div>
           <SpotlightGroup>
