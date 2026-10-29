@@ -93,6 +93,21 @@ jobs:
           fi
           exit "$status"
 
+      # The /vault gallery's password lives only as a secret: GitHub holds it
+      # as VAULT_PASSWORD and this copies it onto the Worker. Skipped if unset.
+      - name: Set the vault password on the Worker
+        if: steps.creds.outputs.present == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
+        run: |
+          if [ -z "$VAULT_PASSWORD" ]; then
+            echo "::warning::VAULT_PASSWORD secret is not set, so /vault stays locked."
+            exit 0
+          fi
+          printf '%s' "$VAULT_PASSWORD" | npx wrangler secret put VAULT_PASSWORD --name gaurav-portfolio
+
       - name: Verify the live site served the new build
         if: steps.creds.outputs.present == 'true'
         run: |
