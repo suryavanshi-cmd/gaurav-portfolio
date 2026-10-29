@@ -1,49 +1,51 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { accessOk, listFolder, firstImage, imageResponse, cleanPrefix } from '../lib/vault.mjs';
+import {
+  listFolder, firstImage, imageResponse, cleanPrefix,
+  passwordMatches, makeSession, sessionOk, sessionCookie, SESSION_COOKIE,
+} from '../lib/vault.mjs';
+import { loginPage } from '../lib/vault-login.mjs';
 
 /*
-  The vault is private because every request must carry a Cloudflare Access
-  JWT that verifies. If that check ever loosens, the slides become public with
-  no error anywhere, so the refusals are asserted here as carefully as the
-  happy path. The R2 bucket is a small in-memory stand-in with the same list
-  semantics (prefix + delimiter).
+  The vault is private because every request must carry a session cookie
+  signed with VAULT_PASSWORD. If that check ever loosens, the slides become
+  public with no error anywhere, so the refusals are asserted here as carefully
+  as the happy path. The R2 bucket is a small in-memory stand-in with the same
+  list semantics (prefix + delimiter). The password below is a test value.
 */
 
-const kp = await crypto.subtle.generateKey(
-  { name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
-  true, ['sign', 'verify'],
-);
-const jwk = { ...(await crypto.subtle.exportKey('jwk', kp.publicKey)), kid: 'k1', alg: 'RS256' };
-const fakeFetch = async () => ({ json: async () => ({ keys: [jwk] }) });
-const b64u = (b) => Buffer.from(b).toString('base64url');
-const env = { VAULT_TEAM_DOMAIN: 'team.cloudflareaccess.com', VAULT_POLICY_AUD: 'AUD123' };
+const env = { VAULT_PASSWORD: 'test-password-123' };
+const withCookie = (v) => new Headers({ cookie: `other=1; ${SESSION_COOKIE}=${v}` });
 
-async function token({ aud = 'AUD123', iss = 'https://team.cloudflareaccess.com', exp = Date.now() / 1000 + 600, kid = 'k1' } = {}) {
-  const h = b64u(JSON.stringify({ alg: 'RS256', kid }));
-  const p = b64u(JSON.stringify({ aud: [aud], iss, exp, email: 'me@example.com' }));
-  const s = b64u(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', kp.privateKey, new TextEncoder().encode(`${h}.${p}`)));
-  return `${h}.${p}.${s}`;
-}
-const hdr = (t) => new Headers(t ? { 'cf-access-jwt-assertion': t } : {});
-
-test('access: a valid Access token is accepted', async () => {
-  assert.equal(await accessOk(hdr(await token()), env, fakeFetch), true);
+test('password: only the exact password matches', async () => {
+  assert.equal(await passwordMatches('test-password-123', env), true);
+  for (const wrong of ['', 'test-password-12', 'test-password-1234', 'TEST-PASSWORD-123', ' test-password-123']) {
+    assert.equal(await passwordMatches(wrong, env), false, JSON.stringify(wrong));
+  }
+  assert.equal(await passwordMatches('anything', {}), false, 'no password configured means nobody gets in');
 });
 
-test('access: missing, wrong-app, expired, foreign-issuer and tampered tokens are refused', async () => {
-  assert.equal(await accessOk(hdr(), env, fakeFetch), false);
-  assert.equal(await accessOk(hdr(await token({ aud: 'OTHER' })), env, fakeFetch), false);
-  assert.equal(await accessOk(hdr(await token({ exp: Date.now() / 1000 - 5 })), env, fakeFetch), false);
-  assert.equal(await accessOk(hdr(await token({ iss: 'https://evil.cloudflareaccess.com' })), env, fakeFetch), false);
-  assert.equal(await accessOk(hdr(await token({ kid: 'unknown' })), env, fakeFetch), false);
-  const good = await token();
-  assert.equal(await accessOk(hdr(good.slice(0, -4) + 'AAAA'), env, fakeFetch), false);
-  assert.equal(await accessOk(hdr('not.a.jwt'), env, fakeFetch), false);
+test('session: a cookie made by sign-in is accepted', async () => {
+  const v = await makeSession(env);
+  assert.equal(await sessionOk(withCookie(v), env), true);
+  assert.match(sessionCookie(v), /HttpOnly; Secure; SameSite=Strict/);
 });
 
-test('access: fails closed when the vault is not configured', async () => {
-  assert.equal(await accessOk(hdr(await token()), {}, fakeFetch), false);
+test('session: missing, forged, expired and other-password cookies are refused', async () => {
+  assert.equal(await sessionOk(new Headers(), env), false);
+  assert.equal(await sessionOk(withCookie('garbage'), env), false);
+  const v = await makeSession(env);
+  const [exp, sig] = v.split('.');
+  assert.equal(await sessionOk(withCookie(`${Number(exp) + 86400}.${sig}`), env), false, 'stretched expiry');
+  assert.equal(await sessionOk(withCookie(`${exp}.${'0'.repeat(64)}`), env), false, 'forged signature');
+  const old = await makeSession(env, Date.now() - 31 * 86400 * 1000);
+  assert.equal(await sessionOk(withCookie(old), env), false, 'expired');
+  assert.equal(await sessionOk(withCookie(v), { VAULT_PASSWORD: 'changed' }), false, 'password changed');
+  assert.equal(await sessionOk(withCookie(v), {}), false, 'not configured');
+});
+
+test('login page never contains the password', () => {
+  assert.equal(loginPage('Wrong password.').includes(env.VAULT_PASSWORD), false);
 });
 
 const keys = ['a/c1/02.webp', 'a/c1/01.webp', 'a/c2/01.webp', 'top.webp', 'a/note.txt'];

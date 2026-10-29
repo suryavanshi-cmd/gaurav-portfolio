@@ -23,9 +23,9 @@
 
   // Request logs and errors in the dashboard. The /api/ask route logs Gemini's
   // status and message on failure, and this is where that comes out.
-  // Private slide gallery at /vault (app/vault, lib/vault.mjs). Cloudflare
-  // Access guards the path; VAULT_TEAM_DOMAIN and VAULT_POLICY_AUD are set as
-  // dashboard variables, which keep_vars stops a deploy from wiping.
+  // Private slide gallery at /vault (app/vault, lib/vault.mjs), locked by the
+  // VAULT_PASSWORD Worker secret that the deploy workflow pushes from GitHub.
+  // keep_vars stops a deploy from wiping anything set in the dashboard.
   "r2_buckets": [
     { "binding": "VAULT", "bucket_name": "ccinemto-vault" }
   ],
