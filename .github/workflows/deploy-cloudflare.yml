@@ -73,10 +73,47 @@ jobs:
         if: steps.creds.outputs.present == 'true'
         run: npm test
 
+      # Says plainly what is wrong with the saved token before the long build:
+      # stray spaces or line breaks, a Global API Key pasted instead of a token,
+      # or a token Cloudflare does not recognise. Never prints the token.
+      - name: Check the Cloudflare token
+        if: steps.creds.outputs.present == 'true'
+        env:
+          RAW_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          token=$(printf '%s' "$RAW_TOKEN" | tr -d '[:space:]')
+          echo "::add-mask::$token"
+          echo "Token length: ${#token} characters"
+          if [ "$token" != "$RAW_TOKEN" ]; then
+            echo "::warning::The saved token had spaces or line breaks around it. They are stripped for this run; re-save the secret without them."
+          fi
+          if printf '%s' "$token" | grep -Eq '^[0-9a-f]{37}$'; then
+            echo "::error::This looks like the Global API Key, not an API token. Create one under My Profile > API Tokens > Create Token."
+            exit 1
+          fi
+          verify() {
+            curl -sS --max-time 20 -H "Authorization: Bearer $token" "$1" \
+              | python3 -c 'import json,sys
+          d=json.load(sys.stdin)
+          print(("ok " if d.get("success") else "rejected ")+json.dumps({"status":(d.get("result") or {}).get("status"),"errors":d.get("errors")}))'
+          }
+          user=$(verify https://api.cloudflare.com/client/v4/user/tokens/verify)
+          acct=$(verify "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/tokens/verify")
+          echo "User token check:    $user"
+          echo "Account token check: $acct"
+          case "$user$acct" in
+            *'ok {"status": "active"'*) echo "Token is valid and active." ;;
+            *'"status": "disabled"'*|*'"status": "expired"'*)
+              echo "::error::Cloudflare knows this token but it is disabled or expired. Create a new one."; exit 1 ;;
+            *)
+              echo "::error::Cloudflare does not recognise this token. Copy the long value shown once after Create Token, not the token name or ID, and save it as CLOUDFLARE_API_TOKEN."; exit 1 ;;
+          esac
+          echo "CLOUDFLARE_API_TOKEN=$token" >> "$GITHUB_ENV"
+
       - name: Build and deploy with OpenNext
         if: steps.creds.outputs.present == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           NO_COLOR: '1'
           FORCE_COLOR: '0'
@@ -98,7 +135,6 @@ jobs:
       - name: Set the vault password on the Worker
         if: steps.creds.outputs.present == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
         run: |
