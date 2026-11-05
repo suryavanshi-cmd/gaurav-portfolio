@@ -3,20 +3,33 @@
 import Link from 'next/link';
 import { useIntl } from '@/i18n/provider';
 import { Scene } from './Scene';
+import { Photo } from './ui/Photo';
 import type { TripPackage } from '@/lib/types';
+import { photosFor } from '@/lib/photo-credits';
 
 export function PackageCard({ pkg }: { pkg: TripPackage }) {
   const { t, tx, money } = useIntl();
   const listing = pkg.listing;
+  /* The package's own photograph if it has one; otherwise the farm it is built
+     around, which is the same landscape seen from the same road. */
+  const photo = photosFor('packages', pkg.slug)[0] ?? (listing ? photosFor('farms', listing.slug)[0] : undefined);
 
   return (
     <Link href={`/packages/${pkg.slug}`} className="card card-hover group flex flex-col overflow-hidden">
       <div className="relative aspect-[16/9] overflow-hidden">
-        <Scene
-          scene={listing?.scene ?? pkg.region?.hero_scene ?? 'orchard'}
-          seed={pkg.slug}
-          className="h-full w-full transition-transform duration-700 group-hover:scale-[1.04]"
-        />
+        {photo ? (
+          <Photo
+            photo={photo}
+            sizes="(min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw"
+            className="h-full w-full transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <Scene
+            scene={listing?.scene ?? pkg.region?.hero_scene ?? 'orchard'}
+            seed={pkg.slug}
+            className="h-full w-full transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+        )}
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
           <span className="rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink)]">
             {tx(pkg.region?.name)}

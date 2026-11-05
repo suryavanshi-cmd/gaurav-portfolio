@@ -61,7 +61,7 @@ export function ExploreClient({
 
   return (
     <>
-      <div className="sticky top-16 z-30 -mx-4 mb-8 border-b border-[var(--color-line)] px-4 py-4 glass sm:-mx-6 sm:px-6">
+      <div className="glass sticky top-16 z-30 -mx-4 mb-8 border-b border-[var(--color-line)] px-4 py-4 backdrop-blur-xl backdrop-saturate-150 sm:-mx-6 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-wrap items-center gap-3">
             <label className="relative min-w-[220px] flex-1">

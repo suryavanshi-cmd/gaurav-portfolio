@@ -283,8 +283,8 @@ begin
     v_host, 'amrai-wadi-pawas', '{"en":"Two days in an Alphonso wadi above Pawas","hi":"पावस के ऊपर हापुस की वाड़ी में दो दिन","mr":"पावसच्या वर हापूसच्या वाडीत दोन दिवस"}'::jsonb, '{"en":"Four hundred mango trees on a laterite slope, kokum along the boundary, and the sea eleven kilometres down the road. You get the room at the end of the house, its own door, and a veranda that faces the trees.","hi":"जांभा ढलान पर चार सौ आम के पेड़, सीमा पर कोकम, और ग्यारह किलोमीटर नीचे समुद्र। घर के आख़िर वाला कमरा आपका — अपना दरवाज़ा, और पेड़ों की ओर खुलती ओसारी।","mr":"जांभ्या उतारावर चारशे आंब्याची झाडं, बांधावर कोकम, आणि अकरा किलोमीटरवर समुद्र. घराच्या टोकाची खोली तुमची — स्वतःचा दरवाजा, आणि झाडांकडे तोंड असलेली ओसरी."}'::jsonb, v_region,
     'Ratnagiri', '{"en":"Pawas","hi":"पावस","mr":"पावस"}'::jsonb, 'wadi_room', 'orchard',
     array['alphonso', 'kokum', 'coconut'], 2400, 8, 2,
-    array[11, 12, 1, 2, 3, 4, 5]::integer[], 16.9331, 73.3255, 'published', 4.9,
-    86, true, now()
+    array[11, 12, 1, 2, 3, 4, 5]::integer[], 16.9331, 73.3255, 'published', 0,
+    0, true, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -327,8 +327,8 @@ begin
     v_host, 'kaju-mala-achara', '{"en":"A cashew slope, and the creek at the bottom of it","hi":"काजू की ढलान, और उसके नीचे की खाड़ी","mr":"काजूचा माळ, आणि त्याखालची खाडी"}'::jsonb, '{"en":"A separate cottage under the cashew, ten minutes from Achara beach and five from the creek where the kayaks are kept. Roasting happens in February and March; the rest of the year the slope is just quiet.","hi":"काजू के नीचे अलग कुटिया, आचरा समुद्र तट से दस मिनट और उस खाड़ी से पाँच जहाँ कयाक रखे हैं। भूनना फ़रवरी-मार्च में; बाक़ी साल ढलान बस शांत रहती है।","mr":"काजूखाली स्वतंत्र घर, आचरा किनाऱ्यापासून दहा मिनिटं आणि कयाक ठेवलेल्या खाडीपासून पाच. भाजणी फेब्रुवारी-मार्चमध्ये; बाकी वर्षभर माळ नुसताच शांत."}'::jsonb, v_region,
     'Sindhudurg', '{"en":"Achara","hi":"आचरा","mr":"आचरा"}'::jsonb, 'farm_cottage', 'coast',
     array['cashew', 'coconut', 'betelnut'], 2900, 10, 3,
-    array[10, 11, 12, 1, 2, 3, 4]::integer[], 16.1793, 73.4402, 'published', 4.8,
-    124, true, now()
+    array[10, 11, 12, 1, 2, 3, 4]::integer[], 16.1793, 73.4402, 'published', 0,
+    0, true, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -371,8 +371,8 @@ begin
     v_host, 'bhat-shet-roha', '{"en":"Paddy, a river pool, and a house made of mud","hi":"धान, नदी का कुंड, और मिट्टी का घर","mr":"भात, नदीचा डोह, आणि मातीचं घर"}'::jsonb, '{"en":"The cheapest stay on the platform and the one people write the longest reviews about. Two rooms in a mud-and-cowdung house that stays cool at two in the afternoon, and the Kundalika ten minutes away on foot.","hi":"मंच पर सबसे सस्ता ठिकाना, और सबसे लंबी समीक्षाएँ इसी की आती हैं। मिट्टी-गोबर के घर में दो कमरे, जो दोपहर दो बजे भी ठंडे रहते हैं, और दस मिनट पैदल पर कुंडलिका।","mr":"साइटवरचा सगळ्यात स्वस्त मुक्काम, आणि सगळ्यात लांब अभिप्राय ह्याच्याच येतात. मातीच्या-शेणाच्या घरात दोन खोल्या, दुपारी दोनलाही गार, आणि दहा मिनिटांवर कुंडलिका."}'::jsonb, v_region,
     'Raigad', '{"en":"Roha","hi":"रोहा","mr":"रोहा"}'::jsonb, 'mud_house', 'river',
     array['rice', 'betelnut'], 1900, 6, 2,
-    array[7, 8, 9, 10, 11, 12, 1]::integer[], 18.4386, 73.1198, 'published', 4.7,
-    58, false, now()
+    array[7, 8, 9, 10, 11, 12, 1]::integer[], 18.4386, 73.1198, 'published', 0,
+    0, false, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -415,8 +415,8 @@ begin
     v_host, 'warli-angan-jawhar', '{"en":"Warli country: nachni, a painted wall, and no phone signal","hi":"वारली इलाक़ा: नाचनी, चित्रित दीवार, और नेटवर्क नहीं","mr":"वारली मुलूख: नाचणी, चित्रं काढलेली भिंत, आणि रेंज नाही"}'::jsonb, '{"en":"Eight hundred metres up, where Jawhar gets cold in December. The front wall of the house is repainted every year, and you will be handed a bamboo stick and asked to add something.","hi":"आठ सौ मीटर ऊपर, जहाँ दिसंबर में जव्हार ठंडा हो जाता है। घर की अगली दीवार हर साल फिर से रँगती है, और आपको बाँस की तीली देकर कुछ जोड़ने को कहा जाएगा।","mr":"आठशे मीटर उंचीवर, जिथं डिसेंबरात जव्हार गार होतं. घराची पुढची भिंत दरवर्षी नव्यानं रंगते, आणि तुमच्या हातात बांबूची काडी देऊन काहीतरी काढायला सांगतील."}'::jsonb, v_region,
     'Palghar', '{"en":"Jawhar","hi":"जव्हार","mr":"जव्हार"}'::jsonb, 'mud_house', 'hills',
     array['rice', 'nachni'], 1700, 8, 2,
-    array[8, 9, 10, 11, 12, 1, 2]::integer[], 19.9117, 73.227, 'published', 4.9,
-    73, true, now()
+    array[8, 9, 10, 11, 12, 1, 2]::integer[], 19.9117, 73.227, 'published', 0,
+    0, true, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -459,8 +459,8 @@ begin
     v_host, 'supari-bagayat-guhagar', '{"en":"Tents under the areca, two lanes from Guhagar beach","hi":"सुपारी के नीचे तंबू, गुहागर तट से दो गली दूर","mr":"सुपारीखाली तंबू, गुहागर किनाऱ्यापासून दोन गल्ल्या"}'::jsonb, '{"en":"Twelve people fit here, which is why cousins book it. Canvas tents on wooden platforms between the areca rows, proper bathrooms at the end, and the beach at walking distance.","hi":"यहाँ बारह लोग समाते हैं, इसीलिए भाई-बहन मिलकर बुक करते हैं। सुपारी की क़तारों के बीच लकड़ी के चबूतरों पर तंबू, आख़िर में ढंग के स्नानघर, और पैदल दूरी पर समुद्र।","mr":"इथं बारा माणसं मावतात, म्हणून भावंडं मिळून बुक करतात. सुपारीच्या ओळींमध्ये लाकडी चौथऱ्यांवर तंबू, टोकाला नीट स्नानगृहं, आणि चालत जाण्याइतक्या अंतरावर समुद्र."}'::jsonb, v_region,
     'Ratnagiri', '{"en":"Guhagar","hi":"गुहागर","mr":"गुहागर"}'::jsonb, 'orchard_tent', 'coast',
     array['betelnut', 'coconut', 'jackfruit'], 2200, 12, 4,
-    array[10, 11, 12, 1, 2, 3]::integer[], 17.4805, 73.1935, 'published', 4.6,
-    41, false, now()
+    array[10, 11, 12, 1, 2, 3]::integer[], 17.4805, 73.1935, 'published', 0,
+    0, false, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -503,8 +503,8 @@ begin
     v_host, 'kokam-aali-kudal', '{"en":"Kokum, pepper, and a kitchen worth the drive","hi":"कोकम, काली मिर्च, और उस रसोई के लिए इतना सफ़र सही","mr":"कोकम, मिरी, आणि एवढा प्रवास करावा असा स्वयंपाक"}'::jsonb, '{"en":"A small cottage for six, deliberately kept small. Pepper climbs the areca, kokum dries in the yard from April, and every meal here starts with sol kadhi.","hi":"छह लोगों की छोटी कुटिया, जान-बूझकर छोटी रखी गई। सुपारी पर काली मिर्च चढ़ती है, अप्रैल से आँगन में कोकम सूखता है, और हर खाना सोल कढ़ी से शुरू होता है।","mr":"सहा जणांचं छोटं घर, मुद्दाम छोटं ठेवलेलं. सुपारीवर मिरी चढते, एप्रिलपासून अंगणात कोकम वाळतं, आणि इथलं प्रत्येक जेवण सोलकढीनं सुरू होतं."}'::jsonb, v_region,
     'Sindhudurg', '{"en":"Kudal","hi":"कुडाळ","mr":"कुडाळ"}'::jsonb, 'farm_cottage', 'orchard',
     array['kokum', 'alphonso', 'pepper'], 2600, 6, 2,
-    array[11, 12, 1, 2, 3, 4, 5]::integer[], 16.0114, 73.6885, 'published', 4.8,
-    97, false, now()
+    array[11, 12, 1, 2, 3, 4, 5]::integer[], 16.0114, 73.6885, 'published', 0,
+    0, false, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -547,8 +547,8 @@ begin
     v_host, 'draksha-mala-ozar', '{"en":"A working vineyard, and dinner served between the rows","hi":"चलता हुआ अंगूर का बाग़, और क़तारों के बीच रात का खाना","mr":"चालू द्राक्षमळा, आणि ओळींमध्ये वाढलेलं जेवण"}'::jsonb, '{"en":"Fourteen acres of Thompson and Sonaka, a raisin shed at the back, and a cottage that looks straight down a row. In January the whole farm smells of grape.","hi":"थॉम्पसन और सोनाका के चौदह एकड़, पीछे किशमिश का शेड, और एक कुटिया जिससे सीधी क़तार दिखती है। जनवरी में पूरा खेत अंगूर की गंध से भर जाता है।","mr":"थॉम्पसन आणि सोनाकाचे चौदा एकर, मागं बेदाण्याचं शेड, आणि सरळ ओळीकडे बघणारं घर. जानेवारीत सगळा मळा द्राक्षाचा वास घेतो."}'::jsonb, v_region,
     'Nashik', '{"en":"Ozar","hi":"ओझर","mr":"ओझर"}'::jsonb, 'farm_cottage', 'vineyard',
     array['grapes', 'onion'], 2700, 10, 3,
-    array[11, 12, 1, 2, 3]::integer[], 20.0967, 73.928, 'published', 4.9,
-    152, true, now()
+    array[11, 12, 1, 2, 3]::integer[], 20.0967, 73.928, 'published', 0,
+    0, true, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -591,8 +591,8 @@ begin
     v_host, 'igatpuri-dhara-ghoti', '{"en":"Monsoon country: waterfalls, strawberries, and Kalsubai at dawn","hi":"बरसात का इलाक़ा: झरने, स्ट्रॉबेरी, और भोर में कलसुबाई","mr":"पावसाळी मुलूख: धबधबे, स्ट्रॉबेरी, आणि पहाटे कळसूबाई"}'::jsonb, '{"en":"Tents on a rice terrace at the foot of the Kalsubai range. July to September it rains without apology; December to March the strawberries come in. Both are worth it.","hi":"कलसुबाई शृंखला के पैर पर धान की सीढ़ी पर तंबू। जुलाई से सितंबर बिना माफ़ी के बरसता है; दिसंबर से मार्च स्ट्रॉबेरी आती है। दोनों सही हैं।","mr":"कळसूबाई रांगेच्या पायथ्याशी भातखाचरावर तंबू. जुलै ते सप्टेंबर माफी न मागता पाऊस; डिसेंबर ते मार्च स्ट्रॉबेरी. दोन्ही योग्य."}'::jsonb, v_region,
     'Nashik', '{"en":"Ghoti","hi":"घोटी","mr":"घोटी"}'::jsonb, 'orchard_tent', 'hills',
     array['rice', 'strawberry'], 2300, 8, 3,
-    array[7, 8, 9, 12, 1, 2, 3]::integer[], 19.7118, 73.6285, 'published', 4.8,
-    88, true, now()
+    array[7, 8, 9, 12, 1, 2, 3]::integer[], 19.7118, 73.6285, 'published', 0,
+    0, true, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -635,8 +635,8 @@ begin
     v_host, 'dalimb-bagh-rahuri', '{"en":"Pomegranate rows, and jaggery boiling at the crusher","hi":"अनार की क़तारें, और गुऱ्हाळ में उबलता गुड़","mr":"डाळिंबाच्या ओळी, आणि गुऱ्हाळात उकळणारा गूळ"}'::jsonb, '{"en":"Dry-country farming done well: drip everywhere, netting over the fruit, and a cottage that stays cool with nothing but a roof of country tiles.","hi":"सूखे इलाक़े की सलीक़े वाली खेती: हर जगह ड्रिप, फलों पर जाली, और देसी खपरैल भर से ठंडी रहने वाली कुटिया।","mr":"कोरडवाहू शेती नीट केलेली: सगळीकडे ठिबक, फळांवर जाळी, आणि नुसत्या देशी कौलांनी गार राहणारं घर."}'::jsonb, v_region,
     'Ahilyanagar', '{"en":"Rahuri","hi":"राहुरी","mr":"राहुरी"}'::jsonb, 'farm_cottage', 'orchard',
     array['pomegranate', 'sugarcane', 'wheat'], 2100, 8, 2,
-    array[10, 11, 12, 1, 2, 3]::integer[], 19.3925, 74.648, 'published', 4.7,
-    64, false, now()
+    array[10, 11, 12, 1, 2, 3]::integer[], 19.3925, 74.648, 'published', 0,
+    0, false, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -679,8 +679,8 @@ begin
     v_host, 'kelibaug-raver', '{"en":"Banana country, cotton at the edge, and a kitchen that does not hold back","hi":"केले का इलाक़ा, किनारे कपास, और बिना कंजूसी वाली रसोई","mr":"केळीचा मुलूख, कडेला कापूस, आणि हात न आखडणारा स्वयंपाक"}'::jsonb, '{"en":"Raver sends bananas to the whole country. Stay in the old mud house at the edge of the plantation, eat Khandeshi food, and accept that the chilli is not negotiable.","hi":"रावेर पूरे देश को केला भेजता है। बाग़ान के किनारे पुराने मिट्टी के घर में रुकिए, खानदेशी खाना खाइए, और मान लीजिए कि मिर्च पर मोल-भाव नहीं है।","mr":"रावेर अख्ख्या देशाला केळी पाठवतं. बागेच्या कडेच्या जुन्या मातीच्या घरात राहा, खानदेशी जेवा, आणि तिखटावर घासाघीस चालत नाही हे मान्य करा."}'::jsonb, v_region,
     'Jalgaon', '{"en":"Raver","hi":"रावेर","mr":"रावेर"}'::jsonb, 'mud_house', 'plateau',
     array['banana', 'cotton'], 1800, 10, 3,
-    array[10, 11, 12, 1, 2]::integer[], 21.247, 76.033, 'published', 4.6,
-    39, false, now()
+    array[10, 11, 12, 1, 2]::integer[], 21.247, 76.033, 'published', 0,
+    0, false, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -723,8 +723,8 @@ begin
     v_host, 'satpuda-padar-toranmal', '{"en":"The far end of Maharashtra, at eleven hundred metres","hi":"महाराष्ट्र का आख़िरी छोर, ग्यारह सौ मीटर पर","mr":"महाराष्ट्राचं शेवटचं टोक, अकराशे मीटरवर"}'::jsonb, '{"en":"A Pawra family’s house on the Toranmal plateau, jowar and custard apple around it, and the Satpuda dropping away to the north. The furthest farm on the platform, and the quietest.","hi":"तोरणमाळ पठार पर पावरा परिवार का घर, चारों ओर ज्वार और सीताफल, और उत्तर की ओर गिरता सतपुड़ा। मंच का सबसे दूर का और सबसे शांत खेत।","mr":"तोरणमाळ पठारावर पावरा कुटुंबाचं घर, भोवती ज्वारी आणि सीताफळ, आणि उत्तरेला उतरणारा सातपुडा. साइटवरची सगळ्यात लांबची आणि सगळ्यात शांत वाडी."}'::jsonb, v_region,
     'Nandurbar', '{"en":"Toranmal","hi":"तोरणमाळ","mr":"तोरणमाळ"}'::jsonb, 'mud_house', 'hills',
     array['jowar', 'custardapple'], 1600, 6, 2,
-    array[8, 9, 10, 11, 12, 1, 2]::integer[], 21.879, 74.464, 'published', 4.8,
-    47, false, now()
+    array[8, 9, 10, 11, 12, 1, 2]::integer[], 21.879, 74.464, 'published', 0,
+    0, false, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -767,8 +767,8 @@ begin
     v_host, 'kanda-ghar-lasalgaon', '{"en":"Onion, and the market that sets the country’s price","hi":"प्याज़, और वह मंडी जो देश का भाव तय करती है","mr":"कांदा, आणि देशाचा भाव ठरवणारा बाजार"}'::jsonb, '{"en":"A terrace room with the sky over it, on a farm ten minutes from the Lasalgaon mandi. Be at the auction by six in the morning and you will never look at an onion the same way.","hi":"खुले आसमान वाला छत का कमरा, लासलगाँव मंडी से दस मिनट के खेत पर। सुबह छह बजे नीलामी में पहुँचिए, फिर प्याज़ पहले जैसा नहीं लगेगा।","mr":"उघड्या आकाशाखालची गच्चीवरची खोली, लासलगाव बाजारापासून दहा मिनिटांवरच्या शेतात. सकाळी सहाला लिलावात पोहोचा, मग कांदा पूर्वीसारखा दिसणार नाही."}'::jsonb, v_region,
     'Nashik', '{"en":"Lasalgaon","hi":"लासलगाँव","mr":"लासलगाव"}'::jsonb, 'terrace_room', 'plateau',
     array['onion', 'tomato', 'wheat'], 1950, 12, 4,
-    array[10, 11, 12, 1, 2, 3]::integer[], 20.1447, 74.238, 'published', 4.7,
-    71, false, now()
+    array[10, 11, 12, 1, 2, 3]::integer[], 20.1447, 74.238, 'published', 0,
+    0, false, now()
   ) returning id into v_listing;
 
   insert into public.listing_activities (listing_id, activity_id)
@@ -1035,21 +1035,7 @@ begin
   values (v_booking, v_listing, 5, '{"en":"Eight hours from Pune and worth every one. The honey, the walk, and a night so quiet it was almost loud.","hi":"पुणे से आठ घंटे, और हर घंटा सही। शहद, वह सैर, और इतनी शांत रात कि लगभग शोर लगे।","mr":"पुण्याहून आठ तास, आणि प्रत्येक तास सार्थ. मध, ती भटकंती, आणि इतकी शांत रात्र की जवळजवळ आवाज वाटावा."}'::jsonb, now() - interval '33 days');
 end $$;
 
--- ─── demo rating counts ─────────────────────────────────────────────────────
--- The trigger on reviews keeps rating and review_count true to the reviews in
--- the table. The seed carries a handful of reviews but the farms are written
--- as if they had been hosting for two years, so the counts are restored here.
--- Delete this block for a project that should only ever show real numbers.
-update public.listings set rating = 4.9, review_count = 86 where slug = 'amrai-wadi-pawas';
-update public.listings set rating = 4.8, review_count = 124 where slug = 'kaju-mala-achara';
-update public.listings set rating = 4.7, review_count = 58 where slug = 'bhat-shet-roha';
-update public.listings set rating = 4.9, review_count = 73 where slug = 'warli-angan-jawhar';
-update public.listings set rating = 4.6, review_count = 41 where slug = 'supari-bagayat-guhagar';
-update public.listings set rating = 4.8, review_count = 97 where slug = 'kokam-aali-kudal';
-update public.listings set rating = 4.9, review_count = 152 where slug = 'draksha-mala-ozar';
-update public.listings set rating = 4.8, review_count = 88 where slug = 'igatpuri-dhara-ghoti';
-update public.listings set rating = 4.7, review_count = 64 where slug = 'dalimb-bagh-rahuri';
-update public.listings set rating = 4.6, review_count = 39 where slug = 'kelibaug-raver';
-update public.listings set rating = 4.8, review_count = 47 where slug = 'satpuda-padar-toranmal';
-update public.listings set rating = 4.7, review_count = 71 where slug = 'kanda-ghar-lasalgaon';
+-- Ratings are left to the trigger on public.reviews: whatever the reviews
+-- in this file average to is what a farm shows, and a farm with none shows
+-- none.
 

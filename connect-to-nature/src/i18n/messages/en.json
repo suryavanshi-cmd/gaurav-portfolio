@@ -105,7 +105,8 @@
     "wishlisted": "Saved",
     "farmerKeeps": "92% of what you pay reaches the family.",
     "location": "Where it is",
-    "similar": "Other farms nearby"
+    "similar": "Other farms nearby",
+    "around": "Around the farm"
   },
   "packages": {
     "title": "Ready two-day trips",
@@ -220,7 +221,27 @@
     "ref": "Reference",
     "viewTrips": "See it in my trips",
     "demoNote": "Razorpay keys are not configured, so this booking is marked as a demo. No money moved.",
-    "signInFirst": "Sign in to finish the booking — it takes one OTP."
+    "signInFirst": "Sign in to finish the booking — it takes one OTP.",
+    "continue": "Continue to payment",
+    "payTitle": "Payment",
+    "testMode": "Test mode — no money moves",
+    "payWith": "Pay with",
+    "upi": "UPI",
+    "card": "Card",
+    "netbanking": "Netbanking",
+    "upiSub": "Any UPI app",
+    "cardSub": "Debit or credit",
+    "netbankingSub": "All major banks",
+    "payAmount": "Pay {amount}",
+    "paying": "Processing payment…",
+    "paid": "Payment successful",
+    "paidBody": "{amount} paid by {method}. {host} will call you on {phone} within a day to confirm.",
+    "paymentRef": "Payment reference",
+    "bookingRef": "Booking reference",
+    "paidAt": "Paid at",
+    "history": "See payment history",
+    "notStored": "No database is connected, so this payment is shown here but not stored.",
+    "payFailed": "The payment did not go through, and nothing was charged. Try again."
   },
   "auth": {
     "title": "Sign in",
@@ -363,7 +384,215 @@
     "demo": "Farms, hosts and reviews on this build are written for the demo. The database, the row-level security, the planner and the booking flow are real.",
     "customer": "Traveller portal",
     "host": "Shetkari portal",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "credits": "Photograph credits"
   },
-  "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
+  "credits": {
+    "eyebrow": "Photographs",
+    "title": "Where these pictures were actually taken",
+    "intro": "Every photograph on this site is a real photograph of Maharashtra, reused from Wikimedia Commons under a licence that allows it. Most of those licences ask for the photographer's name and a link, which is what this page is for.",
+    "placeNote": "The farms and the hosts on this build are written for the demo; the landscapes are not. A picture filed under a farm in Pawas may have been taken at Vengurla, so each credit names the place in the frame rather than the farm it illustrates.",
+    "inReel": "Also one of the six frames in the front-page reel."
+  },
+  "story": {
+    "local": {
+      "highlights": "Highlights",
+      "closer": "The coast",
+      "day": "The day",
+      "regions": "Vibhags",
+      "farms": "Farms",
+      "trips": "2-day trips",
+      "label": "On this page",
+      "look": "Closer look"
+    },
+    "highlights": {
+      "title": "Get the highlights.",
+      "play": "Play highlights",
+      "pause": "Pause highlights",
+      "replay": "Replay highlights",
+      "goto": "Show {n} of {total}",
+      "mango": {
+        "lead": "Alphonso country.",
+        "body": "Wadis of mango on red laterite above the Ratnagiri coast, picked by hand from April."
+      },
+      "paddy": {
+        "lead": "Monsoon green.",
+        "body": "Terraced rice in the Kokan hills, planted in the rain and cut by October."
+      },
+      "cove": {
+        "lead": "The sea at the end of the lane.",
+        "body": "Coves like Aare Ware, where the road runs out and the water is warm."
+      },
+      "falls": {
+        "lead": "Waterfall weather.",
+        "body": "Jawhar in July, when every stream on the plateau finds an edge to fall off."
+      },
+      "vines": {
+        "lead": "Rows to walk at dusk.",
+        "body": "Nashik's vineyards on black soil, a short drive from the Sahyadri."
+      },
+      "lake": {
+        "lead": "Still water, big sky.",
+        "body": "The reservoirs around Igatpuri, quiet enough to hear the far bank."
+      }
+    },
+    "closer": {
+      "title": "The Kokan, before the day-trippers arrive.",
+      "sub": "Early light on the shore, the boats already back, and nowhere you need to be until lunch."
+    },
+    "statement": "No resort. No script. A family that grows mangoes, rice or grapes opens two ordinary days of its life to you — and 92% of what you pay reaches them.",
+    "day": {
+      "title": "Two days, hour by hour.",
+      "sub": "Nobody performs for you. This is roughly what a Kokan farm day already looks like.",
+      "t1": {
+        "time": "6 am",
+        "label": "Mist",
+        "body": "The hills are still inside the cloud. Tea on the verandah while the cows are milked."
+      },
+      "t2": {
+        "time": "10 am",
+        "label": "Orchard",
+        "body": "Into the wadi with whoever is working it — picking, grafting or carrying water, depending on the month."
+      },
+      "t3": {
+        "time": "6 pm",
+        "label": "Shore",
+        "body": "Down to the sea for the last hour of light, the way the village goes after work."
+      },
+      "t4": {
+        "time": "8 pm",
+        "label": "Dinner",
+        "body": "Back at the house for what the kitchen made of the day: fish, rice, kokum, and whatever was ripe."
+      }
+    },
+    "look": {
+      "title": "Take a closer look.",
+      "close": "Close",
+      "prev": "Previous",
+      "next": "Next",
+      "label": "A closer look at a farm stay",
+      "showing": "Shown: {name}",
+      "vibhag": {
+        "label": "Vibhag",
+        "title": "Two vibhags.",
+        "body": "The Kokan is laterite, mango and the sea. Nashik is black soil, vines and the edge of the Sahyadri.",
+        "kokan": "Kokan",
+        "nashik": "Nashik"
+      },
+      "land": {
+        "label": "The land",
+        "title": "A working farm.",
+        "body": "Not a garden kept for guests. You go out with whoever is working that day — ploughing, planting or picking — and help if you want to."
+      },
+      "house": {
+        "label": "The house",
+        "title": "Where you sleep.",
+        "body": "A room in the family's own house or right beside it: thick laterite walls, a tiled roof and a verandah to sit out on."
+      },
+      "food": {
+        "label": "The food",
+        "title": "What was ripe.",
+        "body": "Meals come from what the farm and the village grew that week — cashew and kokum on the coast, grapes and onions inland."
+      },
+      "water": {
+        "label": "The water",
+        "title": "Never far from it.",
+        "body": "A cove, a reservoir, or a stream that turns into a waterfall in July. Both vibhags keep water within reach."
+      },
+      "checked": {
+        "label": "Checked hosts",
+        "title": "Seen before listed.",
+        "body": "Every host has finished onboarding: land papers seen, rooms photographed, and a page written in all three languages."
+      },
+      "pay": {
+        "label": "Fair pay",
+        "title": "92% reaches the family.",
+        "body": "Pay by UPI, card or netbanking. The platform keeps 8%, and the rest goes to the family who hosted you."
+      }
+    },
+    "film": {
+      "watch": "Watch the film",
+      "duration": "0:15",
+      "label": "Connect to Nature — a fifteen-second film",
+      "close": "Close film",
+      "play": "Play",
+      "pause": "Pause",
+      "replay": "Replay",
+      "seek": "Film timeline",
+      "eyebrow": "Kokan · Nashik",
+      "l1": "Two days.",
+      "l2": "One family.",
+      "l3": "Their fields.",
+      "mapTitle": "Two vibhags, a day's drive from Mumbai.",
+      "mumbai": "Mumbai",
+      "nashik": "Nashik",
+      "ratnagiri": "Ratnagiri",
+      "sindhudurg": "Sindhudurg",
+      "coast": "Kokan coast",
+      "p1": "Alphonso",
+      "p2": "Vines",
+      "p3": "The sea",
+      "farms": "farms",
+      "districts": "districts",
+      "langs": "languages",
+      "share": "reaches the family",
+      "endTitle": "Plan your two days.",
+      "endCta": "Start planning",
+      "scroll": "Scroll"
+    }
+  },
+  "payments": {
+    "title": "Payments",
+    "history": "Payment",
+    "log": "Payment log",
+    "showLog": "Show log",
+    "hideLog": "Hide log",
+    "none": "No payment yet.",
+    "test": "Test payment",
+    "status": {
+      "created": "Started",
+      "succeeded": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "events": {
+      "booking_created": "Booking created",
+      "checkout_opened": "Checkout opened",
+      "checkout_method_selected": "Payment method chosen",
+      "checkout_cancelled": "Checkout closed without paying",
+      "payment_order_created": "Payment order created",
+      "payment_initiated": "Payment started",
+      "payment_succeeded": "Payment succeeded",
+      "payment_signature_rejected": "Payment signature rejected",
+      "payment_failed": "Payment failed",
+      "booking_confirmed": "Booking confirmed"
+    },
+    "count": "Payments",
+    "collected": "Collected",
+    "today": "Today",
+    "feed": "Latest payment events",
+    "guest": "Guest",
+    "amount": "Amount",
+    "method": "Method",
+    "when": "When",
+    "reference": "Reference",
+    "booking": "Booking",
+    "noFeed": "No payment events yet.",
+    "demoNote": "Sample rows — no database is connected.",
+    "testNote": "Test mode: every payment is recorded in full, but no money has moved. Payments become real once Razorpay keys are added."
+  }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { revalidateListings } from '@/lib/revalidate';
 import { createServerSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/env';
 
@@ -36,5 +37,7 @@ export async function POST(request: Request) {
   });
 
   if (error) return NextResponse.json({ error: 'insert_failed', detail: error.message }, { status: 400 });
+  // A review moves the farm's rating, which is cached with the catalogue.
+  revalidateListings();
   return NextResponse.json({ ok: true });
 }

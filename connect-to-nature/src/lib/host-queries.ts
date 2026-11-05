@@ -5,9 +5,16 @@
    walked through without an account — clearly marked in the UI, and read-only. */
 
 import { isSupabaseConfigured } from './env';
-import { createServerSupabase } from './supabase/server';
 import { demoBookings, demoListings, stableId } from './demo-data';
+import { createAdminSupabase, createServerSupabase } from './supabase/server';
 import type { Booking, HostProfile, Listing } from './types';
+
+/* Payout details and phone numbers are not selectable by anon or authenticated
+   — see 20260919120000_host_private_columns.sql — so every select that touches
+   host_profiles names its columns. The admin screen, which does need the
+   phone, reads through the service role below. */
+const HOST_COLUMNS =
+  'id, user_id, farm_name, host_name, bio, region_id, district, village, land_acres, languages, verification_status, hosting_since';
 
 export interface HostContext {
   demo: boolean;
@@ -73,7 +80,7 @@ export async function getHostContext(): Promise<HostContext> {
 
   const { data: host } = await supabase
     .from('host_profiles')
-    .select('*')
+    .select(HOST_COLUMNS)
     .eq('user_id', userData.user.id)
     .maybeSingle();
 
@@ -83,7 +90,7 @@ export async function getHostContext(): Promise<HostContext> {
 
   const { data: listing } = await supabase
     .from('listings')
-    .select('*, region:regions(*), host:host_profiles(*), listing_activities(activity:activities(*))')
+    .select(`*, region:regions(*), host:host_profiles(${HOST_COLUMNS}), listing_activities(activity:activities(*))`)
     .eq('host_id', host.id)
     .maybeSingle();
 
@@ -120,7 +127,11 @@ export async function getPendingHosts(): Promise<{ host: HostProfile; listing: L
     const listing = { ...demoListings[3], status: 'pending' as const, id: stableId('listing', 'pending-demo') };
     return [{ host: { ...listing.host!, verification_status: 'pending' }, listing }];
   }
-  const supabase = await createServerSupabase();
+  // Approving a farm is an admin's job and the screen shows the farmer's
+  // phone number, which column privileges keep from every other role. The
+  // page itself is already role-gated; without a service-role key the list
+  // comes back empty rather than partly readable.
+  const supabase = createAdminSupabase();
   if (!supabase) return [];
   const { data } = await supabase
     .from('host_profiles')

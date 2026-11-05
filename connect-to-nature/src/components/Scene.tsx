@@ -1,11 +1,17 @@
-/* Artwork for a farm that has not uploaded photographs yet.
+/* The last fallback, for a farm with no picture of any kind.
 
-   A marketplace page with a grey box on it looks broken; a page with a stock
-   photo of someone else's farm is worse than broken. So each listing gets a
-   drawing generated from its own slug and its own landscape — coast, orchard,
-   vineyard, hills, river or plateau — which is stable across reloads, weighs
-   nothing, needs no network, and is replaced the moment the host uploads a real
-   photo through the shetkari portal. */
+   The demo farms are illustrated by real photographs of the vibhag they sit in
+   — see lib/photo-credits.ts, and the credit under each one, which names the
+   place in the frame rather than the farm. A host who has just finished
+   onboarding has neither: no photograph of their own yet, and no curated
+   landscape, because nobody has chosen one for a farm that was created five
+   minutes ago.
+
+   Rather than show them a grey box, they get a drawing generated from their
+   own slug and their own landscape — coast, orchard, vineyard, hills, river or
+   plateau — stable across reloads, weighing nothing, needing no network, and
+   replaced the moment they upload a real photograph through the shetkari
+   portal. */
 
 interface Palette {
   sky: [string, string];

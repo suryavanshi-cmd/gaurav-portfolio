@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
+import { useReducedMotion } from '@/lib/useReducedMotion';
 import type { ReactNode } from 'react';
 
 /* Scroll-triggered entrance. One component, used everywhere, so the whole page

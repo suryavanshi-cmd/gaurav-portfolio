@@ -137,6 +137,36 @@ export interface Booking {
   payment_status: PaymentStatus;
   created_at: string;
   listing?: Listing;
+  payments?: Payment[];
+  payment_events?: PaymentEvent[];
+}
+
+export type PaymentMethod = 'upi' | 'card' | 'netbanking';
+
+/* One payment against a booking. provider 'test' until Razorpay is switched
+   on: the row is real, the money is not. */
+export interface Payment {
+  id: string;
+  booking_id: string;
+  provider: 'test' | 'razorpay';
+  method: PaymentMethod | null;
+  amount: number;
+  currency: string;
+  status: 'created' | 'succeeded' | 'failed' | 'refunded';
+  reference: string;
+  provider_order_id: string | null;
+  provider_payment_id: string | null;
+  created_at: string;
+}
+
+/* One line of a booking's payment log. */
+export interface PaymentEvent {
+  id: number;
+  booking_id: string;
+  payment_id: string | null;
+  event: string;
+  detail: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface Review {

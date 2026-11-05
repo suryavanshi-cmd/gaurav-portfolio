@@ -37,6 +37,26 @@ begin
   select count(*) into n from public.availability where is_available;
   assert n > 0, 'anon should be able to read open dates';
 
+  -- The family's name and story are public; their bank details are not.
+  -- Selecting an ungranted column raises rather than returning null, so this
+  -- cannot quietly start passing.
+  select count(*) into n from public.host_profiles;
+  assert n = 12, format('anon should see the 12 approved host profiles, saw %s', n);
+
+  denied := false;
+  begin
+    perform payout_upi from public.host_profiles limit 1;
+  exception when insufficient_privilege then denied := true;
+  end;
+  assert denied, 'anon was able to read a farmer''s UPI id';
+
+  denied := false;
+  begin
+    perform phone from public.host_profiles limit 1;
+  exception when insufficient_privilege then denied := true;
+  end;
+  assert denied, 'anon was able to read a farmer''s phone number';
+
   -- These three are not merely filtered to nothing for an anonymous visitor:
   -- the grant is not there, so the table cannot be read at all.
   denied := false;

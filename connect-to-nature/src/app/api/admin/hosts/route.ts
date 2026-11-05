@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { revalidateListings } from '@/lib/revalidate';
 import { createServerSupabase, createAdminSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/env';
 
@@ -56,5 +57,7 @@ export async function POST(request: Request) {
       .eq('id', parsed.data.listingId);
   }
 
+  // An approved farm is public now, not in five minutes.
+  revalidateListings();
   return NextResponse.json({ ok: true });
 }

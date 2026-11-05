@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ListingDetail } from '@/components/ListingDetail';
-import { getListing, getListings, getReviews } from '@/lib/queries';
+import { getListing, getSimilarListings } from '@/lib/queries';
 import { getLocale } from '@/i18n/server';
 import { pickText } from '@/i18n/dictionaries';
 
@@ -20,10 +20,10 @@ export default async function FarmPage({ params }: { params: Promise<{ slug: str
   const listing = await getListing(slug);
   if (!listing) notFound();
 
-  const [reviews, all] = await Promise.all([getReviews(listing.id), getListings()]);
-  const similar = all
-    .filter((item) => item.id !== listing.id && item.region_id === listing.region_id)
-    .slice(0, 3);
+  // The reviews came back with the farm; similar farms come off the cached
+  // catalogue. This page used to make three round trips, one of which pulled
+  // every listing in order to keep three of them.
+  const similar = await getSimilarListings(listing.region_id, listing.id);
 
-  return <ListingDetail listing={listing} reviews={reviews} similar={similar} />;
+  return <ListingDetail listing={listing} reviews={listing.reviews ?? []} similar={similar} />;
 }

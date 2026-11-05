@@ -184,22 +184,32 @@ export function FieldBackdrop({ className, density = 1 }: { className?: string; 
       ctx!.globalAlpha = 1;
     }
 
-    resize();
+    /* Sizing the canvas builds up to six hundred blades, and doing that here
+       put the work inside the same task as hydration — measured as a 99ms long
+       task on the home page, which is 99ms the page cannot respond to a tap.
+       ResizeObserver delivers its first callback asynchronously, after layout,
+       so letting it do the first build moves the work off that task without
+       needing a timer or an idle callback. */
+    let sized = false;
 
-    if (reduced) {
-      draw(0);
-    } else {
-      const loop = (time: number) => {
-        if (!running) return;
-        draw(time);
-        frame = requestAnimationFrame(loop);
-      };
+    const loop = (time: number) => {
+      if (!running) return;
+      draw(time);
       frame = requestAnimationFrame(loop);
-    }
+    };
+
+    const start = () => {
+      if (!sized || reduced) return;
+      running = true;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(loop);
+    };
 
     const observer = new ResizeObserver(() => {
       resize();
+      sized = true;
       if (reduced) draw(0);
+      else start();
     });
     observer.observe(canvas);
 
@@ -207,13 +217,8 @@ export function FieldBackdrop({ className, density = 1 }: { className?: string; 
     // should never be why a phone gets warm.
     const visibility = new IntersectionObserver((entries) => {
       const visible = entries[0]?.isIntersecting ?? true;
-      if (visible && !running && !reduced) {
-        running = true;
-        frame = requestAnimationFrame(function loop(time) {
-          if (!running) return;
-          draw(time);
-          frame = requestAnimationFrame(loop);
-        });
+      if (visible && !running) {
+        start();
       } else if (!visible) {
         running = false;
         cancelAnimationFrame(frame);
@@ -225,13 +230,8 @@ export function FieldBackdrop({ className, density = 1 }: { className?: string; 
       if (document.hidden) {
         running = false;
         cancelAnimationFrame(frame);
-      } else if (!reduced && !running) {
-        running = true;
-        frame = requestAnimationFrame(function loop(time) {
-          if (!running) return;
-          draw(time);
-          frame = requestAnimationFrame(loop);
-        });
+      } else if (!running) {
+        start();
       }
     };
     document.addEventListener('visibilitychange', onVisibility);
