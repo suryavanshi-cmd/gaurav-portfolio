@@ -12,7 +12,7 @@ export default function SiteFooter() {
           <div>
             <h4>{PERSON.name}</h4>
             <p style={{ maxWidth: 300, lineHeight: 1.55 }}>
-              SDET in {PERSON.city}. I test APIs for a living and build backend services and LLM tools on the side.
+              An engineer by mindset and a student everywhere. I learn, experiment and share—about mathematics, films, software, people and almost anything else. Sarcasm occasionally included.
             </p>
           </div>
 
@@ -48,7 +48,7 @@ export default function SiteFooter() {
 
         <div className="footer-base">
           <span>© {year} {PERSON.name}</span>
-          <span>Built with Next.js. Every demo runs in your browser.</span>
+          <span>A student everywhere. Always learning and sharing.</span>
         </div>
       </div>
     </footer>
