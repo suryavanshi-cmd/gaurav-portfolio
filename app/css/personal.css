@@ -200,3 +200,14 @@ body:has(.mp-home) .page { animation: none; }
 @media (prefers-reduced-motion:reduce) {
  .mp-home *, .mp-home *::before,.mp-home *::after { scroll-behavior:auto !important; animation:none !important; transition:none !important; }
 }
+
+/* Small editorial arrival after the shared introduction — V1 only. */
+@media(prefers-reduced-motion:no-preference){
+  .mp-hero .mp-kicker{animation:gs-home-arrive .65s .08s both}
+  .mp-hero h1{animation:gs-home-arrive .82s .18s both}
+  .mp-hero .mp-hero-intro{animation:gs-home-arrive .8s .33s both}
+  .mp-hero .mp-hero-actions{animation:gs-home-arrive .8s .43s both}
+  .mp-hero .mp-hero-art{animation:gs-home-picture .85s .3s both}
+}
+@keyframes gs-home-arrive{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes gs-home-picture{from{opacity:0;transform:translateY(20px) rotate(3deg) scale(.96)}to{opacity:1;transform:none}}
