@@ -120,3 +120,14 @@ body:has(.story-v2)>.nav,body:has(.story-v2) .nav,body:has(.story-v2)>.footer,bo
 .story-film-afterthought{font-size:13px;line-height:1.7;color:var(--muted);margin-top:40px!important;max-width:820px}
 @media(max-width:900px){.story-films-opening{grid-template-columns:1fr}.story-film-list-head{min-height:220px}}
 @media(max-width:620px){.story-film-favorites{grid-template-columns:1fr}.story-film-favorites>div{padding:21px 0}.story-film-favorites>div+div{border-top:1px solid #d2ccbf}.story-film-collections{grid-template-columns:1fr;gap:65px}.story-film-list-head{min-height:auto;padding-bottom:24px}.story-films-opening h2{font-size:clamp(46px,12vw,66px)}}
+
+/* Animated editorial first screen, scoped to V2. No content depends on JS. */
+@media(prefers-reduced-motion:no-preference){
+  .story-hero-top{animation:gs-v2-arrive .65s .08s both}
+  .story-hero h1{animation:gs-v2-arrive .85s .18s both}
+  .story-hero-bottom{animation:gs-v2-arrive .85s .39s both}
+  .story-nav{animation:gs-v2-arrive .55s both}
+  .story-project:hover .story-project-index span{transform:translate(3px,-3px)}
+  .story-project-index span{transition:transform .25s ease}
+}
+@keyframes gs-v2-arrive{from{opacity:0;transform:translateY(23px)}to{opacity:1;transform:translateY(0)}}
