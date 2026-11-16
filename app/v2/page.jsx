@@ -23,6 +23,21 @@ const engProjects = [
   { n:'05', kind:'Built · automation project', title:'Helping a health report make sense', teaser:'Rakta-Setu explores blood-report delivery and plain-language explanations in Marathi.', why:'A report is only useful when someone can receive it and understand what it says.', how:'The project links report handling, WhatsApp delivery, and a voice-friendly explanation page.', hard:'Keeping sensitive health information clear and avoiding unsafe guesses.', learned:'With health information, being careful matters more than adding clever features.', next:'Improve review and real-world reliability before broader use.', href:'/projects/rakta-setu', stack:['Node.js','WhatsApp API','Marathi'] },
 ];
 
+const indianFilms = [
+  { title:'Sholay', year:'1975', maker:'Ramesh Sippy', thought:'The characters and conversations became part of Indian film history.' },
+  { title:'Dilwale Dulhania Le Jayenge', year:'1995', maker:'Aditya Chopra', thought:'A love story people have carried with them for decades.' },
+  { title:'Dangal', year:'2016', maker:'Nitesh Tiwari', thought:'A story about family, effort, expectations, and fighting for a chance.' },
+  { title:'Baahubali 2: The Conclusion', year:'2017', maker:'S. S. Rajamouli', thought:'An example of how huge a story can feel when visuals and emotion meet.' },
+  { title:'3 Idiots', year:'2009', maker:'Rajkumar Hirani', thought:'One I personally love. Funny, emotional, and full of questions about how we learn.' },
+];
+const worldFilms = [
+  { title:'The Shawshank Redemption', year:'1994', maker:'Frank Darabont', thought:'Hope and friendship inside a story that stays with audiences.' },
+  { title:'The Godfather', year:'1972', maker:'Francis Ford Coppola', thought:'Family, power, and choices that never feel simple.' },
+  { title:'The Dark Knight', year:'2008', maker:'Christopher Nolan', thought:'A crime story, a superhero story, and a complicated moral puzzle.' },
+  { title:"Schindler’s List", year:'1993', maker:'Steven Spielberg', thought:'A difficult but important story about history and humanity.' },
+  { title:'The Lord of the Rings: The Return of the King', year:'2003', maker:'Peter Jackson', thought:'An epic finale that shows the power of a world built with care.' },
+];
+
 const questions = [
   ['Are you only interested in AI?','Not at all. I like backend engineering, databases, automation, useful interfaces, and the quiet work of making things reliable. AI is one more interesting part of that.'],
   ['What do you do at work?','I work on software quality and automation, especially API flows. That has taught me how many small parts need to work together for a system to feel trustworthy.'],
@@ -36,7 +51,7 @@ export default function PortfolioV2() {
     <div className="story-shell">
       <header className="story-nav">
         <Link className="story-mark" href="/v2" aria-label="Gaurav portfolio version two">g<span>.</span></Link>
-        <nav aria-label="Story chapters"><a href="#my-story">My story</a><a href="#things-i-build">Projects</a><a href="#curiosity">Curiosity</a><a href="#say-hello">Hello</a></nav>
+        <nav aria-label="Story chapters"><a href="#films">Films</a><a href="#my-story">My story</a><a href="#things-i-build">Projects</a><a href="#curiosity">Curiosity</a><a href="#say-hello">Hello</a></nav>
         <Link className="story-original" href="/">Original site ↗</Link>
       </header>
 
@@ -47,6 +62,39 @@ export default function PortfolioV2() {
           <div className="story-portrait"><img src="https://avatars.githubusercontent.com/u/304623412?v=4" alt="Gaurav's GitHub profile picture" width="190" height="190"/><span>that's me ↗</span></div>
           <div className="story-intro"><p>Hey, I'm Gaurav.</p><p>I write software, explore AI, watch movies, and think about ideas that probably don't need this much thinking.</p><p>Sometimes I build a small tool. Sometimes something bigger. And sometimes I spend hours finding out why one tiny thing won't work.</p><p>That's part of the fun, I guess.</p><a className="story-button" href="#my-story">Come, I'll show you around <span>↘</span></a></div>
         </div>
+      </section>
+
+      <section className="story-section story-films" id="films" aria-labelledby="films-title">
+        <div className="story-eyebrow"><span>A LITTLE DETOUR / FILMS &amp; STORIES</span><span>BEFORE WE TALK ABOUT CODE</span></div>
+        <div className="story-films-opening">
+          <div>
+            <span className="story-film-ticket" aria-hidden="true">A SEAT. A SCREEN. A WHOLE NEW WORLD.</span>
+            <h2 id="films-title">I love watching<br/><em>films alone.</em> <span aria-label="Eyes and popcorn" role="img">👀 🍿</span></h2>
+          </div>
+          <div className="story-prose">
+            <p>There's something I really enjoy about watching a film on my own. No one talking over the best scene. Just me, the screen, and a story I can get completely lost in.</p>
+            <p>I love crime thrillers too. The clues, the twists, the moment you realise you missed something important — we all know that feeling, right?</p>
+            <p><strong>3 Idiots</strong> is one of the films I love. And <strong>Game of Thrones</strong> — yes, it's a series, not a film — is another story world I love thinking about. The characters, the emotions, the scale. There's so much to notice.</p>
+            <p>Now here's the engineer in me: while I'm watching, I sometimes wonder how people make a world like that feel real. Can AI help someone plan scenes, try camera angles, or build visual ideas? And can it do that without losing the human part that makes a story worth watching?</p>
+            <p>I'm curious about using AI to explore storytelling and visuals realistically. I'm learning what's possible, what still looks wrong, and why good stories need more than a clever tool. I'm not claiming I've recreated these films — it's a question I want to keep exploring.</p>
+          </div>
+        </div>
+        <div className="story-film-favorites">
+          <span className="story-film-mini-label">THE TWO I'VE MENTIONED FIRST</span>
+          <div><span>01</span><strong>3 Idiots</strong><small>A film I love</small></div>
+          <div><span>02</span><strong>Game of Thrones</strong><small>A series I love</small></div>
+        </div>
+        <div className="story-film-collections">
+          <div className="story-film-column">
+            <div className="story-film-list-head"><span>01 / FROM INDIA</span><h3>Stories that shaped<br/><em>our cinema.</em></h3><p>Five widely celebrated Indian films. I like looking at why stories like these stay with people.</p></div>
+            {indianFilms.map(film => <FilmRow key={film.title} film={film}/>)}
+          </div>
+          <div className="story-film-column">
+            <div className="story-film-list-head"><span>02 / FROM AROUND THE WORLD</span><h3>Stories that travelled<br/><em>everywhere.</em></h3><p>Five acclaimed films from world cinema, each memorable for a different reason.</p></div>
+            {worldFilms.map(film => <FilmRow key={film.title} film={film}/>)}
+          </div>
+        </div>
+        <p className="story-film-afterthought">This isn't a scientific ranking or a list of everything I've watched. It's a small collection of loved and influential stories. My own favorites are the ones I've called out above.</p>
       </section>
 
       <div className="story-marquee" aria-label="A few things about me"><span>STILL LEARNING</span><b>✳</b><span>MAKING THINGS</span><b>✳</b><span>GOOD STORIES</span><b>✳</b><span>BETTER QUESTIONS</span></div>
@@ -109,6 +157,13 @@ export default function PortfolioV2() {
       <footer className="story-footer"><span>© {new Date().getFullYear()} Gaurav Suryavanshi. Still figuring things out.</span><a href="#main">Back to top ↑</a></footer>
     </div>
   </main>;
+}
+
+function FilmRow({film}) {
+  return <details className="story-film-row">
+    <summary><span className="story-film-row-title">{film.title}</span><span className="story-film-row-year">{film.year}</span><span aria-hidden="true" className="story-film-row-plus">+</span></summary>
+    <div className="story-film-row-detail"><p>Directed by {film.maker}.</p><p>{film.thought}</p></div>
+  </details>;
 }
 
 function ProjectStory({project:p}) {
