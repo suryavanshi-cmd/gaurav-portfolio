@@ -65,48 +65,31 @@ export default function PortfolioV2() {
         </div>
       </section>
 
-      <section className="story-section story-films" id="films" aria-labelledby="films-title">
-        <div className="story-eyebrow"><span>A LITTLE DETOUR / FILMS &amp; STORIES</span><span>BEFORE WE TALK ABOUT CODE</span></div>
+      <section className="story-section story-films story-films-compact" id="films" aria-labelledby="films-title">
+        <div className="story-eyebrow"><span>FILMS &amp; STORIES</span><span>MY LITTLE ESCAPE</span></div>
         <div className="story-films-opening">
-          <div>
-            <span className="story-film-ticket" aria-hidden="true">A SEAT. A SCREEN. A WHOLE NEW WORLD.</span>
-            <h2 id="films-title">I love watching<br/><em>films alone.</em> <span aria-label="Eyes and popcorn" role="img">👀 🍿</span></h2>
-          </div>
+          <h2 id="films-title">A film, some popcorn,<br/><em>and just me.</em> <span aria-label="Eyes and popcorn" role="img">👀 🍿</span></h2>
           <div className="story-prose">
-            <p>There's something I really enjoy about watching a film on my own. No one talking over the best scene. Just me, the screen, and a story I can get completely lost in.</p>
-            <p>I love crime thrillers too. The clues, the twists, the moment you realise you missed something important — we all know that feeling, right?</p>
-            <p><strong>3 Idiots</strong> is one of the films I love. And <strong>Game of Thrones</strong> — yes, it's a series, not a film — is another story world I love thinking about. The characters, the emotions, the scale. There's so much to notice.</p>
-            <p>Now here's the engineer in me: while I'm watching, I sometimes wonder how people make a world like that feel real. Can AI help someone plan scenes, try camera angles, or build visual ideas? And can it do that without losing the human part that makes a story worth watching?</p>
-            <p>I'm curious about using AI to explore storytelling and visuals realistically. I'm learning what's possible, what still looks wrong, and why good stories need more than a clever tool. I'm not claiming I've recreated these films — it's a question I want to keep exploring.</p>
-            <p>And I like watching a scene more than once. The first time, I'm following the story. The second time, I start noticing the little things: a silence, a camera move, the music arriving at just the right moment.</p>
-            <p>Sometimes I wonder: if I had a story in my head, could I make a small, believable scene using AI? Not a copy of someone else's film. Something original, with its own people and its own feeling. That's what I'd love to learn.</p>
+            <p>I love watching films alone, especially crime thrillers. Give me a clever twist and I'll probably spend the whole night thinking about it.</p>
+            <p><strong>3 Idiots</strong> and <strong>Game of Thrones</strong> (yes, a series!) are close to my heart. I also wonder how AI could help me make original scenes feel real. I'm still exploring that.</p>
           </div>
         </div>
-        <div className="story-film-interlude">
-          <div className="story-film-interlude-heading"><span>THE KIND OF FILMS THAT KEEP ME THINKING</span><h3>I love the moment<br/><em>the story turns.</em></h3></div>
-          <div className="story-film-interlude-copy">
-            <p>Crime thrillers have a special place for me. A small clue appears. Someone says something ordinary. And later, suddenly, that little moment means everything.</p>
-            <p>I love that feeling of trying to solve the story before the film does. I get it wrong plenty of times. That's probably why I enjoy it.</p>
-            <p>But I also love funny films, emotional journeys, and big worlds where every character seems to have a story of their own. Good storytelling doesn't belong to just one genre.</p>
-          </div>
-        </div>
-        <div className="story-film-scroll-note"><span aria-hidden="true">↓</span><p>Keep scrolling. These are a few stories worth talking about.</p></div>
         <div className="story-film-favorites">
-          <span className="story-film-mini-label">THE TWO I'VE MENTIONED FIRST</span>
-          <div><span>01</span><strong>3 Idiots</strong><small>A film I love</small></div>
-          <div><span>02</span><strong>Game of Thrones</strong><small>A series I love</small></div>
+          <span className="story-film-mini-label">STORIES I KEEP COMING BACK TO</span>
+          <div><span>01</span><strong>3 Idiots</strong><small>Film</small></div>
+          <div><span>02</span><strong>Game of Thrones</strong><small>Series</small></div>
         </div>
         <div className="story-film-collections">
           <div className="story-film-column">
-            <div className="story-film-list-head"><span>01 / FROM INDIA</span><h3>Stories that shaped<br/><em>our cinema.</em></h3><p>Five widely celebrated Indian films. I like looking at why stories like these stay with people.</p></div>
+            <div className="story-film-list-head"><span>01 / INDIA</span><h3>Indian classics.</h3><p>Five stories people still talk about.</p></div>
             {indianFilms.map(film => <FilmAccordion key={film.title} film={film}/>)}
           </div>
           <div className="story-film-column">
-            <div className="story-film-list-head"><span>02 / FROM AROUND THE WORLD</span><h3>Stories that travelled<br/><em>everywhere.</em></h3><p>Five acclaimed films from world cinema, each memorable for a different reason.</p></div>
+            <div className="story-film-list-head"><span>02 / WORLD CINEMA</span><h3>World favorites.</h3><p>Five acclaimed stories from around the world.</p></div>
             {worldFilms.map(film => <FilmAccordion key={film.title} film={film}/>)}
           </div>
         </div>
-        <p className="story-film-afterthought">This isn't a scientific ranking or a list of everything I've watched. It's a small collection of loved and influential stories. My own favorites are the ones I've called out above.</p>
+        <p className="story-film-afterthought">An inspiration list, not a personal top-ten ranking. Tap any title for a little more.</p>
       </section>
 
       <div className="story-marquee" aria-label="A few things about me"><span>STILL LEARNING</span><b>✳</b><span>MAKING THINGS</span><b>✳</b><span>GOOD STORIES</span><b>✳</b><span>BETTER QUESTIONS</span></div>
