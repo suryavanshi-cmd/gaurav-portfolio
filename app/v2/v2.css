@@ -173,3 +173,30 @@ body:has(.story-v2)>.nav,body:has(.story-v2) .nav,body:has(.story-v2)>.footer,bo
   .story-films-opening,.story-film-interlude,.story-film-favorites,
   .story-film-list-head,.story-film-column>.story-film-row{animation:none!important}
 }
+
+/* Compact cinema chapter. All selectors are V2-scoped; original opening unaffected. */
+.story-films-compact.story-section{padding-top:clamp(48px,6vw,84px);padding-bottom:clamp(48px,6vw,84px)}
+.story-films-compact .story-eyebrow{margin-bottom:28px}
+.story-films-compact .story-films-opening{grid-template-columns:1fr 1fr;gap:clamp(22px,4vw,65px);align-items:center}
+.story-films-compact .story-films-opening h2{font-size:clamp(36px,4.3vw,67px)}
+.story-films-compact .story-prose p{font-size:clamp(15px,1.3vw,17px);line-height:1.6;margin-bottom:10px}
+.story-films-compact .story-film-favorites{margin:30px 0 38px;gap:0 18px}
+.story-films-compact .story-film-mini-label{padding:12px 0 2px;font-size:10px}
+.story-films-compact .story-film-favorites>div{padding:13px 0 16px}
+.story-films-compact .story-film-favorites strong{font-size:clamp(20px,2.2vw,28px)}
+.story-films-compact .story-film-favorites small{font-size:12px}
+.story-films-compact .story-film-collections{gap:clamp(22px,4vw,64px)}
+.story-films-compact .story-film-list-head{min-height:0;padding-bottom:13px}
+.story-films-compact .story-film-list-head h3{font-size:clamp(22px,2.5vw,33px);margin:7px 0 5px!important}
+.story-films-compact .story-film-list-head p{font-size:13px;margin:0}
+.story-films-compact .story-film-trigger{min-height:57px;padding:10px 0}
+.story-films-compact .story-film-row-title{font-size:clamp(14px,1.4vw,17px)}
+.story-films-compact .story-film-trigger .story-film-row-plus{width:23px;height:23px;font-size:17px}
+.story-films-compact .story-film-panel .story-film-row-detail{padding-bottom:16px}
+.story-films-compact .story-film-afterthought{margin-top:19px!important;font-size:12px}
+@media(max-width:760px){
+ .story-films-compact .story-films-opening{grid-template-columns:1fr;gap:17px}
+ .story-films-compact .story-film-favorites{margin:24px 0 30px}
+ .story-films-compact .story-film-collections{grid-template-columns:1fr;gap:35px}
+ .story-films-compact .story-film-list-head{padding-bottom:12px}
+}
