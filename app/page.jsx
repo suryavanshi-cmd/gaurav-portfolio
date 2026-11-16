@@ -237,6 +237,15 @@ export default function Home() {
           </div>
         </section>
 
+        <section aria-labelledby="mp-v2-title" style={{padding:'clamp(64px,8vw,110px) clamp(24px,5.8vw,88px)',maxWidth:1360,margin:'0 auto',borderTop:'1px solid #e7e6e1'}}>
+          <div style={{background:'#f2efe7',color:'#282621',padding:'clamp(30px,5.3vw,70px)',display:'grid',gap:22}}>
+            <span style={{fontSize:11,letterSpacing:'.16em',fontWeight:700,color:'#82786b'}}>A DIFFERENT WAY TO SAY HELLO / VERSION TWO</span>
+            <h2 id="mp-v2-title" style={{fontSize:'clamp(38px,5.5vw,72px)',fontWeight:560,letterSpacing:'-.065em',lineHeight:1.08,maxWidth:770}}>There's another side<br/>to my <em>story.</em></h2>
+            <p style={{maxWidth:590,fontSize:17,lineHeight:1.7,color:'#676158'}}>Want to know how I think, what I build, and what happens between the two? I made a little more room for the story.</p>
+            <div><Link href="/v2" style={{display:'inline-flex',gap:30,alignItems:'center',padding:'16px 22px',background:'#282621',color:'#fff',fontSize:14,fontWeight:650}}>Explore Portfolio V2 <span aria-hidden="true">↗</span></Link></div>
+          </div>
+        </section>
+
         <footer className="mp-footer"><span>© {new Date().getFullYear()} Gaurav Suryavanshi</span><span>Made with curiosity in Pune, India. <span aria-hidden="true">✳</span></span><a href="#main">Back to top ↑</a></footer>
       </div>
     </main>
