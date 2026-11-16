@@ -5,6 +5,7 @@ import './css/pages.css';
 import './css/lab.css';
 import './css/ported.css';
 import SiteNav from '../components/SiteNav';
+import CinematicIntro from '../components/CinematicIntro';
 import SiteFooter from '../components/SiteFooter';
 import PhysicsField from '../components/PhysicsField';
 import Chat from '../components/Chat';
@@ -132,6 +133,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <a href="#main" className="skip">Skip to content</a>
+        <CinematicIntro />
         <PhysicsField />
         <SiteNav />
         {children}
