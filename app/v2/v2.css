@@ -131,3 +131,45 @@ body:has(.story-v2)>.nav,body:has(.story-v2) .nav,body:has(.story-v2)>.footer,bo
   .story-project-index span{transition:transform .25s ease}
 }
 @keyframes gs-v2-arrive{from{opacity:0;transform:translateY(23px)}to{opacity:1;transform:translateY(0)}}
+
+/* Film chapter V2: reading-led expansion. Original cinematic opening untouched. */
+.story-film-interlude{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,7vw,105px);padding:clamp(44px,7vw,95px) 0;border-top:1px solid #d2ccbf;border-bottom:1px solid #d2ccbf;margin-top:60px}
+.story-film-interlude-heading>span{font-size:11px;color:var(--accent);font-weight:750;letter-spacing:.14em}
+.story-film-interlude h3{font-size:clamp(31px,4.1vw,64px);font-weight:540;line-height:1.1;letter-spacing:-.06em;margin-top:22px!important}
+.story-film-interlude-copy p{font-size:clamp(16px,1.45vw,19px);line-height:1.8;color:#59564e;margin-bottom:21px}
+.story-film-scroll-note{display:flex;align-items:center;gap:20px;padding:25px 0;color:var(--accent)}
+.story-film-scroll-note span{display:grid;place-items:center;border:1px solid #c6b9a9;border-radius:50%;height:39px;width:39px;font-size:19px;flex:none}
+.story-film-scroll-note p{font-size:13px;line-height:1.5;color:var(--muted)}
+.story-film-trigger-heading{margin:0!important;font:inherit}
+.story-film-trigger{appearance:none;display:flex;align-items:center;gap:15px;width:100%;min-height:86px;padding:17px 0;border:0;background:transparent;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.story-film-trigger:hover .story-film-row-title{color:var(--accent)}
+.story-film-trigger:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.story-film-trigger .story-film-row-plus{display:inline-grid;place-items:center;width:27px;height:27px;border:1px solid #cbbfae;border-radius:50%;line-height:1;font-size:20px;transition:transform .42s cubic-bezier(.2,.8,.2,1),background .25s}
+.story-film-accordion.is-open .story-film-trigger .story-film-row-plus{transform:rotate(45deg);background:#e6d9c9}
+.story-film-panel{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .54s cubic-bezier(.22,1,.36,1),opacity .32s ease}
+.story-film-accordion.is-open .story-film-panel{grid-template-rows:1fr;opacity:1}
+.story-film-panel-inner{min-height:0;overflow:hidden}
+.story-film-panel .story-film-row-detail{padding:1px 40px 28px 0}
+.story-film-director{color:var(--accent)!important;font-size:13px!important;font-weight:650}
+.story-film-reflection{font:italic 17px/1.6 Georgia,serif!important;color:#8b705b!important;padding-top:7px}
+@media(max-width:900px){.story-film-interlude{grid-template-columns:1fr;gap:25px}}
+@media(max-width:620px){.story-film-interlude{margin-top:40px;padding:50px 0}.story-film-trigger{min-height:76px;gap:9px}.story-film-panel .story-film-row-detail{padding-right:8px}.story-film-row-year{font-size:11px}}
+
+/* Modern scroll-timeline browsers: reveal film passages as they come into view.
+   In older browsers all content remains visible, without a hidden-state trap. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .story-films-opening,.story-film-interlude,.story-film-favorites,
+    .story-film-list-head,.story-film-column>.story-film-row {
+      animation:gs-film-rise both linear;
+      animation-timeline:view();
+      animation-range:entry 0% entry 34%;
+    }
+  }
+}
+@keyframes gs-film-rise{from{opacity:.45;transform:translateY(23px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  .story-film-panel,.story-film-trigger .story-film-row-plus{transition:none!important}
+  .story-films-opening,.story-film-interlude,.story-film-favorites,
+  .story-film-list-head,.story-film-column>.story-film-row{animation:none!important}
+}
