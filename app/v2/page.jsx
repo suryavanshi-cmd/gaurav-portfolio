@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import FilmAccordion from '../../components/FilmAccordion';
 import './v2.css';
 import { PERSON, TIMELINE } from '../../components/site';
 
@@ -77,8 +78,19 @@ export default function PortfolioV2() {
             <p><strong>3 Idiots</strong> is one of the films I love. And <strong>Game of Thrones</strong> — yes, it's a series, not a film — is another story world I love thinking about. The characters, the emotions, the scale. There's so much to notice.</p>
             <p>Now here's the engineer in me: while I'm watching, I sometimes wonder how people make a world like that feel real. Can AI help someone plan scenes, try camera angles, or build visual ideas? And can it do that without losing the human part that makes a story worth watching?</p>
             <p>I'm curious about using AI to explore storytelling and visuals realistically. I'm learning what's possible, what still looks wrong, and why good stories need more than a clever tool. I'm not claiming I've recreated these films — it's a question I want to keep exploring.</p>
+            <p>And I like watching a scene more than once. The first time, I'm following the story. The second time, I start noticing the little things: a silence, a camera move, the music arriving at just the right moment.</p>
+            <p>Sometimes I wonder: if I had a story in my head, could I make a small, believable scene using AI? Not a copy of someone else's film. Something original, with its own people and its own feeling. That's what I'd love to learn.</p>
           </div>
         </div>
+        <div className="story-film-interlude">
+          <div className="story-film-interlude-heading"><span>THE KIND OF FILMS THAT KEEP ME THINKING</span><h3>I love the moment<br/><em>the story turns.</em></h3></div>
+          <div className="story-film-interlude-copy">
+            <p>Crime thrillers have a special place for me. A small clue appears. Someone says something ordinary. And later, suddenly, that little moment means everything.</p>
+            <p>I love that feeling of trying to solve the story before the film does. I get it wrong plenty of times. That's probably why I enjoy it.</p>
+            <p>But I also love funny films, emotional journeys, and big worlds where every character seems to have a story of their own. Good storytelling doesn't belong to just one genre.</p>
+          </div>
+        </div>
+        <div className="story-film-scroll-note"><span aria-hidden="true">↓</span><p>Keep scrolling. These are a few stories worth talking about.</p></div>
         <div className="story-film-favorites">
           <span className="story-film-mini-label">THE TWO I'VE MENTIONED FIRST</span>
           <div><span>01</span><strong>3 Idiots</strong><small>A film I love</small></div>
@@ -87,11 +99,11 @@ export default function PortfolioV2() {
         <div className="story-film-collections">
           <div className="story-film-column">
             <div className="story-film-list-head"><span>01 / FROM INDIA</span><h3>Stories that shaped<br/><em>our cinema.</em></h3><p>Five widely celebrated Indian films. I like looking at why stories like these stay with people.</p></div>
-            {indianFilms.map(film => <FilmRow key={film.title} film={film}/>)}
+            {indianFilms.map(film => <FilmAccordion key={film.title} film={film}/>)}
           </div>
           <div className="story-film-column">
             <div className="story-film-list-head"><span>02 / FROM AROUND THE WORLD</span><h3>Stories that travelled<br/><em>everywhere.</em></h3><p>Five acclaimed films from world cinema, each memorable for a different reason.</p></div>
-            {worldFilms.map(film => <FilmRow key={film.title} film={film}/>)}
+            {worldFilms.map(film => <FilmAccordion key={film.title} film={film}/>)}
           </div>
         </div>
         <p className="story-film-afterthought">This isn't a scientific ranking or a list of everything I've watched. It's a small collection of loved and influential stories. My own favorites are the ones I've called out above.</p>
@@ -157,13 +169,6 @@ export default function PortfolioV2() {
       <footer className="story-footer"><span>© {new Date().getFullYear()} Gaurav Suryavanshi. Still figuring things out.</span><a href="#main">Back to top ↑</a></footer>
     </div>
   </main>;
-}
-
-function FilmRow({film}) {
-  return <details className="story-film-row">
-    <summary><span className="story-film-row-title">{film.title}</span><span className="story-film-row-year">{film.year}</span><span aria-hidden="true" className="story-film-row-plus">+</span></summary>
-    <div className="story-film-row-detail"><p>Directed by {film.maker}.</p><p>{film.thought}</p></div>
-  </details>;
 }
 
 function ProjectStory({project:p}) {
